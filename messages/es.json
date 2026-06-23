@@ -1,0 +1,65 @@
+{
+  "brand": {
+    "name": "Bionexo",
+    "tagline": "Conecta · Transforma · Impacta",
+    "umbrella": "Tu Basura Innova"
+  },
+  "nav": {
+    "home": "Inicio",
+    "shop": "Tienda",
+    "about": "Sobre nosotros",
+    "menuTitle": "Categorías"
+  },
+  "common": {
+    "available": "Disponible",
+    "unavailable": "No disponible",
+    "featured": "Destacados",
+    "viewProduct": "Ver producto",
+    "variants": "Variantes",
+    "buy": "Comprar",
+    "interested": "Me interesa / Contáctame",
+    "allCategories": "Todas las categorías",
+    "back": "Volver"
+  },
+  "home": {
+    "heroTitle": "Economía circular, hecha tienda",
+    "heroSubtitle": "Materiales recuperados, moda sostenible y productos ecológicos hechos por emprendedores que le dan una segunda vida a lo que otros desechan.",
+    "heroCta": "Explorar la tienda",
+    "featuredTitle": "Productos destacados",
+    "categoriesTitle": "Explora por categoría"
+  },
+  "shop": {
+    "title": "Tienda",
+    "subtitle": "Todas nuestras categorías de economía circular en un solo lugar."
+  },
+  "category": {
+    "productsInCategory": "Productos en esta categoría",
+    "empty": "Todavía no hay productos cargados en esta categoría."
+  },
+  "product": {
+    "category": "Categoría",
+    "availability": "Disponibilidad",
+    "description": "Descripción",
+    "notFound": "No encontramos este producto.",
+    "whatsappBuyMessage": "Hola, quiero comprar: {product}",
+    "whatsappInterestMessage": "Hola, me interesa: {product}. ¿Me pueden dar más información?"
+  },
+  "about": {
+    "title": "Sobre nosotros",
+    "missionTitle": "Nuestra misión",
+    "missionBody": "Bionexo es una tienda en línea dedicada a conectar a quienes generan materiales recuperados y productos ecológicos con quienes quieren consumir de forma más consciente. Creemos que la basura de unos puede ser la materia prima de otros.",
+    "umbrellaTitle": "Parte de Tu Basura Innova",
+    "umbrellaBody": "Bionexo nace bajo el respaldo de Tu Basura Innova, marca global de economía circular que impulsa proyectos como este para que cada vez más residuos se transformen en oportunidades.",
+    "historyTitle": "Economía circular: la idea grande",
+    "historyBody": "En lugar de extraer, producir, usar y desechar, la economía circular propone recuperar, reutilizar y regenerar. Cada producto que ves en Bionexo evita que algo termine en un relleno sanitario antes de tiempo."
+  },
+  "footer": {
+    "contactTitle": "Contacto",
+    "phonePlaceholder": "+57 300 000 0000 (placeholder)",
+    "emailPlaceholder": "contacto@bionexo.example.com (placeholder)",
+    "addressTitle": "Presencia",
+    "addressBody": "Bucaramanga y área metropolitana · Bogotá · Envíos a toda Colombia",
+    "socialTitle": "Redes sociales",
+    "rights": "Todos los derechos reservados."
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "brand": {
+    "name": "Bionexo",
+    "tagline": "Connect · Transform · Impact",
+    "umbrella": "Tu Basura Innova"
+  },
+  "nav": {
+    "home": "Home",
+    "shop": "Shop",
+    "about": "About us",
+    "menuTitle": "Categories"
+  },
+  "common": {
+    "available": "Available",
+    "unavailable": "Unavailable",
+    "featured": "Featured",
+    "viewProduct": "View product",
+    "variants": "Variants",
+    "buy": "Buy",
+    "interested": "I'm interested / Contact",
+    "allCategories": "All categories",
+    "back": "Back"
+  },
+  "home": {
+    "heroTitle": "Circular economy, made into a store",
+    "heroSubtitle": "Recovered materials, sustainable fashion and eco-friendly products made by entrepreneurs who give a second life to what others throw away.",
+    "heroCta": "Explore the shop",
+    "featuredTitle": "Featured products",
+    "categoriesTitle": "Browse by category"
+  },
+  "shop": {
+    "title": "Shop",
+    "subtitle": "All of our circular economy categories in one place."
+  },
+  "category": {
+    "productsInCategory": "Products in this category",
+    "empty": "There are no products loaded in this category yet."
+  },
+  "product": {
+    "category": "Category",
+    "availability": "Availability",
+    "description": "Description",
+    "notFound": "We couldn't find this product.",
+    "whatsappBuyMessage": "Hi, I want to buy: {product}",
+    "whatsappInterestMessage": "Hi, I'm interested in: {product}. Could you give me more information?"
+  },
+  "about": {
+    "title": "About us",
+    "missionTitle": "Our mission",
+    "missionBody": "Bionexo is an online store dedicated to connecting those who generate recovered materials and eco-friendly products with those who want to consume more consciously. We believe one person's waste can be another's raw material.",
+    "umbrellaTitle": "Part of Tu Basura Innova",
+    "umbrellaBody": "Bionexo is backed by Tu Basura Innova, a global circular economy brand that supports projects like this one so more waste becomes opportunity.",
+    "historyTitle": "Circular economy: the big idea",
+    "historyBody": "Instead of extract, produce, use and discard, the circular economy proposes recover, reuse and regenerate. Every product you see on Bionexo helps keep something out of a landfill a little longer."
+  },
+  "footer": {
+    "contactTitle": "Contact",
+    "phonePlaceholder": "+57 300 000 0000 (placeholder)",
+    "emailPlaceholder": "contacto@bionexo.example.com (placeholder)",
+    "addressTitle": "Presence",
+    "addressBody": "Bucaramanga and metro area · Bogotá · Shipping all over Colombia",
+    "socialTitle": "Social media",
+    "rights": "All rights reserved."
+  }
+}

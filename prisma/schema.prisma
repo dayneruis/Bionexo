@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// Cada categoría tiene su propia página (8 categorías en total, ver CLAUDE.md).
+model Category {
+  id            String    @id @default(cuid())
+  slug          String    @unique
+  nameEs        String
+  nameEn        String
+  descriptionEs String
+  descriptionEn String
+  products      Product[]
+}
+
+// Un producto del catálogo. La disponibilidad es "Disponible / No disponible",
+// no se maneja cantidad de stock (se actualiza a diario por el dueño del negocio).
+model Product {
+  id            String    @id @default(cuid())
+  slug          String    @unique
+  nameEs        String
+  nameEn        String
+  descriptionEs String
+  descriptionEn String
+  priceCop      Int
+  available     Boolean   @default(true)
+  featured      Boolean   @default(false)
+  imageUrl      String
+  categoryId    String
+  category      Category  @relation(fields: [categoryId], references: [id])
+  variants      Variant[]
+}
+
+// Variante de un producto (talla, color o material), solo informativa en esta fase.
+model Variant {
+  id        String  @id @default(cuid())
+  type      String
+  value     String
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}

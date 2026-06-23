@@ -48,17 +48,13 @@ para pedir y entregar información).
 
 ## Parte 2 — Las tecnologías de ESTE proyecto
 
-> Esta sección se completa cuando Claude Code proponga el "stack" (el conjunto
-> de tecnologías). Por ahora dejamos el espacio listo. Cuando el agente elija,
-> pídele que te explique **por qué** eligió cada una, y lo escribimos aquí.
-
 | Capa | Tecnología elegida | ¿Para qué sirve? | ¿Por qué se eligió? |
 |------|--------------------|------------------|---------------------|
-| Frontend | _por definir_ | | |
-| Backend | _por definir_ | | |
-| Base de datos | _por definir_ | | |
-| Idiomas (es/en) | _por definir_ | | |
-| Conversión COP→USD | _por definir_ | | |
+| Frontend + Backend | **Next.js 15** (App Router) + TypeScript | Next.js es un framework de React: con los mismos archivos resuelve tanto lo que ve el usuario (páginas) como la lógica que lee la base de datos. TypeScript es JavaScript con "tipos", que ayuda a detectar errores antes de ejecutar el código. | Es el framework más usado para tiendas a la medida, tiene buena documentación y crece bien hacia Fase 2/3 (carrito, panel admin). Se fijó la versión 15 (no la 16, recién salida) porque la 16 tenía un problema de compatibilidad con la librería de idiomas. |
+| Estilos | **Tailwind CSS** | Define colores, espacios y tamaños escribiendo "clases" cortas directo en el HTML, en vez de archivos `.css` separados. | Acelera mucho el armado de interfaces responsive y es el estándar actual junto a Next.js. |
+| Base de datos | **Prisma + SQLite** | Prisma es el "traductor" entre el código y la base de datos. SQLite es una base de datos liviana que vive en un solo archivo (`dev.db`), perfecta para desarrollar en local. | Cuando se despliegue el sitio, Prisma permite migrar a una base de datos más robusta (Postgres) cambiando muy poca configuración. |
+| Idiomas (es/en) | **next-intl** | Maneja las rutas `/es/...` y `/en/...`, y carga el diccionario de textos correcto (`messages/es.json` / `messages/en.json`) según el idioma de la URL. | Es la librería estándar para hacer sitios bilingües con Next.js App Router. |
+| Conversión COP→USD | _pendiente (Fase 2)_ | | En Fase 1 los precios solo se muestran en COP. |
 
 **Lo que ya sabemos de la base técnica:**
 - Tienes **Node.js v22** instalado: es el "motor" que permite ejecutar
@@ -66,28 +62,55 @@ para pedir y entregar información).
 - El sitio será **a la medida** (no una plataforma cerrada tipo Shopify), así
   que tendremos control total del código.
 - Probamos **siempre en local primero**, luego desplegamos.
+- Para levantar el sitio en tu computador: abre una terminal en `D:\Eccomerce`
+  y corre `npm run dev`. Luego abre `http://localhost:3000` en el navegador
+  (te redirige automáticamente a `/es`).
 
 ---
 
 ## Parte 3 — La estructura de carpetas (el mapa del proyecto)
 
-> Se completa cuando el agente cree la estructura. La idea es que entiendas qué
-> guarda cada carpeta, como las habitaciones de una casa.
-
-Ejemplo del tipo de estructura que verás (se ajustará al proyecto real):
+Así quedó organizado el proyecto después de construir la Fase 1:
 
 ```
 D:\Eccomerce
 │
-├── CLAUDE.md              ← memoria del proyecto (la lee Claude Code)
-├── Documentacion          ← este manual y otros documentos
+├── CLAUDE.md                  ← memoria del proyecto (la lee Claude Code)
+├── Documentacion/              ← este manual y otros documentos
 │
-├── (carpeta del frontend) ← lo que ve el usuario
-├── (carpeta del backend)  ← la lógica del servidor
-└── (configuración)        ← archivos que ajustan cómo corre todo
+├── prisma/
+│   ├── schema.prisma           ← define las "tablas": Categoría, Producto, Variante
+│   ├── seed.ts                 ← carga los datos de ejemplo (8 categorías, productos)
+│   └── migrations/             ← historial de cambios a la base de datos
+│
+├── messages/
+│   ├── es.json                  ← textos fijos de la interfaz en español
+│   └── en.json                  ← textos fijos de la interfaz en inglés
+│
+├── src/
+│   ├── app/[locale]/            ← todas las páginas (el "[locale]" es /es o /en)
+│   │   ├── layout.tsx            ← plantilla común: encabezado + pie de página
+│   │   ├── page.tsx              ← portada
+│   │   ├── tienda/               ← tienda general (las 8 categorías)
+│   │   ├── categoria/[slug]/     ← página de una categoría específica
+│   │   ├── producto/[slug]/      ← ficha de un producto
+│   │   └── sobre-nosotros/       ← página "Sobre nosotros"
+│   │
+│   ├── components/              ← piezas reutilizables (tarjeta de producto, botones, etc.)
+│   ├── lib/                     ← funciones para leer la base de datos y formatear precios
+│   ├── i18n/                    ← configuración de idiomas (next-intl)
+│   ├── middleware.ts             ← decide qué idioma mostrar en cada visita
+│   └── generated/prisma/         ← código que Prisma genera automáticamente (no se edita a mano)
+│
+├── dev.db                       ← la base de datos SQLite (un solo archivo)
+└── package.json                 ← lista de herramientas que usa el proyecto
 ```
 
-A medida que aparezcan carpetas reales, las explicamos aquí una por una.
+**Algo importante para entender Next.js:** la carpeta `src/app/[locale]/categoria/[slug]`
+tiene corchetes `[ ]` porque es una carpeta "dinámica": una sola plantilla de
+página sirve para *cualquier* categoría (o producto), y Next.js reemplaza
+`[slug]` por el nombre real (por ejemplo `moda-sostenible`) según la URL que
+visite el usuario.
 
 ---
 
@@ -114,7 +137,9 @@ Una estrategia que funciona muy bien para aprender:
 
 | Fecha | Decisión | ¿Por qué? |
 |-------|----------|-----------|
-| _(se irá llenando)_ | | |
+| 2026-06-23 | Se construyó la Fase 1 completa: Next.js 15 + TypeScript + Tailwind + Prisma/SQLite, catálogo bilingüe con las 8 categorías, fichas de producto, portada con destacados y "Sobre nosotros". | Cumplir el alcance de Fase 1 definido en el CLAUDE.md, con contenido de ejemplo para poder revisarlo en el navegador. |
+| 2026-06-23 | Se fijó Next.js en la versión 15.5.19 en vez de la 16 (recién salida). | La versión 16 tenía un problema de compatibilidad con `next-intl` que rompía las páginas en español/inglés (error 404). La 15 es más estable y está bien documentada. |
+| 2026-06-23 | Prisma se conecta a SQLite usando un "adaptador" (`@prisma/adapter-better-sqlite3`). | La versión nueva de Prisma (7) ya no se conecta a la base de datos de forma automática; hay que indicarle explícitamente cómo conectarse. |
 
 ---
 
@@ -144,6 +169,10 @@ Copia y pega estas preguntas cuando quieras entender algo:
 - **Servidor / hosting:** computador en internet donde finalmente vive el sitio para que todos lo vean.
 - **Git:** herramienta para guardar versiones del proyecto y poder volver atrás.
 - **Responsive:** que el sitio se ve bien en celular, tablet y computador.
+- **Migración (de base de datos):** un cambio guardado y versionado en la estructura de la base de datos (por ejemplo, "agregar la tabla Producto").
+- **Seed ("sembrar"):** un script que carga datos de ejemplo en la base de datos para poder probar el sitio sin esperar a tener datos reales.
+- **Componente:** una pieza de interfaz reutilizable (ej: la tarjeta de un producto), que se usa en varias páginas sin repetir el código.
+- **Variable de entorno:** un valor de configuración (como la ubicación de la base de datos) que se guarda fuera del código, en un archivo `.env`.
 - _(seguimos agregando términos a medida que aparezcan)_
 
 ---

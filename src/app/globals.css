@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fafdf9;
+  --foreground: #14271f;
+
+  /* Paleta "eco": verdes de lima a bosque, más azules/cian de acento. */
+  --color-eco-lime: #a6e22e;
+  --color-eco-green: #3fa34d;
+  --color-eco-forest: #1f5d3a;
+  --color-eco-cyan: #2fb6c4;
+  --color-eco-blue: #2563a8;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --color-eco-lime: var(--color-eco-lime);
+  --color-eco-green: var(--color-eco-green);
+  --color-eco-forest: var(--color-eco-forest);
+  --color-eco-cyan: var(--color-eco-cyan);
+  --color-eco-blue: var(--color-eco-blue);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
