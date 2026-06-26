@@ -98,8 +98,19 @@
 - **Base de datos:** Prisma 7 con SQLite local (archivo `dev.db` en la raíz). Esta versión de Prisma requiere un "adaptador de conexión" explícito (`@prisma/adapter-better-sqlite3`) en lugar de leer la base de datos de forma automática, así que el cliente se construye en `src/lib/db.ts` pasándole ese adaptador.
 - **Precios:** solo en COP en esta fase. La conversión automática a USD queda para la Fase 2, tal como ya estaba planeado en la sección 10.
 - **Imágenes de los productos de ejemplo:** se usan imágenes de relleno de `picsum.photos` mientras no haya fotos reales del negocio.
-- **Botones "Comprar" / "Me interesa":** ambos abren un enlace de WhatsApp (`wa.me`) con un mensaje distinto pre-llenado, usando un número de teléfono de ejemplo que el dueño debe reemplazar (ver `src/components/ContactButtons.tsx`). Quedan aislados en su propio componente para poder reemplazar "Comprar" por una pasarela de pago real en la Fase 4 sin tocar el resto de la ficha de producto.
+- **Botones "Comprar" / "Me interesa":** "Comprar" agrega al carrito; "Me interesa" sigue abriendo WhatsApp. Ambos aislados en `src/components/ContactButtons.tsx` para que en Fase 4 solo se cambie ese componente al enchufar la pasarela de pago.
+
+## 13. Bitácora Fase 2
+
+- **Carrito:** estado en React Context (`src/lib/cart.tsx`) + persistencia en `localStorage`. Clave de storage: `bionexo_carrito`. El cajón lateral (`CartDrawer`) se abre/cierra a través del mismo contexto.
+- **Conversión COP → USD:** API gratuita Frankfurter (`api.frankfurter.app`), caché en tabla `ExchangeRate` (SQLite, patrón singleton), refresco cada 6 horas, tasa de respaldo ~1/4200 si la API falla. Lógica en `src/lib/exchange.ts`; endpoint para el cliente en `src/app/api/exchange-rate/route.ts`.
+- **Envío origen-destino:** 5 zonas (`BUC`, `BOG`, `PPAL`, `COL`, `INTL`). Tabla de tarifas 5×5 en `src/lib/shipping-config.ts` (el único archivo que editar para cambiar tarifas o zonas). Lógica de cálculo en `src/lib/shipping.ts`. Estrategia multi-origen: agrupar ítems por zona de origen → un envío por zona → sumar. Preparado para integrar Servientrega/Coordinadora reemplazando `getTarifa()` en `shipping.ts`.
+- **Ciudad de origen por producto:** campo `originCity String` en la tabla `Product`. El seed trae ciudades de ejemplo; el dueño las reemplaza por las reales en el panel admin (Fase 3).
+- **Checkout:** página en `src/app/[locale]/checkout/page.tsx` (mínima, servidor) + componente cliente `CheckoutForm.tsx` que lee el carrito de localStorage, muestra el calculador de envío, recibe datos del comprador y llama a `POST /api/orders` para guardar el pedido. Sin contraseñas en esta fase (se agregan con la pasarela en Fase 4).
+- **Confirmación:** página `src/app/[locale]/pedido-confirmado/page.tsx` que lee el pedido de la BD y genera un enlace de WhatsApp con el resumen completo del pedido para que el comprador lo envíe al negocio.
+- **Modelos nuevos en Prisma:** `Order`, `OrderItem`, `ExchangeRate`. Migración: `20260625230632_fase2`.
+- **Número de WhatsApp de ejemplo:** `573000000000` — el dueño debe reemplazarlo en `ContactButtons.tsx` y en `pedido-confirmado/page.tsx`.
 
 ---
 
-_Última actualización: Fase 1 completada y probada en local._
+_Última actualización: Fase 2 completada y probada en local._

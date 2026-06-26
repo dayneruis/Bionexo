@@ -36,16 +36,58 @@ model Product {
   available     Boolean   @default(true)
   featured      Boolean   @default(false)
   imageUrl      String
+  originCity    String    @default("Bucaramanga") // Ciudad donde se origina el producto
   categoryId    String
   category      Category  @relation(fields: [categoryId], references: [id])
   variants      Variant[]
 }
 
-// Variante de un producto (talla, color o material), solo informativa en esta fase.
+// Variante de un producto (talla, color o material).
 model Variant {
   id        String  @id @default(cuid())
   type      String
   value     String
   productId String
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+// Caché de la tasa de cambio COP→USD. Solo existe una fila (patrón singleton).
+// Se reutiliza hasta 6 horas antes de consultarle a la API externa.
+model ExchangeRate {
+  id        String   @id @default("singleton")
+  usdPerCop Float
+  updatedAt DateTime @updatedAt
+}
+
+// Pedido registrado por un comprador. El estado avanza: pendiente → confirmado → enviado → entregado.
+model Order {
+  id              String      @id @default(cuid())
+  createdAt       DateTime    @default(now())
+  status          String      @default("pendiente")
+  buyerName       String
+  buyerEmail      String
+  buyerPhone      String
+  destCity        String
+  destAddress     String
+  isInternational Boolean     @default(false)
+  shippingCop     Int
+  shippingDetail  String      // JSON: [{zonaOrigen, costo}] — desglose por zona de origen
+  subtotalCop     Int
+  totalCop        Int
+  items           OrderItem[]
+}
+
+// Ítem de un pedido: copia los datos del producto en el momento de la compra
+// para que el historial sea consistente aunque el producto se edite o elimine.
+model OrderItem {
+  id            String  @id @default(cuid())
+  orderId       String
+  order         Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId     String
+  productNameEs String
+  productNameEn String
+  originCity    String
+  variantLabel  String?
+  unitPriceCop  Int
+  quantity      Int     @default(1)
 }

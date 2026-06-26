@@ -4,8 +4,10 @@ import { NextIntlClientProvider } from "next-intl";
 import { notFound } from "next/navigation";
 import { Geist, Geist_Mono } from "next/font/google";
 import { routing } from "@/i18n/routing";
+import { CartProvider } from "@/lib/cart";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import CartDrawer from "@/components/CartDrawer";
 import "../globals.css";
 
 const geistSans = Geist({
@@ -24,9 +26,8 @@ export const metadata: Metadata = {
     "Tienda en línea de productos de economía circular y materiales reciclados.",
 };
 
-// Layout raíz: valida que el idioma de la URL sea uno soportado (es/en),
-// y envuelve todas las páginas con el proveedor de traducciones, el
-// encabezado y el pie de página.
+// Layout raíz: valida el idioma de la URL, envuelve la app con los proveedores
+// de traducciones y del carrito, y renderiza el encabezado, pie y cajón lateral.
 export default async function LocaleLayout({
   children,
   params,
@@ -46,9 +47,14 @@ export default async function LocaleLayout({
     >
       <body className="flex min-h-full flex-col">
         <NextIntlClientProvider>
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          {/* CartProvider da acceso al estado del carrito a todos los componentes cliente */}
+          <CartProvider>
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Footer />
+            {/* CartDrawer vive aquí para cubrir toda la pantalla como overlay */}
+            <CartDrawer />
+          </CartProvider>
         </NextIntlClientProvider>
       </body>
     </html>

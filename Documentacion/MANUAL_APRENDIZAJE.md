@@ -54,7 +54,9 @@ para pedir y entregar información).
 | Estilos | **Tailwind CSS** | Define colores, espacios y tamaños escribiendo "clases" cortas directo en el HTML, en vez de archivos `.css` separados. | Acelera mucho el armado de interfaces responsive y es el estándar actual junto a Next.js. |
 | Base de datos | **Prisma + SQLite** | Prisma es el "traductor" entre el código y la base de datos. SQLite es una base de datos liviana que vive en un solo archivo (`dev.db`), perfecta para desarrollar en local. | Cuando se despliegue el sitio, Prisma permite migrar a una base de datos más robusta (Postgres) cambiando muy poca configuración. |
 | Idiomas (es/en) | **next-intl** | Maneja las rutas `/es/...` y `/en/...`, y carga el diccionario de textos correcto (`messages/es.json` / `messages/en.json`) según el idioma de la URL. | Es la librería estándar para hacer sitios bilingües con Next.js App Router. |
-| Conversión COP→USD | _pendiente (Fase 2)_ | | En Fase 1 los precios solo se muestran en COP. |
+| Conversión COP→USD | **Frankfurter API + caché SQLite** | Consulta la tasa del día de una API gratuita, la guarda en la base de datos por 6 horas, y si la API falla usa un valor de respaldo (~4200 COP/USD). Ver `src/lib/exchange.ts`. |
+| Carrito | **React Context + localStorage** | El carrito vive en la memoria del navegador (no en el servidor). `CartProvider` lo envuelve todo. El cajón lateral se llama `CartDrawer`. Ver `src/lib/cart.tsx`. |
+| Cálculo de envío | **Tabla de tarifas origen→destino** | 5 zonas de envío. Archivo maestro: `src/lib/shipping-config.ts`. Lógica en `src/lib/shipping.ts`. Multi-origen: un cargo por zona de origen única, se suman. |
 
 **Lo que ya sabemos de la base técnica:**
 - Tienes **Node.js v22** instalado: es el "motor" que permite ejecutar
@@ -89,15 +91,19 @@ D:\Eccomerce
 │
 ├── src/
 │   ├── app/[locale]/            ← todas las páginas (el "[locale]" es /es o /en)
-│   │   ├── layout.tsx            ← plantilla común: encabezado + pie de página
+│   │   ├── layout.tsx            ← plantilla común: encabezado + pie + CartProvider
 │   │   ├── page.tsx              ← portada
 │   │   ├── tienda/               ← tienda general (las 8 categorías)
 │   │   ├── categoria/[slug]/     ← página de una categoría específica
-│   │   ├── producto/[slug]/      ← ficha de un producto
+│   │   ├── producto/[slug]/      ← ficha de un producto (con precio en COP y USD)
+│   │   ├── checkout/             ← formulario de pedido (Fase 2)
+│   │   ├── pedido-confirmado/    ← confirmación del pedido con enlace a WhatsApp (Fase 2)
+│   │   ├── api/exchange-rate/    ← endpoint: devuelve tasa COP→USD (Fase 2)
+│   │   ├── api/orders/           ← endpoint: guarda un pedido (Fase 2)
 │   │   └── sobre-nosotros/       ← página "Sobre nosotros"
 │   │
-│   ├── components/              ← piezas reutilizables (tarjeta de producto, botones, etc.)
-│   ├── lib/                     ← funciones para leer la base de datos y formatear precios
+│   ├── components/              ← piezas reutilizables (tarjeta de producto, carrito, etc.)
+│   ├── lib/                     ← funciones: base de datos, carrito, envío, divisas
 │   ├── i18n/                    ← configuración de idiomas (next-intl)
 │   ├── middleware.ts             ← decide qué idioma mostrar en cada visita
 │   └── generated/prisma/         ← código que Prisma genera automáticamente (no se edita a mano)
@@ -140,6 +146,11 @@ Una estrategia que funciona muy bien para aprender:
 | 2026-06-23 | Se construyó la Fase 1 completa: Next.js 15 + TypeScript + Tailwind + Prisma/SQLite, catálogo bilingüe con las 8 categorías, fichas de producto, portada con destacados y "Sobre nosotros". | Cumplir el alcance de Fase 1 definido en el CLAUDE.md, con contenido de ejemplo para poder revisarlo en el navegador. |
 | 2026-06-23 | Se fijó Next.js en la versión 15.5.19 en vez de la 16 (recién salida). | La versión 16 tenía un problema de compatibilidad con `next-intl` que rompía las páginas en español/inglés (error 404). La 15 es más estable y está bien documentada. |
 | 2026-06-23 | Prisma se conecta a SQLite usando un "adaptador" (`@prisma/adapter-better-sqlite3`). | La versión nueva de Prisma (7) ya no se conecta a la base de datos de forma automática; hay que indicarle explícitamente cómo conectarse. |
+| 2026-06-25 | Carrito implementado con React Context y localStorage, no con una tabla en la base de datos. | El carrito es temporal: cambia mientras el usuario navega y se vacía al confirmar el pedido. Guardarlo en la BD de forma permanente tiene más sentido solo cuando haya registro de usuarios (Fase 4). Con localStorage el carrito sobrevive a recargas del navegador sin tocar el servidor. |
+| 2026-06-25 | Tabla de tarifas de envío en un archivo TypeScript (`shipping-config.ts`), no en la base de datos. | Así el dueño del negocio puede ver y editar las tarifas directamente en ese archivo sin necesidad de una interfaz de admin. En Fase futura, cuando se integre Servientrega/Coordinadora, solo se cambia la función `getTarifa()` y nada más. |
+| 2026-06-25 | Estrategia multi-origen: un cargo de envío por zona de origen única, se suman. | Si en el carrito hay un producto de Medellín y otro de Bogotá, son dos despachos físicos distintos; cobrar uno solo sería injusto para el negocio. El comprador ve el desglose en el checkout. |
+| 2026-06-25 | Checkout sin contraseña en Fase 2. Solo se recogen nombre, email, teléfono y dirección. | Cumple el requisito "registro sencillo y no tedioso". La contraseña y la cuenta del usuario se agregarán junto con la pasarela de pago en Fase 4. |
+| 2026-06-25 | Al confirmar un pedido, el comprador hace clic en un botón que abre WhatsApp con el resumen pre-llenado. | No hay aún una pasarela de pago real. WhatsApp es el canal de confirmación manual mientras no haya integración bancaria. En Fase 4 ese botón se reemplaza por el flujo de pago. |
 
 ---
 
@@ -173,8 +184,13 @@ Copia y pega estas preguntas cuando quieras entender algo:
 - **Seed ("sembrar"):** un script que carga datos de ejemplo en la base de datos para poder probar el sitio sin esperar a tener datos reales.
 - **Componente:** una pieza de interfaz reutilizable (ej: la tarjeta de un producto), que se usa en varias páginas sin repetir el código.
 - **Variable de entorno:** un valor de configuración (como la ubicación de la base de datos) que se guarda fuera del código, en un archivo `.env`.
+- **React Context:** mecanismo de React para compartir información entre componentes sin tener que pasarla "de mano en mano". El carrito usa Context para que cualquier botón de cualquier página pueda agregar ítems.
+- **localStorage:** espacio de almacenamiento del navegador (no del servidor) que guarda datos aunque se recargue la página. El carrito de Bionexo vive ahí.
+- **Zona de envío:** agrupación de ciudades con una misma tarifa de envío. Bionexo tiene 5 zonas: BUC (Bucaramanga), BOG (Bogotá), PPAL (ciudades principales), COL (resto de Colombia), INTL (internacional).
+- **Tasa de cambio en caché:** guardar temporalmente la tasa del día en la base de datos local para no consultar la API externa en cada clic de usuario. Se renueva cada 6 horas.
+- **API endpoint / Route Handler:** una URL especial del sitio que responde con datos en formato JSON en vez de con una página visible. Ejemplo: `/api/exchange-rate` devuelve la tasa COP→USD.
 - _(seguimos agregando términos a medida que aparezcan)_
 
 ---
 
-_Última actualización: versión inicial. Este documento crece con el proyecto._
+_Última actualización: Fase 2 completada. Este documento crece con el proyecto._

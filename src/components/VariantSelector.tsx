@@ -1,18 +1,28 @@
+"use client";
+
 import { useTranslations } from "next-intl";
 import type { Variant } from "@/generated/prisma/client";
 
 // Muestra las variantes del producto (talla, color, material) agrupadas por tipo.
-// En esta fase es solo informativo: no hay carrito, así que no se "selecciona"
-// nada todavía, simplemente se listan las opciones disponibles.
-export default function VariantSelector({ variants }: { variants: Variant[] }) {
+// Ahora es controlado: recibe la variante seleccionada y notifica al padre
+// cuando el usuario elige una. El padre (ProductActions) combina este estado
+// con el botón "Agregar al carrito".
+export default function VariantSelector({
+  variants,
+  selected,
+  onSelect,
+}: {
+  variants: Variant[];
+  selected?: string;
+  onSelect?: (label: string) => void;
+}) {
   const t = useTranslations("common");
 
-  if (variants.length === 0) {
-    return null;
-  }
+  if (variants.length === 0) return null;
 
-  const groups = variants.reduce<Record<string, string[]>>((acc, variant) => {
-    acc[variant.type] = [...(acc[variant.type] ?? []), variant.value];
+  // Agrupar variantes por tipo (ej: todas las tallas juntas, todos los colores juntos).
+  const groups = variants.reduce<Record<string, string[]>>((acc, v) => {
+    acc[v.type] = [...(acc[v.type] ?? []), v.value];
     return acc;
   }, {});
 
@@ -21,18 +31,27 @@ export default function VariantSelector({ variants }: { variants: Variant[] }) {
       <p className="mb-2 text-sm font-semibold text-eco-forest">{t("variants")}</p>
       <div className="flex flex-col gap-2">
         {Object.entries(groups).map(([type, values]) => (
-          <div key={type} className="flex items-center gap-2 text-sm">
+          <div key={type} className="flex flex-wrap items-center gap-2 text-sm">
             <span className="capitalize text-foreground/60">{type}:</span>
-            <div className="flex flex-wrap gap-2">
-              {values.map((value) => (
-                <span
+            {values.map((value) => {
+              // La etiqueta combina tipo + valor para identificar la selección.
+              const label = `${type}: ${value}`;
+              const isSelected = selected === label;
+              return (
+                <button
                   key={value}
-                  className="rounded-full border border-eco-forest/20 px-3 py-1 text-foreground/80"
+                  type="button"
+                  onClick={() => onSelect?.(label)}
+                  className={`rounded-full border px-3 py-1 text-sm transition-colors ${
+                    isSelected
+                      ? "border-eco-forest bg-eco-forest text-white"
+                      : "border-eco-forest/20 text-foreground/80 hover:border-eco-forest/60"
+                  }`}
                 >
                   {value}
-                </span>
-              ))}
-            </div>
+                </button>
+              );
+            })}
           </div>
         ))}
       </div>

@@ -16,7 +16,7 @@
     "featured": "Featured",
     "viewProduct": "View product",
     "variants": "Variants",
-    "buy": "Buy",
+    "buy": "Add to cart",
     "interested": "I'm interested / Contact",
     "allCategories": "All categories",
     "back": "Back"
@@ -41,8 +41,60 @@
     "availability": "Availability",
     "description": "Description",
     "notFound": "We couldn't find this product.",
+    "originCity": "Ships from",
     "whatsappBuyMessage": "Hi, I want to buy: {product}",
     "whatsappInterestMessage": "Hi, I'm interested in: {product}. Could you give me more information?"
+  },
+  "cart": {
+    "title": "Your cart",
+    "empty": "Your cart is empty.",
+    "continueShopping": "Continue shopping",
+    "subtotal": "Subtotal",
+    "goToCheckout": "Go to checkout",
+    "remove": "Remove",
+    "open": "Shopping cart",
+    "close": "Close cart"
+  },
+  "shipping": {
+    "title": "Shipping cost",
+    "enterCity": "Enter your destination city",
+    "international": "International shipping (outside Colombia)",
+    "breakdown": "Breakdown by origin",
+    "from": "From",
+    "totalShipping": "Total shipping",
+    "zones": {
+      "BUC": "Bucaramanga and metro area",
+      "BOG": "Bogotá and Sabana",
+      "PPAL": "Major cities",
+      "COL": "Rest of Colombia",
+      "INTL": "International"
+    },
+    "note": "Example rates · Coming soon: Servientrega / Coordinadora"
+  },
+  "checkout": {
+    "title": "Confirm order",
+    "summary": "Order summary",
+    "buyerInfo": "Your contact details",
+    "name": "Full name",
+    "email": "Email address",
+    "phone": "Phone number",
+    "address": "Delivery address",
+    "subtotal": "Products subtotal",
+    "shipping": "Shipping cost",
+    "total": "Total",
+    "confirm": "Confirm order",
+    "emptyCart": "Your cart is empty. Add products before continuing.",
+    "goToShop": "Go to the shop",
+    "processing": "Processing...",
+    "errorSubmit": "Something went wrong. Please try again.",
+    "needCity": "Enter your destination city in the shipping calculator to continue."
+  },
+  "confirmation": {
+    "title": "Order placed!",
+    "subtitle": "Order #{orderId}",
+    "message": "We have saved your order. Confirm via WhatsApp so we can process the delivery.",
+    "whatsappBtn": "Confirm order via WhatsApp",
+    "continueShopping": "Continue shopping"
   },
   "about": {
     "title": "About us",

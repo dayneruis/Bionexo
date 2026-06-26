@@ -12,6 +12,8 @@ function image(seed: string) {
   return `https://picsum.photos/seed/${seed}/600/450`;
 }
 
+// Las ciudades de origen son de ejemplo; el dueño del negocio debe
+// reemplazarlas por la ciudad real de cada proveedor o vendedor.
 const categories = [
   {
     slug: "materiales-recuperados",
@@ -32,6 +34,7 @@ const categories = [
           "Recovered and ground plastic pellets, ideal for injection and extrusion processes.",
         priceCop: 185000,
         featured: true,
+        originCity: "Medellín",
         variants: [{ type: "material", value: "PET" }, { type: "material", value: "HDPE" }],
       },
       {
@@ -44,6 +47,7 @@ const categories = [
           "Recovered ground glass, useful for crafts, construction and decorative projects.",
         priceCop: 45000,
         featured: false,
+        originCity: "Bogotá",
         variants: [{ type: "color", value: "Transparente" }, { type: "color", value: "Verde" }],
       },
       {
@@ -54,6 +58,7 @@ const categories = [
         descriptionEn: "Bale of recovered cardboard, pressed and ready to recycle or reuse.",
         priceCop: 30000,
         featured: false,
+        originCity: "Bucaramanga",
         variants: [],
       },
     ],
@@ -77,6 +82,7 @@ const categories = [
           "Weather-resistant bench made from a single block of recycled plastic.",
         priceCop: 420000,
         featured: true,
+        originCity: "Medellín",
         variants: [{ type: "color", value: "Verde bosque" }, { type: "color", value: "Gris" }],
       },
       {
@@ -87,6 +93,7 @@ const categories = [
         descriptionEn: "Brick made from recovered PET plastic, for non-structural walls.",
         priceCop: 3500,
         featured: false,
+        originCity: "Bogotá",
         variants: [],
       },
       {
@@ -97,6 +104,7 @@ const categories = [
         descriptionEn: "Individual desk made from wood recovered from pallets and packaging.",
         priceCop: 165000,
         featured: false,
+        originCity: "Cali",
         variants: [],
       },
     ],
@@ -116,6 +124,7 @@ const categories = [
         descriptionEn: "Basic t-shirt made from 100% organic cotton, pesticide-free farming.",
         priceCop: 65000,
         featured: true,
+        originCity: "Bogotá",
         variants: [
           { type: "talla", value: "S" },
           { type: "talla", value: "M" },
@@ -130,6 +139,7 @@ const categories = [
         descriptionEn: "Selected and restored jacket, in very good condition.",
         priceCop: 95000,
         featured: false,
+        originCity: "Medellín",
         variants: [{ type: "talla", value: "M" }, { type: "talla", value: "L" }],
       },
     ],
@@ -149,6 +159,7 @@ const categories = [
         descriptionEn: "Cold-process handmade soap, free of harsh chemicals.",
         priceCop: 14000,
         featured: true,
+        originCity: "Bucaramanga",
         variants: [],
       },
       {
@@ -159,6 +170,7 @@ const categories = [
         descriptionEn: "Natural fluoride-free toothpaste with mint and baking soda.",
         priceCop: 18000,
         featured: false,
+        originCity: "Floridablanca",
         variants: [],
       },
     ],
@@ -178,6 +190,7 @@ const categories = [
         descriptionEn: "100% organic fertilizer made from composted plant waste.",
         priceCop: 28000,
         featured: true,
+        originCity: "Pereira",
         variants: [],
       },
       {
@@ -188,6 +201,7 @@ const categories = [
         descriptionEn: "Assorted native seeds for home gardening.",
         priceCop: 12000,
         featured: false,
+        originCity: "Bogotá",
         variants: [],
       },
     ],
@@ -207,6 +221,7 @@ const categories = [
         descriptionEn: "Organic honey from local producers, with no industrial processing.",
         priceCop: 32000,
         featured: true,
+        originCity: "Neiva",
         variants: [],
       },
       {
@@ -217,6 +232,7 @@ const categories = [
         descriptionEn: "Cream made with natural calendula extract for sensitive skin.",
         priceCop: 22000,
         featured: false,
+        originCity: "Cali",
         variants: [],
       },
     ],
@@ -236,6 +252,7 @@ const categories = [
         descriptionEn: "Handmade earrings made from recycled glass fragments.",
         priceCop: 25000,
         featured: false,
+        originCity: "Bogotá",
         variants: [{ type: "color", value: "Azul" }, { type: "color", value: "Ámbar" }],
       },
       {
@@ -246,6 +263,7 @@ const categories = [
         descriptionEn: "Hand-woven bag made from strips of recycled plastic.",
         priceCop: 58000,
         featured: true,
+        originCity: "Barranquilla",
         variants: [],
       },
     ],
@@ -265,6 +283,7 @@ const categories = [
         descriptionEn: "Compostable cups made from plant fiber.",
         priceCop: 21000,
         featured: false,
+        originCity: "Bogotá",
         variants: [],
       },
       {
@@ -275,6 +294,7 @@ const categories = [
         descriptionEn: "Recycled kraft paper bags, an alternative to single-use plastic.",
         priceCop: 26000,
         featured: false,
+        originCity: "Medellín",
         variants: [],
       },
     ],
@@ -283,6 +303,8 @@ const categories = [
 
 async function main() {
   // Limpiamos antes de sembrar para poder correr el seed varias veces sin duplicar.
+  await prisma.orderItem.deleteMany();
+  await prisma.order.deleteMany();
   await prisma.variant.deleteMany();
   await prisma.product.deleteMany();
   await prisma.category.deleteMany();

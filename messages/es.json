@@ -16,7 +16,7 @@
     "featured": "Destacados",
     "viewProduct": "Ver producto",
     "variants": "Variantes",
-    "buy": "Comprar",
+    "buy": "Agregar al carrito",
     "interested": "Me interesa / Contáctame",
     "allCategories": "Todas las categorías",
     "back": "Volver"
@@ -41,8 +41,60 @@
     "availability": "Disponibilidad",
     "description": "Descripción",
     "notFound": "No encontramos este producto.",
+    "originCity": "Ciudad de origen",
     "whatsappBuyMessage": "Hola, quiero comprar: {product}",
     "whatsappInterestMessage": "Hola, me interesa: {product}. ¿Me pueden dar más información?"
+  },
+  "cart": {
+    "title": "Tu carrito",
+    "empty": "Tu carrito está vacío.",
+    "continueShopping": "Seguir comprando",
+    "subtotal": "Subtotal",
+    "goToCheckout": "Ir al pedido",
+    "remove": "Quitar",
+    "open": "Carrito de compras",
+    "close": "Cerrar carrito"
+  },
+  "shipping": {
+    "title": "Costo de envío",
+    "enterCity": "Escribe tu ciudad de destino",
+    "international": "Envío internacional (fuera de Colombia)",
+    "breakdown": "Desglose por origen",
+    "from": "Desde",
+    "totalShipping": "Total de envío",
+    "zones": {
+      "BUC": "Bucaramanga y área metropolitana",
+      "BOG": "Bogotá y Sabana",
+      "PPAL": "Ciudades principales",
+      "COL": "Resto de Colombia",
+      "INTL": "Internacional"
+    },
+    "note": "Tarifas de ejemplo · Próximamente: Servientrega / Coordinadora"
+  },
+  "checkout": {
+    "title": "Confirmar pedido",
+    "summary": "Resumen del pedido",
+    "buyerInfo": "Tus datos de contacto",
+    "name": "Nombre completo",
+    "email": "Correo electrónico",
+    "phone": "Teléfono",
+    "address": "Dirección de entrega",
+    "subtotal": "Subtotal productos",
+    "shipping": "Costo de envío",
+    "total": "Total",
+    "confirm": "Confirmar pedido",
+    "emptyCart": "Tu carrito está vacío. Agrega productos antes de continuar.",
+    "goToShop": "Ir a la tienda",
+    "processing": "Procesando...",
+    "errorSubmit": "Hubo un error. Por favor intenta de nuevo.",
+    "needCity": "Ingresa tu ciudad de destino en el calculador de envío para continuar."
+  },
+  "confirmation": {
+    "title": "¡Pedido registrado!",
+    "subtitle": "Pedido #{orderId}",
+    "message": "Hemos guardado tu pedido. Confirma por WhatsApp para que procesemos la entrega.",
+    "whatsappBtn": "Confirmar pedido por WhatsApp",
+    "continueShopping": "Seguir comprando"
   },
   "about": {
     "title": "Sobre nosotros",
