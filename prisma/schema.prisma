@@ -1,7 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+// Esquema de la base de datos del proyecto Bionexo.
+// Motor: SQLite en local (se migra a Postgres al desplegar).
+// Documentación completa en CLAUDE.md y en Documentacion/MANUAL_APRENDIZAJE.md.
 
 generator client {
   provider = "prisma-client"
@@ -12,7 +11,7 @@ datasource db {
   provider = "sqlite"
 }
 
-// Cada categoría tiene su propia página (8 categorías en total, ver CLAUDE.md).
+// Categorías del catálogo (10 en total: las 8 originales + Servicios + Otros productos).
 model Category {
   id            String    @id @default(cuid())
   slug          String    @unique
@@ -23,23 +22,56 @@ model Category {
   products      Product[]
 }
 
-// Un producto del catálogo. La disponibilidad es "Disponible / No disponible",
-// no se maneja cantidad de stock (se actualiza a diario por el dueño del negocio).
+// Datos internos del productor o emprendedor que ofrece el producto.
+// NUNCA se muestran al cliente: son solo para uso interno del negocio
+// (reportes, cobro del margen de intermediación y contacto directo con el proveedor).
+// Se gestionarán desde el panel de administración en la Fase 3.
+model Producer {
+  id          String    @id @default(cuid())
+  name        String    // Nombre del emprendimiento o razón social
+  contactName String    // Nombre de la persona de contacto
+  phone       String    // Teléfono del productor (SOLO uso interno)
+  email       String?   // Correo del productor (opcional, SOLO uso interno)
+  notes       String?   // Notas internas sobre el productor
+  products    Product[]
+}
+
+// Producto del catálogo.
+// Regla de oro del modelo de intermediación: los campos del productor y el margen
+// NUNCA se exponen en APIs públicas ni en páginas visibles al cliente.
 model Product {
-  id            String    @id @default(cuid())
-  slug          String    @unique
+  id            String   @id @default(cuid())
+  slug          String   @unique
   nameEs        String
   nameEn        String
   descriptionEs String
   descriptionEn String
   priceCop      Int
-  available     Boolean   @default(true)
-  featured      Boolean   @default(false)
+  available     Boolean  @default(true)
+  featured      Boolean  @default(false)
   imageUrl      String
-  originCity    String    @default("Bucaramanga") // Ciudad donde se origina el producto
-  categoryId    String
-  category      Category  @relation(fields: [categoryId], references: [id])
-  variants      Variant[]
+
+  // --- Origen del producto ---
+  originCity       String  @default("Bucaramanga")  // Ciudad de origen (Colombia)
+  originDepartment String  @default("Santander")    // Departamento de origen (Colombia)
+  isInternational  Boolean @default(false)           // true → el producto viene de fuera de Colombia
+  originCountry    String?                           // País de origen (solo si isInternational = true)
+
+  // --- Características visibles al cliente ---
+  size             String? // Tamaño o medida del producto (p.ej. "25 kg", "2×1 m")
+  warranty         Boolean @default(false) // ¿El producto tiene garantía?
+  warrantyDuration String?                 // Duración de la garantía (p.ej. "6 meses", "1 año")
+
+  // --- Intermediación: SOLO para uso interno, NUNCA exponer al cliente ---
+  margin Float @default(5.0) // Porcentaje de margen de Bionexo sobre el precio (3–10 %)
+
+  // --- Relaciones ---
+  categoryId String
+  category   Category  @relation(fields: [categoryId], references: [id])
+  variants   Variant[]
+
+  producerId String?   // Productor que fabrica u ofrece este producto (puede ser null)
+  producer   Producer? @relation(fields: [producerId], references: [id])
 }
 
 // Variante de un producto (talla, color o material).
@@ -59,7 +91,7 @@ model ExchangeRate {
   updatedAt DateTime @updatedAt
 }
 
-// Pedido registrado por un comprador. El estado avanza: pendiente → confirmado → enviado → entregado.
+// Pedido registrado por un comprador.
 model Order {
   id              String      @id @default(cuid())
   createdAt       DateTime    @default(now())
@@ -71,7 +103,7 @@ model Order {
   destAddress     String
   isInternational Boolean     @default(false)
   shippingCop     Int
-  shippingDetail  String      // JSON: [{zonaOrigen, costo}] — desglose por zona de origen
+  shippingDetail  String      // JSON: [{zonaOrigen, costo}]
   subtotalCop     Int
   totalCop        Int
   items           OrderItem[]

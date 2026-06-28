@@ -12,42 +12,91 @@ function image(seed: string) {
   return `https://picsum.photos/seed/${seed}/600/450`;
 }
 
-// Las ciudades de origen son de ejemplo; el dueño del negocio debe
-// reemplazarlas por la ciudad real de cada proveedor o vendedor.
+// ─── PRODUCTORES DE EJEMPLO ──────────────────────────────────────────────────
+// Estos datos son INTERNOS: solo para uso del equipo de Bionexo.
+// NUNCA se muestran al cliente. El dueño debe reemplazar por los datos reales.
+const productores = [
+  {
+    name: "EcoMedellín SAS",
+    contactName: "Carlos Ramírez",
+    phone: "3101234567",
+    email: "carlos@ecomedellin.example.com",
+    notes: "Proveedor principal de plásticos recuperados. Pago mensual.",
+  },
+  {
+    name: "Artesanías del Pacífico",
+    contactName: "Luz Marina Torres",
+    phone: "3209876543",
+    email: "luz@artesaniaspacifico.example.com",
+    notes: "Emprendimiento familiar. Pago contra entrega.",
+  },
+  {
+    name: "BioHuerta Bogotá",
+    contactName: "Pedro Gómez",
+    phone: "3154567890",
+    email: null,
+    notes: "Productor de abonos y plantas. Entrega los lunes.",
+  },
+  {
+    name: "Moda Verde Cali",
+    contactName: "Alejandra Ríos",
+    phone: "3187654321",
+    email: "ale@modaverde.example.com",
+    notes: "Diseñadora independiente. Margen negociado al 7%.",
+  },
+  {
+    name: "NaturalMente Bucaramanga",
+    contactName: "Jimena Vásquez",
+    phone: "3052345678",
+    email: "jimena@naturalmente.example.com",
+    notes: "Jabones y cremas naturales. Proveedor desde Fase 1.",
+  },
+];
+
+// ─── CATEGORÍAS ──────────────────────────────────────────────────────────────
+// Las 8 categorías originales + 2 nuevas = 10 en total.
+// Las ciudades y departamentos de origen son de ejemplo; el dueño del negocio
+// debe reemplazarlos por los datos reales de cada proveedor.
 const categories = [
   {
     slug: "materiales-recuperados",
     nameEs: "Materiales recuperados",
     nameEn: "Recovered materials",
-    descriptionEs:
-      "Cartón, vidrio, pellets y plástico recuperado y molido, listos para una segunda vida.",
-    descriptionEn:
-      "Cardboard, glass, pellets and recovered ground plastic, ready for a second life.",
+    descriptionEs: "Cartón, vidrio, pellets y plástico recuperado y molido, listos para una segunda vida.",
+    descriptionEn: "Cardboard, glass, pellets and recovered ground plastic, ready for a second life.",
     products: [
       {
         slug: "pellets-plastico-reciclado-25kg",
         nameEs: "Pellets de plástico reciclado (25 kg)",
         nameEn: "Recycled plastic pellets (25 kg)",
-        descriptionEs:
-          "Pellets de plástico recuperado y molido, ideales para procesos de inyección y extrusión.",
-        descriptionEn:
-          "Recovered and ground plastic pellets, ideal for injection and extrusion processes.",
+        descriptionEs: "Pellets de plástico recuperado y molido, ideales para procesos de inyección y extrusión.",
+        descriptionEn: "Recovered and ground plastic pellets, ideal for injection and extrusion processes.",
         priceCop: 185000,
         featured: true,
         originCity: "Medellín",
+        originDepartment: "Antioquia",
+        size: "25 kg por bulto",
+        warranty: true,
+        warrantyDuration: "6 meses",
+        margin: 7.0,
+        producerIndex: 0, // EcoMedellín SAS
         variants: [{ type: "material", value: "PET" }, { type: "material", value: "HDPE" }],
       },
       {
         slug: "vidrio-molido-bulto",
         nameEs: "Vidrio molido por bulto",
         nameEn: "Ground glass (bulk bag)",
-        descriptionEs:
-          "Vidrio recuperado y molido, útil para artesanías, construcción y proyectos decorativos.",
-        descriptionEn:
-          "Recovered ground glass, useful for crafts, construction and decorative projects.",
+        descriptionEs: "Vidrio recuperado y molido, útil para artesanías, construcción y proyectos decorativos.",
+        descriptionEn: "Recovered ground glass, useful for crafts, construction and decorative projects.",
         priceCop: 45000,
         featured: false,
         originCity: "Bogotá",
+        originDepartment: "Bogotá D.C.",
+        size: "10 kg por bulto",
+        warranty: false,
+        warrantyDuration: null,
+        margin: 5.0,
+        producerIndex: null,
         variants: [{ type: "color", value: "Transparente" }, { type: "color", value: "Verde" }],
       },
       {
@@ -59,6 +108,12 @@ const categories = [
         priceCop: 30000,
         featured: false,
         originCity: "Bucaramanga",
+        originDepartment: "Santander",
+        size: "Aprox. 50 kg",
+        warranty: false,
+        warrantyDuration: null,
+        margin: 5.0,
+        producerIndex: null,
         variants: [],
       },
     ],
@@ -67,22 +122,24 @@ const categories = [
     slug: "mobiliario-urbano",
     nameEs: "Mobiliario urbano y de construcción",
     nameEn: "Urban & construction furniture",
-    descriptionEs:
-      "Muebles de plástico y madera recuperada, mobiliario escolar y ladrillos ecológicos.",
-    descriptionEn:
-      "Furniture made from recovered plastic and wood, school furniture and eco-bricks.",
+    descriptionEs: "Muebles de plástico y madera recuperada, mobiliario escolar y ladrillos ecológicos.",
+    descriptionEn: "Furniture made from recovered plastic and wood, school furniture and eco-bricks.",
     products: [
       {
         slug: "banca-exterior-plastico-reciclado",
         nameEs: "Banca de exterior en plástico reciclado",
         nameEn: "Outdoor bench made from recycled plastic",
-        descriptionEs:
-          "Banca resistente a la intemperie, fabricada con plástico reciclado de un solo bloque.",
-        descriptionEn:
-          "Weather-resistant bench made from a single block of recycled plastic.",
+        descriptionEs: "Banca resistente a la intemperie, fabricada con plástico reciclado de un solo bloque.",
+        descriptionEn: "Weather-resistant bench made from a single block of recycled plastic.",
         priceCop: 420000,
         featured: true,
         originCity: "Medellín",
+        originDepartment: "Antioquia",
+        size: "180 × 40 × 45 cm",
+        warranty: true,
+        warrantyDuration: "1 año",
+        margin: 8.0,
+        producerIndex: 0, // EcoMedellín SAS
         variants: [{ type: "color", value: "Verde bosque" }, { type: "color", value: "Gris" }],
       },
       {
@@ -94,6 +151,12 @@ const categories = [
         priceCop: 3500,
         featured: false,
         originCity: "Bogotá",
+        originDepartment: "Bogotá D.C.",
+        size: "20 × 10 × 6 cm",
+        warranty: false,
+        warrantyDuration: null,
+        margin: 5.0,
+        producerIndex: null,
         variants: [],
       },
       {
@@ -105,6 +168,12 @@ const categories = [
         priceCop: 165000,
         featured: false,
         originCity: "Cali",
+        originDepartment: "Valle del Cauca",
+        size: "60 × 45 × 75 cm",
+        warranty: true,
+        warrantyDuration: "6 meses",
+        margin: 6.0,
+        producerIndex: null,
         variants: [],
       },
     ],
@@ -124,7 +193,13 @@ const categories = [
         descriptionEn: "Basic t-shirt made from 100% organic cotton, pesticide-free farming.",
         priceCop: 65000,
         featured: true,
-        originCity: "Bogotá",
+        originCity: "Cali",
+        originDepartment: "Valle del Cauca",
+        size: "Tallas S, M, L",
+        warranty: false,
+        warrantyDuration: null,
+        margin: 7.0,
+        producerIndex: 3, // Moda Verde Cali
         variants: [
           { type: "talla", value: "S" },
           { type: "talla", value: "M" },
@@ -140,6 +215,12 @@ const categories = [
         priceCop: 95000,
         featured: false,
         originCity: "Medellín",
+        originDepartment: "Antioquia",
+        size: "Tallas M, L",
+        warranty: false,
+        warrantyDuration: null,
+        margin: 6.0,
+        producerIndex: 3, // Moda Verde Cali
         variants: [{ type: "talla", value: "M" }, { type: "talla", value: "L" }],
       },
     ],
@@ -160,6 +241,12 @@ const categories = [
         priceCop: 14000,
         featured: true,
         originCity: "Bucaramanga",
+        originDepartment: "Santander",
+        size: "100 g",
+        warranty: false,
+        warrantyDuration: null,
+        margin: 5.0,
+        producerIndex: 4, // NaturalMente Bucaramanga
         variants: [],
       },
       {
@@ -171,6 +258,12 @@ const categories = [
         priceCop: 18000,
         featured: false,
         originCity: "Floridablanca",
+        originDepartment: "Santander",
+        size: "75 ml",
+        warranty: false,
+        warrantyDuration: null,
+        margin: 5.0,
+        producerIndex: 4, // NaturalMente Bucaramanga
         variants: [],
       },
     ],
@@ -191,6 +284,12 @@ const categories = [
         priceCop: 28000,
         featured: true,
         originCity: "Pereira",
+        originDepartment: "Risaralda",
+        size: "10 kg",
+        warranty: false,
+        warrantyDuration: null,
+        margin: 5.0,
+        producerIndex: 2, // BioHuerta Bogotá
         variants: [],
       },
       {
@@ -202,6 +301,12 @@ const categories = [
         priceCop: 12000,
         featured: false,
         originCity: "Bogotá",
+        originDepartment: "Bogotá D.C.",
+        size: "50 semillas aprox.",
+        warranty: false,
+        warrantyDuration: null,
+        margin: 5.0,
+        producerIndex: 2, // BioHuerta Bogotá
         variants: [],
       },
     ],
@@ -222,10 +327,16 @@ const categories = [
         priceCop: 32000,
         featured: true,
         originCity: "Neiva",
+        originDepartment: "Huila",
+        size: "500 g",
+        warranty: false,
+        warrantyDuration: null,
+        margin: 5.0,
+        producerIndex: null,
         variants: [],
       },
       {
-        slug: "crema-natural-caléndula",
+        slug: "crema-natural-calendula",
         nameEs: "Crema natural de caléndula",
         nameEn: "Natural calendula cream",
         descriptionEs: "Crema elaborada con extracto natural de caléndula para piel sensible.",
@@ -233,6 +344,12 @@ const categories = [
         priceCop: 22000,
         featured: false,
         originCity: "Cali",
+        originDepartment: "Valle del Cauca",
+        size: "60 ml",
+        warranty: false,
+        warrantyDuration: null,
+        margin: 5.0,
+        producerIndex: null,
         variants: [],
       },
     ],
@@ -252,7 +369,13 @@ const categories = [
         descriptionEn: "Handmade earrings made from recycled glass fragments.",
         priceCop: 25000,
         featured: false,
-        originCity: "Bogotá",
+        originCity: "Quibdó",
+        originDepartment: "Chocó",
+        size: "3 cm de largo",
+        warranty: false,
+        warrantyDuration: null,
+        margin: 5.0,
+        producerIndex: 1, // Artesanías del Pacífico
         variants: [{ type: "color", value: "Azul" }, { type: "color", value: "Ámbar" }],
       },
       {
@@ -264,6 +387,12 @@ const categories = [
         priceCop: 58000,
         featured: true,
         originCity: "Barranquilla",
+        originDepartment: "Atlántico",
+        size: "30 × 25 cm",
+        warranty: false,
+        warrantyDuration: null,
+        margin: 6.0,
+        producerIndex: 1, // Artesanías del Pacífico
         variants: [],
       },
     ],
@@ -284,6 +413,12 @@ const categories = [
         priceCop: 21000,
         featured: false,
         originCity: "Bogotá",
+        originDepartment: "Bogotá D.C.",
+        size: "250 ml, paquete × 50",
+        warranty: false,
+        warrantyDuration: null,
+        margin: 5.0,
+        producerIndex: null,
         variants: [],
       },
       {
@@ -295,6 +430,65 @@ const categories = [
         priceCop: 26000,
         featured: false,
         originCity: "Medellín",
+        originDepartment: "Antioquia",
+        size: "20 × 30 cm, paquete × 100",
+        warranty: false,
+        warrantyDuration: null,
+        margin: 5.0,
+        producerIndex: 0, // EcoMedellín SAS
+        variants: [],
+      },
+    ],
+  },
+  // ─── CATEGORÍAS NUEVAS (Fase 3 prep) ───────────────────────────────────────
+  {
+    slug: "servicios",
+    nameEs: "Servicios",
+    nameEn: "Services",
+    descriptionEs: "Servicios de recolección, transformación, consultoría y más, ofrecidos por emprendedores de economía circular.",
+    descriptionEn: "Collection, transformation, consulting and other services offered by circular economy entrepreneurs.",
+    products: [
+      {
+        slug: "servicio-recoleccion-residuos",
+        nameEs: "Recolección de residuos en empresa",
+        nameEn: "Business waste collection service",
+        descriptionEs: "Servicio de recolección y clasificación de residuos sólidos en empresas y oficinas.",
+        descriptionEn: "Solid waste collection and classification service for companies and offices.",
+        priceCop: 180000,
+        featured: false,
+        originCity: "Bucaramanga",
+        originDepartment: "Santander",
+        size: "Por visita mensual",
+        warranty: false,
+        warrantyDuration: null,
+        margin: 10.0,
+        producerIndex: null,
+        variants: [],
+      },
+    ],
+  },
+  {
+    slug: "otros-productos",
+    nameEs: "Otros productos",
+    nameEn: "Other products",
+    descriptionEs: "Productos de economía circular que no encajan en las otras categorías pero que merecen una segunda vida.",
+    descriptionEn: "Circular economy products that don't fit in other categories but deserve a second life.",
+    products: [
+      {
+        slug: "lote-electronica-reciclada",
+        nameEs: "Lote de electrónica reciclada",
+        nameEn: "Recycled electronics lot",
+        descriptionEs: "Lote de componentes y aparatos electrónicos recuperados, aptos para reparación o repuestos.",
+        descriptionEn: "Lot of recovered electronic components and devices, suitable for repair or spare parts.",
+        priceCop: 75000,
+        featured: false,
+        originCity: "Bogotá",
+        originDepartment: "Bogotá D.C.",
+        size: "Aprox. 5 kg de componentes",
+        warranty: false,
+        warrantyDuration: null,
+        margin: 5.0,
+        producerIndex: null,
         variants: [],
       },
     ],
@@ -308,27 +502,38 @@ async function main() {
   await prisma.variant.deleteMany();
   await prisma.product.deleteMany();
   await prisma.category.deleteMany();
+  await prisma.producer.deleteMany();
 
+  // Crear los productores de ejemplo primero
+  const creadosProductores = await Promise.all(
+    productores.map((p) => prisma.producer.create({ data: p })),
+  );
+
+  // Crear categorías y productos
   for (const category of categories) {
     const { products, ...categoryData } = category;
 
     const createdCategory = await prisma.category.create({ data: categoryData });
 
     for (const product of products) {
-      const { variants, ...productData } = product;
+      const { variants, producerIndex, ...productData } = product;
 
       await prisma.product.create({
         data: {
           ...productData,
           imageUrl: image(product.slug),
           categoryId: createdCategory.id,
+          // Vincular al productor si se especificó un índice
+          ...(producerIndex !== null && producerIndex !== undefined
+            ? { producerId: creadosProductores[producerIndex].id }
+            : {}),
           variants: { create: variants },
         },
       });
     }
   }
 
-  console.log("Catálogo de ejemplo creado correctamente.");
+  console.log(`✅ Catálogo de ejemplo creado: ${productores.length} productores, ${categories.length} categorías.`);
 }
 
 main()

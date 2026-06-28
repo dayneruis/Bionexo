@@ -2,20 +2,14 @@
 
 import { useTranslations } from "next-intl";
 import { useCart } from "@/lib/cart";
+import { whatsappUrl } from "@/lib/contact-config";
 import type { ProductForCart } from "./ProductActions";
-
-// Número de WhatsApp de ejemplo: el dueño debe reemplazarlo por el real.
-const WHATSAPP_PHONE_PLACEHOLDER = "573000000000";
-
-function whatsappLink(phone: string, message: string) {
-  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-}
 
 // Los dos botones de cada producto:
 //   • "Agregar al carrito" → agrega el ítem y abre el cajón del carrito.
-//   • "Me interesa / Contáctame" → sigue abriendo WhatsApp (sin cambios).
-// En Fase 4, "Agregar al carrito" se conectará a una pasarela de pago real
-// sin necesidad de tocar el resto de la ficha de producto.
+//   • "Me interesa / Contáctame" → abre WhatsApp del ECOMMERCE (no del productor).
+// El número de WhatsApp viene de contact-config.ts (nunca del productor).
+// En Fase 4 se conectará a una pasarela de pago sin tocar el resto de la ficha.
 export default function ContactButtons({
   product,
   selectedVariant,
@@ -41,7 +35,7 @@ export default function ContactButtons({
       originCity: product.originCity,
       variantLabel: selectedVariant,
     });
-    openCart(); // Abrir el cajón para que el usuario vea lo que agregó.
+    openCart();
   }
 
   return (
@@ -54,7 +48,7 @@ export default function ContactButtons({
         {t("common.buy")}
       </button>
       <a
-        href={whatsappLink(WHATSAPP_PHONE_PLACEHOLDER, interestMessage)}
+        href={whatsappUrl(interestMessage)}
         target="_blank"
         rel="noopener noreferrer"
         className="inline-flex flex-1 items-center justify-center rounded-full border border-eco-forest px-6 py-3 text-sm font-semibold text-eco-forest transition-colors hover:bg-eco-forest/10"

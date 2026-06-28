@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/db";
 import type { Locale } from "@/i18n/routing";
 
-// Estos helpers leen el catálogo desde la base de datos y ya devuelven
-// los textos (nombre/descripción) en el idioma que pidió la página,
-// para que los componentes no tengan que preocuparse por es/en.
+// Helpers para leer el catálogo desde la base de datos.
+// Los datos del productor y el margen NUNCA se incluyen en estas consultas
+// para respetar el modelo de intermediación (esos datos son de uso interno).
 
 export function getCategories() {
   return prisma.category.findMany({ orderBy: { nameEs: "asc" } });
@@ -30,7 +30,50 @@ export function getProductsByCategoryId(categoryId: string) {
 export function getProductBySlug(slug: string) {
   return prisma.product.findUnique({
     where: { slug },
+    // Se excluye explícitamente el productor para no exponerlo al cliente
     include: { category: true, variants: true },
+  });
+}
+
+// Búsqueda combinada: filtra por texto, departamento/municipio o internacionalidad.
+// Usada por la tienda y por las páginas de categoría cuando hay filtros activos.
+// IMPORTANTE: el campo `producer` y `margin` no se incluyen aquí a propósito.
+export function searchProducts(options: {
+  query?: string;
+  department?: string;
+  municipality?: string;
+  isInternational?: boolean;
+  categoryId?: string;
+}) {
+  return prisma.product.findMany({
+    where: {
+      // Filtro de texto: busca en nombre y descripción (español e inglés)
+      ...(options.query?.trim()
+        ? {
+            OR: [
+              { nameEs: { contains: options.query.trim() } },
+              { nameEn: { contains: options.query.trim() } },
+              { descriptionEs: { contains: options.query.trim() } },
+              { descriptionEn: { contains: options.query.trim() } },
+            ],
+          }
+        : {}),
+
+      // Filtro geográfico
+      ...(options.isInternational
+        ? { isInternational: true }
+        : {
+            ...(options.department
+              ? { originDepartment: options.department, isInternational: false }
+              : {}),
+            ...(options.municipality ? { originCity: options.municipality } : {}),
+          }),
+
+      // Filtro por categoría (para las páginas de categoría)
+      ...(options.categoryId ? { categoryId: options.categoryId } : {}),
+    },
+    include: { category: true, variants: true },
+    orderBy: { nameEs: "asc" },
   });
 }
 

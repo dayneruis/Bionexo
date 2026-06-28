@@ -28,9 +28,29 @@
     "featuredTitle": "Featured products",
     "categoriesTitle": "Browse by category"
   },
+  "search": {
+    "heroTitle": "Find circular economy products",
+    "heroSubtitle": "Search for recovered materials, sustainable fashion, crafts and much more.",
+    "placeholder": "What are you looking for?",
+    "button": "Search",
+    "results": "Results for: \"{q}\"",
+    "noResults": "No products found for that search. Try different keywords or browse the categories."
+  },
+  "geo": {
+    "filterTitle": "Filter by product origin",
+    "department": "Department",
+    "municipality": "Municipality",
+    "allDepartments": "All departments",
+    "allMunicipalities": "All municipalities",
+    "international": "International (outside Colombia)",
+    "apply": "Apply",
+    "clear": "Clear filter",
+    "activeInternational": "Showing international products"
+  },
   "shop": {
     "title": "Shop",
-    "subtitle": "All of our circular economy categories in one place."
+    "subtitle": "All of our circular economy categories in one place.",
+    "filteredProducts": "Products found"
   },
   "category": {
     "productsInCategory": "Products in this category",
@@ -42,6 +62,11 @@
     "description": "Description",
     "notFound": "We couldn't find this product.",
     "originCity": "Ships from",
+    "originCountry": "Country of origin",
+    "size": "Size",
+    "warranty": "Warranty",
+    "warrantyYes": "Includes warranty",
+    "warrantyNo": "No warranty",
     "whatsappBuyMessage": "Hi, I want to buy: {product}",
     "whatsappInterestMessage": "Hi, I'm interested in: {product}. Could you give me more information?"
   },
@@ -107,10 +132,7 @@
   },
   "footer": {
     "contactTitle": "Contact",
-    "phonePlaceholder": "+57 300 000 0000 (placeholder)",
-    "emailPlaceholder": "contacto@bionexo.example.com (placeholder)",
     "addressTitle": "Presence",
-    "addressBody": "Bucaramanga and metro area · Bogotá · Shipping all over Colombia",
     "socialTitle": "Social media",
     "rights": "All rights reserved."
   }

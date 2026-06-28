@@ -35,7 +35,7 @@
 
 ## 5. Catálogo
 
-- **8 categorías**, cada una con su **página dedicada**, más una tienda general que las agrupa:
+- **10 categorías** (las 8 originales + Servicios + Otros productos), cada una con su **página dedicada**, más una tienda general que las agrupa:
   1. Materiales recuperados (cartón, vidrio, pellets, plástico recuperado y molido)
   2. Mobiliario urbano y de construcción (muebles de plástico/madera recuperada, mobiliario escolar, ladrillos ecológicos)
   3. Moda sostenible (ropa reciclada en buen estado, ropa ecológica)
@@ -44,6 +44,8 @@
   6. Medicinas y comida sana (comida orgánica, cremas y medicina natural/orgánica)
   7. Artesanías y accesorios (con material reciclado)
   8. Empaques y desechables ecológicos
+  9. Servicios (recolección, transformación, consultoría, etc.)
+  10. Otros productos (economía circular que no encaja en las categorías anteriores)
 - **5 a 8 productos destacados** en la portada; el resto en el catálogo por categoría.
 - Cada producto: imágenes, descripción, información, precio, **variantes** (talla/color/material).
 - Disponibilidad: marca **"Disponible / No disponible"** (NO se maneja stock por cantidades; se actualiza a diario).
@@ -109,8 +111,23 @@
 - **Checkout:** página en `src/app/[locale]/checkout/page.tsx` (mínima, servidor) + componente cliente `CheckoutForm.tsx` que lee el carrito de localStorage, muestra el calculador de envío, recibe datos del comprador y llama a `POST /api/orders` para guardar el pedido. Sin contraseñas en esta fase (se agregan con la pasarela en Fase 4).
 - **Confirmación:** página `src/app/[locale]/pedido-confirmado/page.tsx` que lee el pedido de la BD y genera un enlace de WhatsApp con el resumen completo del pedido para que el comprador lo envíe al negocio.
 - **Modelos nuevos en Prisma:** `Order`, `OrderItem`, `ExchangeRate`. Migración: `20260625230632_fase2`.
-- **Número de WhatsApp de ejemplo:** `573000000000` — el dueño debe reemplazarlo en `ContactButtons.tsx` y en `pedido-confirmado/page.tsx`.
+- **Número de WhatsApp de ejemplo:** `573000000000` — el dueño lo reemplaza en `src/lib/contact-config.ts` (un solo lugar para todo el sitio).
+
+## 14. Bitácora — Ajustes pre-Fase 3 (Bloque Marketplace)
+
+- **Modelo de intermediación:** la ficha del cliente NO muestra nombre, teléfono ni redes del productor. Solo se muestra información comercial del producto. Regla reforzada en el código con comentarios explícitos para no olvidar en el futuro.
+- **Modelo `Producer` (SOLO interno):** nuevo modelo en Prisma con campos: `name`, `contactName`, `phone`, `email`, `notes`. Vinculado a `Product` por FK opcional (`producerId`). El productor NUNCA se incluye en las consultas públicas de `catalog.ts`. Funciones de uso interno en `src/lib/producer.ts`.
+- **Margen de intermediación (SOLO interno):** campo `margin: Float` en `Product` (3–10%). Lógica de cálculo en `src/lib/margin.ts`. Preparado para el panel admin de Fase 3. NUNCA se expone al cliente.
+- **Contacto centralizado:** todos los datos del ecommerce (WhatsApp, email, redes) viven en `src/lib/contact-config.ts`. Cambiar ahí aplica en todo el sitio: `ContactButtons`, `Footer`, `pedido-confirmado`.
+- **Campos nuevos en `Product`:** `originDepartment` (departamento colombiano), `isInternational` (bool), `originCountry` (país si internacional), `size` (tamaño), `warranty` (bool), `warrantyDuration` (texto duración).
+- **Origen geográfico:** componente `OriginBadge` en `src/components/OriginBadge.tsx`. Si `isInternational=false` → muestra "📍 Ciudad, Departamento". Si `isInternational=true` → muestra "🌍 País de origen".
+- **Filtro geográfico:** componente cliente `GeoFilter` en `src/components/GeoFilter.tsx`. Usa los 32 departamentos + Bogotá D.C. de `src/lib/colombia-geo.ts`. Funciona con parámetros de URL (`?depto=&mpio=` o `?origen=internacional`). Aparece en `/tienda` y en cada página de `/categoria/[slug]`. La función `searchProducts` en `catalog.ts` hace el filtrado en el servidor.
+- **Búsqueda de texto:** la tienda lee el param `?q=texto` y filtra productos por nombre y descripción (español e inglés).
+- **SearchHero:** sección en la portada con mosaico de 6 imágenes de fondo + barra de búsqueda. Componente cliente en `src/components/SearchHero.tsx`. Al buscar navega a `/tienda?q=texto`.
+- **Dos categorías nuevas:** `servicios` y `otros-productos`. Total: 10 categorías.
+- **Migración Prisma:** `20260628164715_fase3_prep_marketplace`.
+- **Archivo maestro de contacto:** `src/lib/contact-config.ts` — el dueño reemplaza los placeholders por los datos reales del negocio.
 
 ---
 
-_Última actualización: Fase 2 completada y probada en local._
+_Última actualización: Bloque de ajustes pre-Fase 3 completado (marketplace, productor interno, margen, filtro geo, búsqueda, 10 categorías)._

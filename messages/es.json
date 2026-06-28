@@ -28,9 +28,29 @@
     "featuredTitle": "Productos destacados",
     "categoriesTitle": "Explora por categoría"
   },
+  "search": {
+    "heroTitle": "Encuentra productos de economía circular",
+    "heroSubtitle": "Busca materiales recuperados, moda sostenible, artesanías y mucho más.",
+    "placeholder": "¿Qué estás buscando?",
+    "button": "Buscar",
+    "results": "Resultados para: \"{q}\"",
+    "noResults": "No encontramos productos con ese criterio. Intenta con otra búsqueda o revisa las categorías."
+  },
+  "geo": {
+    "filterTitle": "Filtrar por lugar de origen",
+    "department": "Departamento",
+    "municipality": "Municipio",
+    "allDepartments": "Todos los departamentos",
+    "allMunicipalities": "Todos los municipios",
+    "international": "Internacional (fuera de Colombia)",
+    "apply": "Aplicar",
+    "clear": "Limpiar filtro",
+    "activeInternational": "Mostrando productos internacionales"
+  },
   "shop": {
     "title": "Tienda",
-    "subtitle": "Todas nuestras categorías de economía circular en un solo lugar."
+    "subtitle": "Todas nuestras categorías de economía circular en un solo lugar.",
+    "filteredProducts": "Productos encontrados"
   },
   "category": {
     "productsInCategory": "Productos en esta categoría",
@@ -41,7 +61,12 @@
     "availability": "Disponibilidad",
     "description": "Descripción",
     "notFound": "No encontramos este producto.",
-    "originCity": "Ciudad de origen",
+    "originCity": "Origen",
+    "originCountry": "País de origen",
+    "size": "Tamaño",
+    "warranty": "Garantía",
+    "warrantyYes": "Con garantía",
+    "warrantyNo": "Sin garantía",
     "whatsappBuyMessage": "Hola, quiero comprar: {product}",
     "whatsappInterestMessage": "Hola, me interesa: {product}. ¿Me pueden dar más información?"
   },
@@ -107,10 +132,7 @@
   },
   "footer": {
     "contactTitle": "Contacto",
-    "phonePlaceholder": "+57 300 000 0000 (placeholder)",
-    "emailPlaceholder": "contacto@bionexo.example.com (placeholder)",
     "addressTitle": "Presencia",
-    "addressBody": "Bucaramanga y área metropolitana · Bogotá · Envíos a toda Colombia",
     "socialTitle": "Redes sociales",
     "rights": "Todos los derechos reservados."
   }

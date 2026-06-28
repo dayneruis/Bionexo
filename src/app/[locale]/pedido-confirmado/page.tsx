@@ -3,9 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { prisma } from "@/lib/db";
 import { formatCop } from "@/lib/format";
-
-// Número de WhatsApp de ejemplo: el dueño debe reemplazarlo por el real.
-const WHATSAPP_PHONE = "573000000000";
+import { whatsappUrl } from "@/lib/contact-config";
 
 // Construye el mensaje de WhatsApp con el resumen del pedido.
 // El negocio recibe este mensaje del comprador para confirmar y procesar el envío.
@@ -54,7 +52,7 @@ function buildWhatsAppMessage(order: {
 }
 
 // Página de confirmación: muestra el número de pedido y un botón para
-// confirmar por WhatsApp al negocio. Se carga con el ID del pedido en la URL.
+// confirmar por WhatsApp al ECOMMERCE (número tomado de contact-config.ts).
 export default async function ConfirmationPage({
   searchParams,
 }: {
@@ -73,7 +71,7 @@ export default async function ConfirmationPage({
   const t = await getTranslations();
   const shortId = order.id.slice(-6).toUpperCase();
   const waMessage = buildWhatsAppMessage(order);
-  const waUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(waMessage)}`;
+  const waUrl = whatsappUrl(waMessage);
 
   return (
     <div className="mx-auto max-w-lg px-4 py-16 text-center">
@@ -116,7 +114,7 @@ export default async function ConfirmationPage({
         </div>
       </div>
 
-      {/* Botón de confirmación por WhatsApp */}
+      {/* Botón de confirmación por WhatsApp (abre el chat del ECOMMERCE) */}
       <a
         href={waUrl}
         target="_blank"

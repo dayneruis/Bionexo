@@ -151,10 +151,119 @@ Una estrategia que funciona muy bien para aprender:
 | 2026-06-25 | Estrategia multi-origen: un cargo de envío por zona de origen única, se suman. | Si en el carrito hay un producto de Medellín y otro de Bogotá, son dos despachos físicos distintos; cobrar uno solo sería injusto para el negocio. El comprador ve el desglose en el checkout. |
 | 2026-06-25 | Checkout sin contraseña en Fase 2. Solo se recogen nombre, email, teléfono y dirección. | Cumple el requisito "registro sencillo y no tedioso". La contraseña y la cuenta del usuario se agregarán junto con la pasarela de pago en Fase 4. |
 | 2026-06-25 | Al confirmar un pedido, el comprador hace clic en un botón que abre WhatsApp con el resumen pre-llenado. | No hay aún una pasarela de pago real. WhatsApp es el canal de confirmación manual mientras no haya integración bancaria. En Fase 4 ese botón se reemplaza por el flujo de pago. |
+| 2026-06-28 | Se implementó el bloque de ajustes pre-Fase 3: modelo de intermediación (productor oculto), filtro geográfico, buscador en portada, 10 categorías. Ver sección 6 de este manual. | El negocio opera como marketplace; el cliente nunca ve quién fabrica el producto. El filtro geográfico es necesario porque los productos vienen de distintas regiones de Colombia e internacionalmente. |
 
 ---
 
-## Parte 6 — Preguntas útiles para hacerle a Claude Code (y aprender)
+## Parte 6 — Lo nuevo en el Bloque pre-Fase 3
+
+### 6.1 Modelo de intermediación (marketplace)
+
+Bionexo actúa como **intermediario**: conecta compradores con productores/emprendedores, cobra un margen por ese servicio, y el cliente nunca sabe quién es el proveedor exacto. Es como las grandes plataformas (Rappi, Mercado Libre), pero de economía circular.
+
+**¿Qué significa esto en el código?**
+
+- Existe un nuevo "molde" en la base de datos llamado `Producer` (productor). Tiene campos como nombre del emprendimiento, teléfono del contacto y notas internas.
+- Cada producto puede estar vinculado a un productor, pero ese vínculo **nunca se muestra al cliente**.
+- Las funciones que sí usa el cliente (en `catalog.ts`) nunca incluyen al productor en la respuesta.
+- Las funciones internas (en `producer.ts`) solo las usará el panel de administración en la Fase 3.
+
+**¿Y el margen?**
+
+- Cada producto tiene un campo `margin` (porcentaje, entre 3 y 10%).
+- El cálculo de cuánto le toca al productor y cuánto gana Bionexo vive en `src/lib/margin.ts`.
+- Igual que el productor, **el margen nunca se muestra al cliente**.
+
+**Regla de oro:** en Bionexo, el cliente ve el producto; el negocio ve el productor y el margen.
+
+---
+
+### 6.2 Ficha de producto renovada
+
+La ficha de producto (`/producto/[slug]`) ahora muestra más información al cliente:
+
+| Campo | ¿Qué muestra? |
+|-------|---------------|
+| Nombre | El nombre del producto |
+| Precio | En COP y en USD (tasa del día) |
+| Disponibilidad | Disponible / No disponible |
+| **Origen** | Ciudad y departamento (Colombia) o País (si es internacional) |
+| **Tamaño** | La medida del producto si aplica (ej: "25 kg", "2×1 m") |
+| **Garantía** | "Con garantía — 6 meses" o "Sin garantía" |
+| Descripción | Texto descriptivo |
+
+Lo que **NO** aparece: nombre del productor, teléfono, email, redes sociales del productor, margen.
+
+---
+
+### 6.3 Datos de contacto centralizados
+
+Antes, el número de WhatsApp estaba escrito en dos o tres archivos separados. Ahora vive en un solo lugar:
+
+```
+src/lib/contact-config.ts
+```
+
+Aquí el dueño cambia de una vez: teléfono, email, Facebook, Instagram y cualquier otro dato del negocio. El código lo toma automáticamente en el pie de página, en los botones de "Me interesa" y en la página de confirmación de pedido.
+
+**¿Cómo se usa?** El archivo exporta un objeto `CONTACTO_BIONEXO` y una función `whatsappUrl(mensaje)`. Los componentes importan de ahí, nunca escriben el número directamente.
+
+---
+
+### 6.4 Filtro geográfico por departamento
+
+En la tienda y en cada categoría aparece ahora un filtro que permite ver qué productos vienen de cada región de Colombia (o del exterior).
+
+**¿Cómo funciona?**
+
+1. El usuario elige un departamento en el menú desplegable.
+2. Aparece un segundo menú con los principales municipios de ese departamento.
+3. Al presionar "Aplicar", la página se recarga mostrando solo los productos con ese origen.
+4. También hay una opción "Internacional" para ver productos de fuera de Colombia.
+
+**¿Dónde está el código?**
+
+- Los 32 departamentos + Bogotá D.C. y sus municipios principales están en `src/lib/colombia-geo.ts`. Cuando el dueño quiera cargar la lista oficial completa del DANE, solo tiene que reemplazar el contenido de ese archivo.
+- El componente visual se llama `GeoFilter` y vive en `src/components/GeoFilter.tsx`. Es un componente "cliente" (usa estado de React) pero se llama desde páginas del servidor.
+- El filtro funciona con **parámetros de URL**: al aplicar un filtro, la URL cambia a algo como `/tienda?depto=Santander&mpio=Bucaramanga`. Esto hace posible compartir el enlace filtrado.
+- La búsqueda en la base de datos la hace la función `searchProducts` en `catalog.ts`.
+
+---
+
+### 6.5 Origen internacional
+
+Los productos que vienen de fuera de Colombia tienen `isInternational = true` y un campo `originCountry` (nombre del país). En la ficha del producto, el componente `OriginBadge` decide automáticamente qué mostrar:
+
+- Colombia → 📍 Bucaramanga, Santander
+- Internacional → 🌍 Brasil (por ejemplo)
+
+---
+
+### 6.6 Barra de búsqueda en la portada
+
+En la página principal hay ahora una sección llamada `SearchHero` (héroe de búsqueda). Tiene:
+
+- Un fondo con un mosaico de 6 imágenes de ejemplo (mercados, economía circular).
+- Un título y subtítulo motivadores.
+- Una barra de búsqueda de texto.
+
+Al escribir algo y presionar "Buscar", el sitio navega a `/tienda?q=lo-que-escribiste` y muestra los productos que coinciden con ese texto en el nombre o la descripción (en español o inglés).
+
+**Archivo:** `src/components/SearchHero.tsx`
+
+---
+
+### 6.7 Dos nuevas categorías (total: 10)
+
+Se agregaron:
+- **Servicios:** recolección, transformación, consultoría y similares.
+- **Otros productos:** economía circular que no encaja en las otras 8 categorías.
+
+Cada una tiene su propia página en `/categoria/servicios` y `/categoria/otros-productos`, con soporte del filtro geográfico igual que las demás.
+
+---
+
+## Parte 7 — Preguntas útiles para hacerle a Claude Code (y aprender)
 
 Copia y pega estas preguntas cuando quieras entender algo:
 
@@ -193,4 +302,4 @@ Copia y pega estas preguntas cuando quieras entender algo:
 
 ---
 
-_Última actualización: Fase 2 completada. Este documento crece con el proyecto._
+_Última actualización: Bloque pre-Fase 3 completado (marketplace, productor interno, margen, filtro geográfico, búsqueda, 10 categorías). Este documento crece con el proyecto._

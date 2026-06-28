@@ -1,7 +1,8 @@
 import { useTranslations } from "next-intl";
+import { CONTACTO_BIONEXO } from "@/lib/contact-config";
 
-// Pie de página con datos de contacto y redes sociales de ejemplo
-// (el cliente debe reemplazarlos por los datos reales del negocio).
+// Pie de página con los datos de contacto del ECOMMERCE Bionexo.
+// Todos los datos vienen de contact-config.ts: el dueño los actualiza en un solo lugar.
 export default function Footer() {
   const t = useTranslations();
   const year = new Date().getFullYear();
@@ -19,15 +20,17 @@ export default function Footer() {
 
         <div>
           <p className="font-semibold text-eco-forest">{t("footer.contactTitle")}</p>
-          <p className="text-sm text-foreground/80">{t("footer.phonePlaceholder")}</p>
-          <p className="text-sm text-foreground/80">{t("footer.emailPlaceholder")}</p>
+          <p className="text-sm text-foreground/80">{CONTACTO_BIONEXO.telefono}</p>
+          <p className="text-sm text-foreground/80">{CONTACTO_BIONEXO.email}</p>
         </div>
 
         <div>
           <p className="font-semibold text-eco-forest">{t("footer.addressTitle")}</p>
-          <p className="text-sm text-foreground/80">{t("footer.addressBody")}</p>
+          <p className="text-sm text-foreground/80">{CONTACTO_BIONEXO.presencia}</p>
           <p className="mt-2 font-semibold text-eco-forest">{t("footer.socialTitle")}</p>
-          <p className="text-sm text-foreground/80">Facebook · Instagram · WhatsApp (placeholders)</p>
+          <p className="text-sm text-foreground/80">
+            Facebook: {CONTACTO_BIONEXO.facebook} · Instagram: {CONTACTO_BIONEXO.instagram}
+          </p>
         </div>
       </div>
 

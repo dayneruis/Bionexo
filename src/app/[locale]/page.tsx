@@ -3,9 +3,13 @@ import { Link } from "@/i18n/navigation";
 import { getCategories, getFeaturedProducts } from "@/lib/catalog";
 import ProductGrid from "@/components/ProductGrid";
 import CategoryCard from "@/components/CategoryCard";
+import SearchHero from "@/components/SearchHero";
 
-// Portada del sitio: mensaje de bienvenida, productos destacados (5 a 8,
-// según el CLAUDE.md) y acceso rápido a las 8 categorías.
+// Portada del sitio:
+// 1. Hero de texto + botón "Explorar"
+// 2. Sección de búsqueda con mosaico de imágenes (SearchHero)
+// 3. Productos destacados
+// 4. Acceso rápido a las 10 categorías
 export default async function HomePage() {
   const t = await getTranslations();
   const [featuredProducts, categories] = await Promise.all([
@@ -15,6 +19,7 @@ export default async function HomePage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
+      {/* Hero principal */}
       <section className="flex flex-col gap-4 py-8 text-center sm:py-12">
         <h1 className="text-3xl font-bold text-eco-forest sm:text-4xl">
           {t("home.heroTitle")}
@@ -28,11 +33,18 @@ export default async function HomePage() {
         </Link>
       </section>
 
+      {/* Barra de búsqueda con mosaico de imágenes de fondo */}
+      <section className="py-6">
+        <SearchHero />
+      </section>
+
+      {/* Productos destacados */}
       <section className="py-8">
         <h2 className="mb-6 text-2xl font-bold text-eco-forest">{t("home.featuredTitle")}</h2>
         <ProductGrid products={featuredProducts} />
       </section>
 
+      {/* Explorar por categoría */}
       <section className="py-8">
         <h2 className="mb-6 text-2xl font-bold text-eco-forest">{t("home.categoriesTitle")}</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

@@ -7,9 +7,13 @@ import { type Locale } from "@/i18n/routing";
 import AvailabilityBadge from "@/components/AvailabilityBadge";
 import PriceDisplay from "@/components/PriceDisplay";
 import ProductActions from "@/components/ProductActions";
+import OriginBadge from "@/components/OriginBadge";
 
-// Ficha de producto: imagen, descripción, precio COP + USD, ciudad de origen,
-// disponibilidad, variantes (con selección) y los dos botones de acción.
+// Ficha de producto vista por el CLIENTE.
+// Modelo de intermediación: NUNCA se muestran datos del productor
+// (nombre, teléfono, redes). Solo se expone información comercial del producto.
+// Lo que se muestra: nombre, descripción, precio, variantes, disponibilidad,
+// origen geográfico, tamaño, garantía.
 export default async function ProductPage({
   params,
 }: {
@@ -53,18 +57,37 @@ export default async function ProductPage({
           <p className="text-sm font-medium text-eco-cyan">{categoryName}</p>
           <h1 className="text-2xl font-bold text-eco-forest">{name}</h1>
 
-          {/* Precio en COP con equivalente en USD (tasa del día) */}
+          {/* Precio en COP con equivalente en USD */}
           <PriceDisplay priceCop={product.priceCop} />
 
           <AvailabilityBadge available={product.available} />
 
-          {/* Ciudad de origen del producto */}
+          {/* Origen geográfico: ciudad/departamento o país si es internacional */}
+          <OriginBadge
+            isInternational={product.isInternational}
+            originCountry={product.originCountry}
+            originCity={product.originCity}
+            originDepartment={product.originDepartment}
+          />
+
+          {/* Tamaño o medida del producto (si aplica) */}
+          {product.size && (
+            <p className="text-sm text-foreground/60">
+              📐{" "}
+              <span className="font-medium text-foreground/80">{t("product.size")}:</span>{" "}
+              {product.size}
+            </p>
+          )}
+
+          {/* Garantía: se muestra si el campo está activo */}
           <p className="text-sm text-foreground/60">
-            📍{" "}
-            <span className="font-medium text-foreground/80">
-              {t("product.originCity")}:
-            </span>{" "}
-            {product.originCity}
+            🛡️{" "}
+            <span className="font-medium text-foreground/80">{t("product.warranty")}:</span>{" "}
+            {product.warranty
+              ? product.warrantyDuration
+                ? `${t("product.warrantyYes")} — ${product.warrantyDuration}`
+                : t("product.warrantyYes")
+              : t("product.warrantyNo")}
           </p>
 
           {/* Descripción */}
@@ -75,7 +98,7 @@ export default async function ProductPage({
             <p className="text-foreground/80">{description}</p>
           </div>
 
-          {/* Selector de variantes + botones (comparten el estado de la variante elegida) */}
+          {/* Selector de variantes + botones de acción */}
           <ProductActions
             product={{
               id: product.id,
