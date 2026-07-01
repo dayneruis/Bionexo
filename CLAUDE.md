@@ -128,6 +128,21 @@
 - **Migración Prisma:** `20260628164715_fase3_prep_marketplace`.
 - **Archivo maestro de contacto:** `src/lib/contact-config.ts` — el dueño reemplaza los placeholders por los datos reales del negocio.
 
+## 15. Bitácora — Bloque visual y de contenido (pre-Fase 3, segunda parte)
+
+- **Logos reales:** `logos/bionexo.png` y `logos/tubasurainnova.png` copiados a `public/`. El Header y Footer usan `next/image` con el logo real de Bionexo. El favicon se sirve desde `src/app/icon.png` (Next.js lo detecta automáticamente). El logo de Tu Basura Innova aparece en la página "Sobre nosotros".
+- **Paleta refinada:** `globals.css` actualizado con valores más precisos (`eco-lime #7ec820`, `eco-green #2d8a4e`, `eco-forest #1a4731`, `eco-cyan #0e9b9b`). Se añadió transición global en `a` y `button`.
+- **Tarjetas mejoradas:** `ProductCard` y `CategoryCard` tienen hover con borde verde, sombra y flecha "→". El precio del producto ahora usa `text-eco-forest`.
+- **Hero rediseñado:** `SearchHero.tsx` tiene gradiente 135° (eco-forest → eco-cyan), pastilla de marca, título extrabold más grande, barra con ícono de lupa y cuatro botones de búsqueda rápida (Cartón, Plástico reciclado, Moda sostenible, Abono orgánico).
+- **"Sobre nosotros" con contenido real:** página completamente reescrita con hero verde + logo, estadísticas (14,4 M ton / ~12% / 60.000 recicladores), secciones de misión y meta, tarjeta de Tu Basura Innova con su logo, y cierre con CTA. Textos en español e inglés en `messages/es.json` y `messages/en.json`.
+- **CartDrawer mejorado:** encabezado con banda `eco-forest`, tarjetas de ítem con sombra, botón de checkout más grande con flecha.
+- **CheckoutForm mejorado:** inputs con borde redondeado y foco verde, cuadro de totales con fondo eco suave, campos generados con un arreglo para evitar repetición.
+- **Preparación pasarela de pago (Fase 4):**
+  - `src/lib/payment-config.ts`: archivo de configuración placeholder con comentarios de cómo conectar Wompi / PayU / ePayco.
+  - `src/app/api/payment/webhook/route.ts`: ruta POST placeholder; responde 200 y registra en consola. En Fase 4 se reemplaza por la lógica real del proveedor.
+  - Comentario `// ── PUNTO DE INTEGRACIÓN PASARELA (Fase 4) ──` en `CheckoutForm.tsx` marca exactamente dónde insertar el widget del proveedor.
+- **Textos de mensajes actualizados:** heroTitle/heroSubtitle del buscador son más impactantes; se añadió `checkout.paymentNote` y se reestructuró completamente la sección `about.*`.
+
 ---
 
-_Última actualización: Bloque de ajustes pre-Fase 3 completado (marketplace, productor interno, margen, filtro geo, búsqueda, 10 categorías)._
+_Última actualización: Bloque visual y de contenido completado (logos reales, paleta, hero, sobre nosotros, carrito, checkout, preparación pasarela)._

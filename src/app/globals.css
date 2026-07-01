@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fafdf9;
-  --foreground: #14271f;
+  --background: #f8fdf6;
+  --foreground: #12201a;
 
-  /* Paleta "eco": verdes de lima a bosque, más azules/cian de acento. */
-  --color-eco-lime: #a6e22e;
-  --color-eco-green: #3fa34d;
-  --color-eco-forest: #1f5d3a;
-  --color-eco-cyan: #2fb6c4;
-  --color-eco-blue: #2563a8;
+  /* Paleta eco Bionexo: verde lima → verde bosque + acento cian/azul */
+  --color-eco-lime:   #7ec820;   /* verde lima natural */
+  --color-eco-green:  #2d8a4e;   /* verde medio, botones secundarios */
+  --color-eco-forest: #1a4731;   /* verde bosque oscuro, primario */
+  --color-eco-cyan:   #0e9b9b;   /* teal/cian de acento */
+  --color-eco-blue:   #1a6ba8;   /* azul de acento complementario */
 }
 
 @theme inline {
@@ -18,15 +18,22 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
-  --color-eco-lime: var(--color-eco-lime);
-  --color-eco-green: var(--color-eco-green);
+  --color-eco-lime:   var(--color-eco-lime);
+  --color-eco-green:  var(--color-eco-green);
   --color-eco-forest: var(--color-eco-forest);
-  --color-eco-cyan: var(--color-eco-cyan);
-  --color-eco-blue: var(--color-eco-blue);
+  --color-eco-cyan:   var(--color-eco-cyan);
+  --color-eco-blue:   var(--color-eco-blue);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Transición suave global para elementos interactivos */
+a, button {
+  transition-property: color, background-color, border-color, opacity, box-shadow, transform;
+  transition-duration: 150ms;
+  transition-timing-function: ease-in-out;
 }

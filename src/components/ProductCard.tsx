@@ -7,9 +7,7 @@ import { formatCop } from "@/lib/format";
 import { type Locale } from "@/i18n/routing";
 import AvailabilityBadge from "./AvailabilityBadge";
 
-// Tarjeta resumida de un producto, usada en la portada (destacados) y en
-// las grillas de tienda/categoría. Solo muestra lo esencial; el detalle
-// completo (variantes, descripción, botones) vive en la ficha de producto.
+// Tarjeta resumida de un producto para la portada y grillas de tienda/categoría.
 export default function ProductCard({ product }: { product: Product }) {
   const locale = useLocale() as Locale;
   const t = useTranslations("common");
@@ -18,24 +16,26 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <Link
       href={`/producto/${product.slug}`}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-eco-forest/10 bg-white shadow-sm transition-shadow hover:shadow-md"
+      className="group flex flex-col overflow-hidden rounded-2xl border border-eco-forest/10 bg-white shadow-sm transition-all hover:border-eco-green/40 hover:shadow-lg"
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-eco-forest/5">
         <Image
           src={product.imageUrl}
           alt={name}
           fill
-          className="object-cover transition-transform group-hover:scale-105"
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
           sizes="(max-width: 768px) 100vw, 33vw"
         />
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
-        <h3 className="font-semibold text-eco-forest">{name}</h3>
-        <p className="text-lg font-bold text-foreground">{formatCop(product.priceCop)}</p>
-        <div className="mt-auto flex items-center justify-between">
+        <h3 className="font-semibold leading-snug text-eco-forest group-hover:text-eco-green">
+          {name}
+        </h3>
+        <p className="text-lg font-bold text-eco-forest">{formatCop(product.priceCop)}</p>
+        <div className="mt-auto flex items-center justify-between pt-1">
           <AvailabilityBadge available={product.available} />
-          <span className="text-sm font-medium text-eco-cyan group-hover:underline">
-            {t("viewProduct")}
+          <span className="text-sm font-medium text-eco-cyan group-hover:underline underline-offset-2">
+            {t("viewProduct")} →
           </span>
         </div>
       </div>

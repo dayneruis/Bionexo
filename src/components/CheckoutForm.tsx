@@ -10,27 +10,24 @@ import { formatCop } from "@/lib/format";
 import ShippingCalculator from "./ShippingCalculator";
 
 // Formulario completo del checkout: resumen del carrito, calculador de envío
-// y datos del comprador. Al confirmar, guarda el pedido en la BD y abre
-// WhatsApp en la página de confirmación.
+// y datos del comprador. Al confirmar guarda el pedido en la BD y muestra
+// el enlace de WhatsApp en la página de confirmación.
 export default function CheckoutForm() {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
   const { items, subtotalCop, vaciar } = useCart();
 
-  // Datos del comprador
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
 
-  // Resultado del calculador de envío
   const [shippingCop, setShippingCop] = useState(0);
   const [shippingDetail, setShippingDetail] = useState<DetalleEnvio[]>([]);
   const [destCity, setDestCity] = useState("");
   const [isInternacional, setIsInternacional] = useState(false);
 
-  // Estado de la petición
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,7 +35,6 @@ export default function CheckoutForm() {
   const destOk = destCity.trim() !== "" || isInternacional;
   const canSubmit = name && email && phone && address && destOk && !loading;
 
-  // El ShippingCalculator llama a esto cada vez que el usuario cambia la ciudad.
   function handleShippingChange(
     total: number,
     city: string,
@@ -87,7 +83,7 @@ export default function CheckoutForm() {
       if (!res.ok) throw new Error("Error del servidor");
       const { orderId } = (await res.json()) as { orderId: string };
 
-      vaciar(); // Limpiar el carrito después de confirmar el pedido.
+      vaciar();
       router.push(`/pedido-confirmado?id=${orderId}`);
     } catch {
       setError(t("checkout.errorSubmit"));
@@ -95,14 +91,20 @@ export default function CheckoutForm() {
     }
   }
 
-  // Si el carrito está vacío, mostrar mensaje y enlace a la tienda.
   if (items.length === 0) {
     return (
-      <div className="py-16 text-center">
+      <div className="py-20 text-center">
+        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-eco-forest/5">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-eco-forest/40" aria-hidden="true">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+            <line x1="3" x2="21" y1="6" y2="6" />
+            <path d="M16 10a4 4 0 0 1-8 0" />
+          </svg>
+        </div>
         <p className="text-foreground/60">{t("checkout.emptyCart")}</p>
         <Link
           href="/tienda"
-          className="mt-4 inline-block text-eco-cyan underline-offset-2 hover:underline"
+          className="mt-4 inline-block rounded-full bg-eco-forest px-6 py-2.5 text-sm font-semibold text-white hover:bg-eco-green"
         >
           {t("checkout.goToShop")}
         </Link>
@@ -112,18 +114,19 @@ export default function CheckoutForm() {
 
   return (
     <form onSubmit={handleSubmit} className="grid gap-10 lg:grid-cols-2">
+
       {/* ── Columna izquierda: resumen del carrito + envío ── */}
       <div className="flex flex-col gap-6">
-        <h2 className="font-semibold text-eco-forest">{t("checkout.summary")}</h2>
+        <h2 className="text-lg font-bold text-eco-forest">{t("checkout.summary")}</h2>
 
-        {/* Lista de ítems del carrito */}
+        {/* Lista de ítems */}
         <ul className="flex flex-col gap-3">
           {items.map((item) => {
             const itemName = locale === "en" ? item.nameEn : item.nameEs;
             return (
               <li
                 key={`${item.id}__${item.variantLabel ?? ""}`}
-                className="flex gap-3 rounded-xl border border-eco-forest/10 p-3"
+                className="flex gap-3 rounded-xl border border-eco-forest/10 bg-white p-3 shadow-sm"
               >
                 <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-eco-forest/5">
                   <Image
@@ -135,7 +138,7 @@ export default function CheckoutForm() {
                   />
                 </div>
                 <div className="flex-1 text-sm">
-                  <p className="font-medium">{itemName}</p>
+                  <p className="font-semibold text-eco-forest">{itemName}</p>
                   {item.variantLabel && (
                     <p className="text-xs text-foreground/50">{item.variantLabel}</p>
                   )}
@@ -144,7 +147,7 @@ export default function CheckoutForm() {
                   </p>
                 </div>
                 <div className="shrink-0 text-right text-sm">
-                  <p className="font-semibold text-eco-forest">
+                  <p className="font-bold text-eco-forest">
                     {formatCop(item.priceCop * item.quantity)}
                   </p>
                   <p className="text-xs text-foreground/40">×{item.quantity}</p>
@@ -154,21 +157,21 @@ export default function CheckoutForm() {
           })}
         </ul>
 
-        {/* Calculador de envío origen-destino */}
+        {/* Calculador de envío */}
         <ShippingCalculator items={items} onShippingChange={handleShippingChange} />
 
-        {/* Resumen de totales */}
-        <div className="rounded-xl border border-eco-forest/20 p-4 text-sm">
+        {/* Cuadro de totales */}
+        <div className="rounded-xl border border-eco-forest/15 bg-eco-forest/5 p-5 text-sm">
           <div className="flex justify-between text-foreground/70">
             <span>{t("checkout.subtotal")}</span>
             <span>{formatCop(subtotalCop)}</span>
           </div>
-          <div className="flex justify-between text-foreground/70">
+          <div className="mt-1 flex justify-between text-foreground/70">
             <span>{t("checkout.shipping")}</span>
             <span>{shippingCop > 0 ? formatCop(shippingCop) : "—"}</span>
           </div>
-          <hr className="my-2 border-eco-forest/10" />
-          <div className="flex justify-between text-base font-bold text-eco-forest">
+          <hr className="my-3 border-eco-forest/10" />
+          <div className="flex justify-between text-base font-extrabold text-eco-forest">
             <span>{t("checkout.total")}</span>
             <span>{formatCop(totalCop)}</span>
           </div>
@@ -176,90 +179,61 @@ export default function CheckoutForm() {
       </div>
 
       {/* ── Columna derecha: datos del comprador ── */}
-      <div className="flex flex-col gap-4">
-        <h2 className="font-semibold text-eco-forest">{t("checkout.buyerInfo")}</h2>
+      <div className="flex flex-col gap-5">
+        <h2 className="text-lg font-bold text-eco-forest">{t("checkout.buyerInfo")}</h2>
 
-        {/* Nombre */}
-        <div>
-          <label htmlFor="co-name" className="mb-1 block text-sm font-medium text-eco-forest">
-            {t("checkout.name")}
-          </label>
-          <input
-            id="co-name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            className="w-full rounded-lg border border-eco-forest/20 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-eco-forest/30"
-          />
-        </div>
+        {/* Campo de texto reutilizable inline */}
+        {[
+          { id: "co-name",    label: t("checkout.name"),    value: name,    set: setName,    type: "text" },
+          { id: "co-email",   label: t("checkout.email"),   value: email,   set: setEmail,   type: "email" },
+          { id: "co-phone",   label: t("checkout.phone"),   value: phone,   set: setPhone,   type: "tel" },
+          { id: "co-address", label: t("checkout.address"), value: address, set: setAddress, type: "text" },
+        ].map(({ id, label, value, set, type }) => (
+          <div key={id}>
+            <label htmlFor={id} className="mb-1.5 block text-sm font-semibold text-eco-forest">
+              {label}
+            </label>
+            <input
+              id={id}
+              type={type}
+              value={value}
+              onChange={(e) => set(e.target.value)}
+              required
+              className="w-full rounded-xl border border-eco-forest/20 bg-white px-4 py-3 text-sm placeholder:text-foreground/30 focus:border-eco-green focus:outline-none focus:ring-2 focus:ring-eco-green/20"
+            />
+          </div>
+        ))}
 
-        {/* Correo */}
-        <div>
-          <label htmlFor="co-email" className="mb-1 block text-sm font-medium text-eco-forest">
-            {t("checkout.email")}
-          </label>
-          <input
-            id="co-email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full rounded-lg border border-eco-forest/20 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-eco-forest/30"
-          />
-        </div>
-
-        {/* Teléfono */}
-        <div>
-          <label htmlFor="co-phone" className="mb-1 block text-sm font-medium text-eco-forest">
-            {t("checkout.phone")}
-          </label>
-          <input
-            id="co-phone"
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            required
-            className="w-full rounded-lg border border-eco-forest/20 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-eco-forest/30"
-          />
-        </div>
-
-        {/* Dirección de entrega */}
-        <div>
-          <label htmlFor="co-address" className="mb-1 block text-sm font-medium text-eco-forest">
-            {t("checkout.address")}
-          </label>
-          <input
-            id="co-address"
-            type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            required
-            placeholder="Calle 45 # 23-10, Apto 301"
-            className="w-full rounded-lg border border-eco-forest/20 px-3 py-2 text-sm placeholder:text-foreground/30 focus:outline-none focus:ring-2 focus:ring-eco-forest/30"
-          />
-        </div>
-
-        {/* Aviso si falta la ciudad de destino */}
+        {/* Aviso si falta ciudad */}
         {!destOk && (
-          <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
-            {t("checkout.needCity")}
+          <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-700">
+            ⚠️ {t("checkout.needCity")}
           </p>
         )}
 
-        {/* Error de envío del formulario */}
+        {/* Error del servidor */}
         {error && (
-          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>
+          <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+            {error}
+          </p>
         )}
 
-        {/* Botón de confirmación */}
+        {/* ── PUNTO DE INTEGRACIÓN PASARELA (Fase 4) ──────────────────────────
+            En Fase 4 se reemplaza este bloque por el SDK de Wompi / PayU / ePayco.
+            Ver: src/lib/payment-config.ts para la configuración del proveedor.
+            El webhook de confirmación está en: src/app/api/payment/webhook/route.ts
+        ──────────────────────────────────────────────────────────────────────── */}
         <button
           type="submit"
           disabled={!canSubmit}
-          className="mt-2 w-full rounded-full bg-eco-forest py-3 text-sm font-semibold text-white transition-colors hover:bg-eco-green disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-2 w-full rounded-full bg-eco-forest py-4 text-sm font-bold text-white shadow-lg hover:bg-eco-green disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? t("checkout.processing") : t("checkout.confirm")}
         </button>
+
+        <p className="text-center text-xs text-foreground/50">
+          {t("checkout.paymentNote")}
+        </p>
       </div>
     </form>
   );

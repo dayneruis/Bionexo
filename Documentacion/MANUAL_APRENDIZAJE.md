@@ -302,4 +302,88 @@ Copia y pega estas preguntas cuando quieras entender algo:
 
 ---
 
-_Última actualización: Bloque pre-Fase 3 completado (marketplace, productor interno, margen, filtro geográfico, búsqueda, 10 categorías). Este documento crece con el proyecto._
+## Parte 6 — Bloque visual y de contenido
+
+### ¿Por qué un bloque "solo de diseño" antes de seguir con la Fase 3?
+
+Antes de construir el panel de administración (Fase 3), se aprovechó para dejar el sitio con su identidad visual real: logos verdaderos, contenido de "Sobre nosotros" con texto e historia auténticos, y un hero de búsqueda más impactante. Esto permite que el dueño ya pueda mostrar el sitio a clientes o colaboradores con una imagen profesional.
+
+---
+
+### 6.1 Logos reales con `next/image`
+
+Antes, el Header mostraba el nombre "Bionexo" en texto. Ahora muestra la imagen real `bionexo.png`. ¿Por qué usar `next/image` y no un `<img>` normal?
+
+- **Optimización automática:** Next.js convierte la imagen al formato WebP (más liviano) y la sirve en el tamaño exacto que necesita la pantalla.
+- **Carga perezosa:** las imágenes que están fuera de la pantalla no se cargan hasta que el usuario las ve. Esto hace el sitio más rápido.
+- **El prop `priority`** en el logo del Header le dice a Next.js: "esta imagen es importante, cárgala de inmediato" (porque está arriba de la pantalla, siempre visible).
+
+El favicon (el íconito que aparece en la pestaña del navegador) se crea simplemente poniendo un archivo llamado `icon.png` dentro de `src/app/`. Next.js lo detecta automáticamente.
+
+---
+
+### 6.2 Variables CSS y la paleta eco
+
+Los colores del sitio no están escritos directamente en cada componente (ej: `#1a4731`). Están guardados como **variables CSS** en `globals.css`:
+
+```css
+:root {
+  --color-eco-forest: #1a4731;
+}
+```
+
+Y luego Tailwind CSS los expone con un nombre corto: `text-eco-forest`, `bg-eco-forest`, `border-eco-forest`. Así, si el dueño quiere cambiar el verde oscuro del sitio, solo cambia un valor en `globals.css` y el cambio aplica en todas partes.
+
+---
+
+### 6.3 El hero de búsqueda: gradiente y mosaico
+
+El `SearchHero` es la gran sección de portada. Tiene:
+
+1. **Mosaico de 6 imágenes** en la capa de fondo (3 columnas × 2 filas), con fotos de naturaleza y mercados.
+2. **Gradiente encima** (de verde bosque a cian), creado con `linear-gradient`. El gradiente hace dos cosas: tapa parcialmente las fotos para que el texto sea legible, y refuerza la identidad de color de Bionexo.
+3. **Pastilla de marca** (`Bionexo · Economía Circular`): una etiqueta pequeña con borde sutil que da contexto.
+4. **Botones de búsqueda rápida**: atajos que llevan directamente a la tienda buscando un término común (Cartón, Plástico reciclado, etc.). Son solo botones que navegan a `/tienda?q=término`.
+
+La búsqueda en sí no cambió: sigue mandando al usuario a `/tienda?q=texto` donde el servidor filtra los productos.
+
+---
+
+### 6.4 La página "Sobre nosotros" rediseñada
+
+Esta página pasó de ser texto plano a tener varias secciones visuales:
+
+- **Hero verde** con el logo blanco (filtro CSS `brightness-0 invert` convierte cualquier imagen a blanco puro).
+- **Sección de estadísticas**: tres números grandes en `text-eco-green` sobre fondo suave. Los números impactan visualmente y comunican la escala del problema que Bionexo ayuda a resolver.
+- **Tarjeta de Tu Basura Innova**: fondo cian muy suave, con el logo de la marca sombrilla a la izquierda y el texto a la derecha (usando `flexbox` en pantallas grandes).
+- **Cierre con CTA** ("Cuando compras en Bionexo, cierras el ciclo"): fondo verde oscuro, texto de impacto y botón para ir a la tienda.
+
+---
+
+### 6.5 Preparación de la pasarela de pago
+
+Una **pasarela de pago** es el sistema que procesa el cobro con tarjeta o PSE. En Colombia las más comunes son Wompi, PayU y ePayco.
+
+Por ahora el sitio *no cobra* directamente (el comprador confirma por WhatsApp). Pero dejamos la estructura técnica lista para Fase 4:
+
+**`src/lib/payment-config.ts`** — archivo de configuración que tiene todos los parámetros en un solo lugar: qué proveedor usar, si está en modo prueba o producción, las claves de acceso. Cuando llegue Fase 4, el dueño (con ayuda técnica) solo rellena este archivo con las claves reales.
+
+**`src/app/api/payment/webhook/route.ts`** — un **webhook** es una URL de tu sitio que el proveedor de pagos llama automáticamente para decirte "el pago fue aprobado" o "fue rechazado". Esta ruta ya existe pero por ahora solo responde "OK". En Fase 4 se programará para actualizar el estado del pedido en la base de datos y notificar al comprador.
+
+**Comentario en `CheckoutForm.tsx`** — hay un comentario marcado con `// ── PUNTO DE INTEGRACIÓN PASARELA (Fase 4) ──` justo antes del botón de confirmar pedido. Ese es el lugar exacto donde en Fase 4 se insertará el widget de pago del proveedor.
+
+---
+
+### Nuevos términos para el glosario
+
+- **`next/image`:** componente de Next.js para mostrar imágenes de forma optimizada (WebP, carga perezosa, tamaño adaptado a la pantalla).
+- **Favicon:** el ícono pequeño que aparece en la pestaña del navegador. En Next.js basta con poner `icon.png` en `src/app/`.
+- **Variable CSS (custom property):** un valor reutilizable definido con `--nombre` en CSS. Permite cambiar un color en un solo lugar y que aplique en todo el sitio.
+- **Gradiente (`linear-gradient`):** transición suave entre dos o más colores. Se usa en el hero para combinar verde bosque con cian.
+- **Pasarela de pago:** servicio externo que procesa cobros con tarjeta o PSE. Ejemplos colombianos: Wompi, PayU, ePayco.
+- **Webhook:** URL de tu sitio que servicios externos (como una pasarela de pago) llaman automáticamente para enviarte notificaciones (ej: "el pago fue aprobado").
+- **Filtro CSS `brightness-0 invert`:** convierte cualquier imagen a color blanco puro. Útil para mostrar un logo oscuro sobre fondo oscuro.
+
+---
+
+_Última actualización: Bloque visual y de contenido completado (logos reales, paleta, hero, sobre nosotros, carrito, checkout, preparación pasarela). Este documento crece con el proyecto._

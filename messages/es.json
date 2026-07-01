@@ -29,8 +29,8 @@
     "categoriesTitle": "Explora por categoría"
   },
   "search": {
-    "heroTitle": "Encuentra productos de economía circular",
-    "heroSubtitle": "Busca materiales recuperados, moda sostenible, artesanías y mucho más.",
+    "heroTitle": "El mercado que cierra el ciclo",
+    "heroSubtitle": "Productos de economía circular: materiales recuperados, moda sostenible, artesanías, plantas, alimentos orgánicos y mucho más.",
     "placeholder": "¿Qué estás buscando?",
     "button": "Buscar",
     "results": "Resultados para: \"{q}\"",
@@ -112,7 +112,8 @@
     "goToShop": "Ir a la tienda",
     "processing": "Procesando...",
     "errorSubmit": "Hubo un error. Por favor intenta de nuevo.",
-    "needCity": "Ingresa tu ciudad de destino en el calculador de envío para continuar."
+    "needCity": "Ingresa tu ciudad de destino en el calculador de envío para continuar.",
+    "paymentNote": "Después de confirmar, recibirás un enlace de WhatsApp para completar tu pago."
   },
   "confirmation": {
     "title": "¡Pedido registrado!",
@@ -123,12 +124,28 @@
   },
   "about": {
     "title": "Sobre nosotros",
+    "tagline": "Conecta, Transforma, Impacta.",
+    "intro": "Bionexo es el mercado digital de economía circular de Tu Basura Innova, un ecosistema colombiano que une ciudadanía, recicladores, emprendimientos y empresas en torno a un propósito común: darle una nueva vida a los residuos y transformar la manera en que consumimos.",
+    "originTitle": "¿De dónde venimos?",
+    "originBody": "Somos una iniciativa conjunta nacida del trabajo de un equipo del oriente colombiano (Santander) y de la capital del país (Bogotá D.C.), con la meta de crecer y llegar a todo el territorio nacional y la región.",
+    "productsTitle": "¿Qué encuentras en Bionexo?",
+    "productsBody": "Productos y materiales nacidos del aprovechamiento y el reciclaje: desde materiales recuperados y mobiliario fabricado con plástico y madera reutilizada, hasta moda sostenible, abonos orgánicos, productos de aseo ecológicos, artesanías y mucho más. Cada compra que haces impulsa a los emprendedores que están construyendo una economía más limpia y justa.",
+    "whyTitle": "¿Por qué importa lo que hacemos?",
+    "whyStat1Value": "14,4 M",
+    "whyStat1Label": "toneladas de residuos sólidos al año en Colombia",
+    "whyStat2Value": "~12%",
+    "whyStat2Label": "del total se recicla o reutiliza",
+    "whyStat3Value": "60.000",
+    "whyStat3Label": "recicladores de oficio en el país",
+    "whyBody": "En ese enorme potencial desaprovechado vemos una oportunidad: transformar residuos en productos, y productos en progreso.",
+    "whySource": "Fuente: DNP, 2025.",
     "missionTitle": "Nuestra misión",
-    "missionBody": "Bionexo es una tienda en línea dedicada a conectar a quienes generan materiales recuperados y productos ecológicos con quienes quieren consumir de forma más consciente. Creemos que la basura de unos puede ser la materia prima de otros.",
-    "umbrellaTitle": "Parte de Tu Basura Innova",
-    "umbrellaBody": "Bionexo nace bajo el respaldo de Tu Basura Innova, marca global de economía circular que impulsa proyectos como este para que cada vez más residuos se transformen en oportunidades.",
-    "historyTitle": "Economía circular: la idea grande",
-    "historyBody": "En lugar de extraer, producir, usar y desechar, la economía circular propone recuperar, reutilizar y regenerar. Cada producto que ves en Bionexo evita que algo termine en un relleno sanitario antes de tiempo."
+    "missionBody": "Visibilizar y fortalecer los emprendimientos de economía circular de Colombia, conectándolos con personas y empresas que quieren consumir de forma responsable. Creemos que lo que hoy se desecha, mañana puede ser una oportunidad.",
+    "goalTitle": "Nuestra meta",
+    "goalBody": "Llegar a todo el país y a la región, conectando cada vez a más emprendedores y compradores comprometidos con la sostenibilidad.",
+    "umbrellaTitle": "Tu Basura Innova, nuestra marca sombrilla",
+    "umbrellaBody": "Tu Basura Innova es una plataforma tecnológica y social para el reciclaje, la economía circular y la gestión ambiental, alineada con los Objetivos de Desarrollo Sostenible. Bionexo es su corazón comercial: el espacio donde la sostenibilidad se vuelve producto, y el reciclaje se convierte en progreso.",
+    "cta": "Cuando compras en Bionexo, no solo adquieres un producto: cierras el ciclo."
   },
   "footer": {
     "contactTitle": "Contacto",

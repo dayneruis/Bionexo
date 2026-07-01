@@ -29,8 +29,8 @@
     "categoriesTitle": "Browse by category"
   },
   "search": {
-    "heroTitle": "Find circular economy products",
-    "heroSubtitle": "Search for recovered materials, sustainable fashion, crafts and much more.",
+    "heroTitle": "The marketplace that closes the loop",
+    "heroSubtitle": "Circular economy products: recovered materials, sustainable fashion, crafts, plants, organic food and much more.",
     "placeholder": "What are you looking for?",
     "button": "Search",
     "results": "Results for: \"{q}\"",
@@ -112,7 +112,8 @@
     "goToShop": "Go to the shop",
     "processing": "Processing...",
     "errorSubmit": "Something went wrong. Please try again.",
-    "needCity": "Enter your destination city in the shipping calculator to continue."
+    "needCity": "Enter your destination city in the shipping calculator to continue.",
+    "paymentNote": "After confirming, you will receive a WhatsApp link to complete your payment."
   },
   "confirmation": {
     "title": "Order placed!",
@@ -123,12 +124,28 @@
   },
   "about": {
     "title": "About us",
+    "tagline": "Connect, Transform, Impact.",
+    "intro": "Bionexo is the circular-economy marketplace of Tu Basura Innova, a Colombian ecosystem that brings together citizens, recyclers, entrepreneurs, and businesses around a shared purpose: giving waste a new life and transforming the way we consume.",
+    "originTitle": "Where do we come from?",
+    "originBody": "We are a joint initiative born from the work of a team from eastern Colombia (Santander) and the nation's capital (Bogotá D.C.), with the goal of growing to reach the entire country and region.",
+    "productsTitle": "What will you find at Bionexo?",
+    "productsBody": "Products and materials born from reuse and recycling: from recovered materials and furniture made with reclaimed plastic and wood, to sustainable fashion, organic fertilizers, eco-friendly cleaning products, handicrafts, and much more. Every purchase supports the entrepreneurs building a cleaner, fairer economy.",
+    "whyTitle": "Why does our work matter?",
+    "whyStat1Value": "14.4 M",
+    "whyStat1Label": "tons of solid waste per year in Colombia",
+    "whyStat2Value": "~12%",
+    "whyStat2Label": "of the total is recycled or reused",
+    "whyStat3Value": "60,000",
+    "whyStat3Label": "waste-picker workers in the country",
+    "whyBody": "In that vast wasted potential we see an opportunity: to turn waste into products, and products into progress.",
+    "whySource": "Source: DNP, 2025.",
     "missionTitle": "Our mission",
-    "missionBody": "Bionexo is an online store dedicated to connecting those who generate recovered materials and eco-friendly products with those who want to consume more consciously. We believe one person's waste can be another's raw material.",
-    "umbrellaTitle": "Part of Tu Basura Innova",
-    "umbrellaBody": "Bionexo is backed by Tu Basura Innova, a global circular economy brand that supports projects like this one so more waste becomes opportunity.",
-    "historyTitle": "Circular economy: the big idea",
-    "historyBody": "Instead of extract, produce, use and discard, the circular economy proposes recover, reuse and regenerate. Every product you see on Bionexo helps keep something out of a landfill a little longer."
+    "missionBody": "To give visibility to and strengthen Colombia's circular-economy ventures, connecting them with people and companies who want to consume responsibly. We believe that what is discarded today can become an opportunity tomorrow.",
+    "goalTitle": "Our goal",
+    "goalBody": "To reach the entire country and region, connecting more and more entrepreneurs and buyers committed to sustainability.",
+    "umbrellaTitle": "Tu Basura Innova, our parent brand",
+    "umbrellaBody": "Tu Basura Innova is a technological and social platform for recycling, circular economy, and environmental management, aligned with the Sustainable Development Goals. Bionexo is its commercial heart: where sustainability becomes a product, and recycling becomes progress.",
+    "cta": "When you buy at Bionexo, you don't just get a product — you close the loop."
   },
   "footer": {
     "contactTitle": "Contact",
