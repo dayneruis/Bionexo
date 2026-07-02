@@ -12,7 +12,7 @@ export default function CategoryCard({ category }: { category: Category }) {
   return (
     <Link
       href={`/categoria/${category.slug}`}
-      className="group flex flex-col gap-2 rounded-2xl border border-eco-forest/10 bg-gradient-to-br from-eco-lime/10 via-background to-eco-cyan/10 p-5 transition-all hover:border-eco-green/40 hover:shadow-md hover:from-eco-lime/20 hover:to-eco-cyan/20"
+      className="group flex flex-col gap-2 rounded-2xl border border-eco-forest/10 bg-eco-cream p-5 transition-all hover:border-eco-green/50 hover:bg-eco-lime/10 hover:shadow-md"
     >
       <h3 className="font-semibold text-eco-forest transition-colors group-hover:text-eco-green">
         {name}

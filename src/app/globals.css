@@ -1,28 +1,30 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fdf6;
-  --foreground: #12201a;
+  --background: #ffffff;
+  --foreground: #0f1f16;
 
-  /* Paleta eco Bionexo: verde lima → verde bosque + acento cian/azul */
-  --color-eco-lime:   #7ec820;   /* verde lima natural */
-  --color-eco-green:  #2d8a4e;   /* verde medio, botones secundarios */
-  --color-eco-forest: #1a4731;   /* verde bosque oscuro, primario */
-  --color-eco-cyan:   #0e9b9b;   /* teal/cian de acento */
-  --color-eco-blue:   #1a6ba8;   /* azul de acento complementario */
+  /* Paleta eco Bionexo — luminosa, fresca, marca eco moderna */
+  --color-eco-lime:   #22c55e;   /* verde hoja brillante — acento principal */
+  --color-eco-green:  #16a34a;   /* verde vivo — botones, hover */
+  --color-eco-forest: #14532d;   /* verde bosque profundo — títulos, header */
+  --color-eco-cream:  #f0fdf4;   /* verde muy pálido / beige natural — fondos suaves */
+  --color-eco-cyan:   #0891b2;   /* cian vivo — acento secundario, enlaces */
+  --color-eco-blue:   #1a6ba8;   /* azul de apoyo */
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background:  var(--background);
+  --color-foreground:  var(--foreground);
+  --font-sans:         var(--font-geist-sans);
+  --font-mono:         var(--font-geist-mono);
 
-  --color-eco-lime:   var(--color-eco-lime);
-  --color-eco-green:  var(--color-eco-green);
-  --color-eco-forest: var(--color-eco-forest);
-  --color-eco-cyan:   var(--color-eco-cyan);
-  --color-eco-blue:   var(--color-eco-blue);
+  --color-eco-lime:    var(--color-eco-lime);
+  --color-eco-green:   var(--color-eco-green);
+  --color-eco-forest:  var(--color-eco-forest);
+  --color-eco-cream:   var(--color-eco-cream);
+  --color-eco-cyan:    var(--color-eco-cyan);
+  --color-eco-blue:    var(--color-eco-blue);
 }
 
 body {

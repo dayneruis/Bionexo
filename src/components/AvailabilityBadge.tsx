@@ -9,7 +9,7 @@ export default function AvailabilityBadge({ available }: { available: boolean })
     <span
       className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
         available
-          ? "bg-eco-green/15 text-eco-forest"
+          ? "bg-eco-lime/20 text-eco-forest"
           : "bg-foreground/10 text-foreground/60"
       }`}
     >

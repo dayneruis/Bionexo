@@ -18,7 +18,7 @@ export default function ProductCard({ product }: { product: Product }) {
       href={`/producto/${product.slug}`}
       className="group flex flex-col overflow-hidden rounded-2xl border border-eco-forest/10 bg-white shadow-sm transition-all hover:border-eco-green/40 hover:shadow-lg"
     >
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-eco-forest/5">
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-eco-cream">
         <Image
           src={product.imageUrl}
           alt={name}

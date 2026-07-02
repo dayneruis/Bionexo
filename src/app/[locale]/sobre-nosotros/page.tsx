@@ -38,7 +38,7 @@ export default async function AboutPage() {
       </section>
 
       {/* ── Por qué importa: estadísticas ── */}
-      <section className="mb-10 rounded-2xl border border-eco-forest/10 bg-eco-forest/5 p-8">
+      <section className="mb-10 rounded-2xl border border-eco-forest/10 bg-eco-cream p-8">
         <h2 className="mb-6 text-xl font-bold text-eco-forest">{t("whyTitle")}</h2>
         <div className="mb-6 grid gap-6 sm:grid-cols-3">
           <div className="text-center">
@@ -71,7 +71,7 @@ export default async function AboutPage() {
       </section>
 
       {/* ── Tu Basura Innova (marca sombrilla) ── */}
-      <section className="mb-12 flex flex-col gap-6 rounded-2xl border border-eco-cyan/20 bg-eco-cyan/5 p-8 sm:flex-row sm:items-center">
+      <section className="mb-12 flex flex-col gap-6 rounded-2xl border border-eco-green/20 bg-eco-cream p-8 sm:flex-row sm:items-center">
         <div className="flex shrink-0 justify-center">
           <Image
             src="/tubasurainnova.png"

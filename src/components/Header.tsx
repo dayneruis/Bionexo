@@ -10,15 +10,15 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-10 border-b border-eco-forest/10 bg-background/95 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
         {/* Logo principal Bionexo */}
         <Link href="/" className="flex items-center gap-2">
           <Image
             src="/bionexo.png"
             alt="Bionexo"
-            width={160}
-            height={48}
-            className="h-10 w-auto object-contain"
+            width={240}
+            height={72}
+            className="h-12 w-auto object-contain sm:h-16"
             priority
           />
         </Link>

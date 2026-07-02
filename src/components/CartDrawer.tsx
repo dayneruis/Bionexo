@@ -77,7 +77,7 @@ export default function CartDrawer() {
         <div className="flex-1 overflow-y-auto px-4 py-4">
           {items.length === 0 ? (
             <div className="flex flex-col items-center gap-4 py-16 text-center text-foreground/50">
-              <div className="rounded-full bg-eco-forest/5 p-6">
+              <div className="rounded-full bg-eco-cream p-6">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
                   <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
                   <line x1="3" x2="21" y1="6" y2="6" />
@@ -100,7 +100,7 @@ export default function CartDrawer() {
                 return (
                   <li key={key} className="flex gap-3 rounded-xl border border-eco-forest/10 bg-white p-3 shadow-sm">
                     {/* Miniatura */}
-                    <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-eco-forest/5">
+                    <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-eco-cream">
                       <Image
                         src={item.imageUrl}
                         alt={name}

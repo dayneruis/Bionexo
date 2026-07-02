@@ -94,7 +94,7 @@ export default function CheckoutForm() {
   if (items.length === 0) {
     return (
       <div className="py-20 text-center">
-        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-eco-forest/5">
+        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-eco-cream">
           <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-eco-forest/40" aria-hidden="true">
             <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
             <line x1="3" x2="21" y1="6" y2="6" />
@@ -128,7 +128,7 @@ export default function CheckoutForm() {
                 key={`${item.id}__${item.variantLabel ?? ""}`}
                 className="flex gap-3 rounded-xl border border-eco-forest/10 bg-white p-3 shadow-sm"
               >
-                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-eco-forest/5">
+                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-eco-cream">
                   <Image
                     src={item.imageUrl}
                     alt={itemName}
@@ -161,7 +161,7 @@ export default function CheckoutForm() {
         <ShippingCalculator items={items} onShippingChange={handleShippingChange} />
 
         {/* Cuadro de totales */}
-        <div className="rounded-xl border border-eco-forest/15 bg-eco-forest/5 p-5 text-sm">
+        <div className="rounded-xl border border-eco-forest/15 bg-eco-cream p-5 text-sm">
           <div className="flex justify-between text-foreground/70">
             <span>{t("checkout.subtotal")}</span>
             <span>{formatCop(subtotalCop)}</span>
