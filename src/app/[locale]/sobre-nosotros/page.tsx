@@ -28,13 +28,13 @@ export default async function AboutPage() {
       {/* ── Origen ── */}
       <section className="mb-10">
         <h2 className="mb-3 text-xl font-bold text-eco-forest">{t("originTitle")}</h2>
-        <p className="text-foreground/80 leading-relaxed">{t("originBody")}</p>
+        <p className="text-slate-700 leading-relaxed">{t("originBody")}</p>
       </section>
 
       {/* ── Qué encuentras ── */}
       <section className="mb-10">
         <h2 className="mb-3 text-xl font-bold text-eco-forest">{t("productsTitle")}</h2>
-        <p className="text-foreground/80 leading-relaxed">{t("productsBody")}</p>
+        <p className="text-slate-700 leading-relaxed">{t("productsBody")}</p>
       </section>
 
       {/* ── Por qué importa: estadísticas ── */}
@@ -43,31 +43,31 @@ export default async function AboutPage() {
         <div className="mb-6 grid gap-6 sm:grid-cols-3">
           <div className="text-center">
             <p className="text-4xl font-extrabold text-eco-green">{t("whyStat1Value")}</p>
-            <p className="mt-1 text-sm text-foreground/70">{t("whyStat1Label")}</p>
+            <p className="mt-1 text-sm text-slate-500">{t("whyStat1Label")}</p>
           </div>
           <div className="text-center">
             <p className="text-4xl font-extrabold text-eco-green">{t("whyStat2Value")}</p>
-            <p className="mt-1 text-sm text-foreground/70">{t("whyStat2Label")}</p>
+            <p className="mt-1 text-sm text-slate-500">{t("whyStat2Label")}</p>
           </div>
           <div className="text-center">
             <p className="text-4xl font-extrabold text-eco-green">{t("whyStat3Value")}</p>
-            <p className="mt-1 text-sm text-foreground/70">{t("whyStat3Label")}</p>
+            <p className="mt-1 text-sm text-slate-500">{t("whyStat3Label")}</p>
           </div>
         </div>
-        <p className="text-foreground/80 leading-relaxed">{t("whyBody")}</p>
-        <p className="mt-2 text-xs text-foreground/40 italic">{t("whySource")}</p>
+        <p className="text-slate-700 leading-relaxed">{t("whyBody")}</p>
+        <p className="mt-2 text-xs text-slate-400 italic">{t("whySource")}</p>
       </section>
 
       {/* ── Misión ── */}
       <section className="mb-10">
         <h2 className="mb-3 text-xl font-bold text-eco-forest">{t("missionTitle")}</h2>
-        <p className="text-foreground/80 leading-relaxed">{t("missionBody")}</p>
+        <p className="text-slate-700 leading-relaxed">{t("missionBody")}</p>
       </section>
 
       {/* ── Meta ── */}
       <section className="mb-12">
         <h2 className="mb-3 text-xl font-bold text-eco-forest">{t("goalTitle")}</h2>
-        <p className="text-foreground/80 leading-relaxed">{t("goalBody")}</p>
+        <p className="text-slate-700 leading-relaxed">{t("goalBody")}</p>
       </section>
 
       {/* ── Tu Basura Innova (marca sombrilla) ── */}
@@ -83,7 +83,7 @@ export default async function AboutPage() {
         </div>
         <div>
           <h2 className="mb-2 text-xl font-bold text-eco-forest">{t("umbrellaTitle")}</h2>
-          <p className="text-foreground/80 leading-relaxed">{t("umbrellaBody")}</p>
+          <p className="text-slate-700 leading-relaxed">{t("umbrellaBody")}</p>
         </div>
       </section>
 

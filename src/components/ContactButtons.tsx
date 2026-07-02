@@ -8,7 +8,6 @@ import type { ProductForCart } from "./ProductActions";
 // Los dos botones de cada producto:
 //   • "Agregar al carrito" → agrega el ítem y abre el cajón del carrito.
 //   • "Me interesa / Contáctame" → abre WhatsApp del ECOMMERCE (no del productor).
-// El número de WhatsApp viene de contact-config.ts (nunca del productor).
 // En Fase 4 se conectará a una pasarela de pago sin tocar el resto de la ficha.
 export default function ContactButtons({
   product,
@@ -40,18 +39,20 @@ export default function ContactButtons({
 
   return (
     <div className="flex flex-col gap-3 sm:flex-row">
+      {/* Botón primario: verde vivo brillante */}
       <button
         type="button"
         onClick={handleAddToCart}
-        className="inline-flex flex-1 items-center justify-center rounded-full bg-eco-forest px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-eco-green"
+        className="inline-flex flex-1 items-center justify-center rounded-full bg-eco-green px-6 py-3 text-sm font-bold text-white shadow-sm hover:bg-eco-forest"
       >
         {t("common.buy")}
       </button>
+      {/* Botón secundario: borde verde, texto verde */}
       <a
         href={whatsappUrl(interestMessage)}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex flex-1 items-center justify-center rounded-full border border-eco-forest px-6 py-3 text-sm font-semibold text-eco-forest transition-colors hover:bg-eco-forest/10"
+        className="inline-flex flex-1 items-center justify-center rounded-full border-2 border-eco-green px-6 py-3 text-sm font-bold text-eco-green hover:bg-eco-green/10"
       >
         {t("common.interested")}
       </a>

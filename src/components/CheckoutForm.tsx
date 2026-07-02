@@ -101,7 +101,7 @@ export default function CheckoutForm() {
             <path d="M16 10a4 4 0 0 1-8 0" />
           </svg>
         </div>
-        <p className="text-foreground/60">{t("checkout.emptyCart")}</p>
+        <p className="text-slate-500">{t("checkout.emptyCart")}</p>
         <Link
           href="/tienda"
           className="mt-4 inline-block rounded-full bg-eco-forest px-6 py-2.5 text-sm font-semibold text-white hover:bg-eco-green"
@@ -126,7 +126,7 @@ export default function CheckoutForm() {
             return (
               <li
                 key={`${item.id}__${item.variantLabel ?? ""}`}
-                className="flex gap-3 rounded-xl border border-eco-forest/10 bg-white p-3 shadow-sm"
+                className="flex gap-3 rounded-xl border border-eco-green/20 bg-white p-3 shadow-sm"
               >
                 <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-eco-cream">
                   <Image
@@ -140,9 +140,9 @@ export default function CheckoutForm() {
                 <div className="flex-1 text-sm">
                   <p className="font-semibold text-eco-forest">{itemName}</p>
                   {item.variantLabel && (
-                    <p className="text-xs text-foreground/50">{item.variantLabel}</p>
+                    <p className="text-xs text-slate-400">{item.variantLabel}</p>
                   )}
-                  <p className="text-xs text-foreground/40">
+                  <p className="text-xs text-slate-400">
                     📍 {t("product.originCity")}: {item.originCity}
                   </p>
                 </div>
@@ -150,7 +150,7 @@ export default function CheckoutForm() {
                   <p className="font-bold text-eco-forest">
                     {formatCop(item.priceCop * item.quantity)}
                   </p>
-                  <p className="text-xs text-foreground/40">×{item.quantity}</p>
+                  <p className="text-xs text-slate-400">×{item.quantity}</p>
                 </div>
               </li>
             );
@@ -162,11 +162,11 @@ export default function CheckoutForm() {
 
         {/* Cuadro de totales */}
         <div className="rounded-xl border border-eco-forest/15 bg-eco-cream p-5 text-sm">
-          <div className="flex justify-between text-foreground/70">
+          <div className="flex justify-between text-slate-500">
             <span>{t("checkout.subtotal")}</span>
             <span>{formatCop(subtotalCop)}</span>
           </div>
-          <div className="mt-1 flex justify-between text-foreground/70">
+          <div className="mt-1 flex justify-between text-slate-500">
             <span>{t("checkout.shipping")}</span>
             <span>{shippingCop > 0 ? formatCop(shippingCop) : "—"}</span>
           </div>
@@ -226,12 +226,12 @@ export default function CheckoutForm() {
         <button
           type="submit"
           disabled={!canSubmit}
-          className="mt-2 w-full rounded-full bg-eco-forest py-4 text-sm font-bold text-white shadow-lg hover:bg-eco-green disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-2 w-full rounded-full bg-eco-green py-4 text-sm font-bold text-white shadow-lg hover:bg-eco-forest disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? t("checkout.processing") : t("checkout.confirm")}
         </button>
 
-        <p className="text-center text-xs text-foreground/50">
+        <p className="text-center text-xs text-slate-400">
           {t("checkout.paymentNote")}
         </p>
       </div>

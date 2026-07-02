@@ -16,7 +16,7 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <Link
       href={`/producto/${product.slug}`}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-eco-forest/10 bg-white shadow-sm transition-all hover:border-eco-green/40 hover:shadow-lg"
+      className="group flex flex-col overflow-hidden rounded-2xl border border-eco-green/20 bg-white shadow-sm transition-all hover:border-eco-green/50 hover:shadow-lg"
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-eco-cream">
         <Image
@@ -28,13 +28,13 @@ export default function ProductCard({ product }: { product: Product }) {
         />
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
-        <h3 className="font-semibold leading-snug text-eco-forest group-hover:text-eco-green">
+        <h3 className="font-bold leading-snug text-eco-forest group-hover:text-eco-green">
           {name}
         </h3>
-        <p className="text-lg font-bold text-eco-forest">{formatCop(product.priceCop)}</p>
+        <p className="text-lg font-bold text-eco-green">{formatCop(product.priceCop)}</p>
         <div className="mt-auto flex items-center justify-between pt-1">
           <AvailabilityBadge available={product.available} />
-          <span className="text-sm font-medium text-eco-cyan group-hover:underline underline-offset-2">
+          <span className="text-sm font-semibold text-eco-cyan underline-offset-2 group-hover:underline">
             {t("viewProduct")} →
           </span>
         </div>
