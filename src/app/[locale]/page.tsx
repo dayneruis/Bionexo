@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Leaf, Tag, Recycle, Handshake, Globe } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -30,6 +31,20 @@ export default async function HomePage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
+      {/* Portada de marca: imagen visual de presentación, antes del hero de texto */}
+      <section className="pt-2">
+        <div className="overflow-hidden rounded-3xl">
+          <Image
+            src="/portada-marca.png"
+            alt={`${t("brand.name")} — ${t("brand.tagline")}`}
+            width={1718}
+            height={916}
+            className="h-48 w-full object-cover sm:h-64 md:h-72"
+            priority
+          />
+        </div>
+      </section>
+
       {/* Hero principal */}
       <section className="flex flex-col gap-4 py-8 text-center sm:py-12">
         <h1 className="text-3xl font-bold text-eco-forest sm:text-4xl">
@@ -65,6 +80,19 @@ export default async function HomePage() {
               <p className="text-sm text-slate-600">{t(`home.${textKey}`)}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Tirilla de valores: imagen horizontal con los valores de la marca */}
+      <section className="pb-8">
+        <div className="mx-auto max-w-3xl rounded-2xl border border-eco-green/10 bg-white p-4 shadow-sm sm:p-6">
+          <Image
+            src="/tirilla-valores.jpeg"
+            alt={t("home.whatIsTitle")}
+            width={1536}
+            height={125}
+            className="h-auto w-full object-contain"
+          />
         </div>
       </section>
 

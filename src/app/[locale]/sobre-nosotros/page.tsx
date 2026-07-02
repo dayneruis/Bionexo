@@ -15,13 +15,18 @@ export default async function AboutPage() {
 
       {/* ── Hero de la página ── */}
       <div className="mb-12 overflow-hidden rounded-3xl bg-eco-forest px-8 py-14 text-center text-white sm:px-16">
-        <Image
-          src="/bionexo.png"
-          alt="Bionexo"
-          width={200}
-          height={60}
-          className="mx-auto mb-6 h-14 w-auto object-contain brightness-0 invert"
-        />
+        {/* Tarjeta blanca a propósito: bionexo.png tiene fondo claro opaco (no
+            transparente), así que un filtro invert sobre fondo verde dejaba
+            todo el rectángulo en blanco sólido (el logo "desaparecía"). */}
+        <div className="mx-auto mb-6 inline-flex rounded-2xl bg-white px-6 py-3 shadow-md">
+          <Image
+            src="/bionexo.png"
+            alt="Bionexo"
+            width={200}
+            height={60}
+            className="h-12 w-auto object-contain sm:h-14"
+          />
+        </div>
         <h1 className="text-3xl font-extrabold sm:text-4xl">{t("tagline")}</h1>
         <p className="mx-auto mt-4 max-w-2xl text-base text-white/85 sm:text-lg">
           {t("intro")}
@@ -89,6 +94,17 @@ export default async function AboutPage() {
               </span>
             </div>
           ))}
+        </div>
+
+        {/* Cartel oficial de los 17 ODS, tamaño moderado y centrado */}
+        <div className="mx-auto mt-8 max-w-xs rounded-2xl border border-eco-green/10 bg-white p-4 shadow-sm sm:max-w-sm">
+          <Image
+            src="/ods-cartel.png"
+            alt={t("odsTitle")}
+            width={1254}
+            height={1254}
+            className="h-auto w-full object-contain"
+          />
         </div>
       </section>
 

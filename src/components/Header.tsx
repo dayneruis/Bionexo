@@ -19,7 +19,7 @@ export default function Header() {
             alt="Bionexo"
             width={240}
             height={72}
-            className="h-14 w-auto object-contain sm:h-20"
+            className="h-16 w-auto object-contain sm:h-24"
             priority
           />
         </Link>
