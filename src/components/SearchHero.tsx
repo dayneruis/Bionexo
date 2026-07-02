@@ -1,23 +1,24 @@
 "use client";
 
 // SearchHero: sección principal de la portada.
-// Mosaico de 6 imágenes de fondo (economía circular) con gradiente eco encima,
+// Mosaico de 8 fotos reales del negocio (public/hero/) con una capa verde
+// translúcida encima para que combinen entre sí y con la paleta del sitio,
 // título impactante y barra de búsqueda. Al buscar navega a /tienda?q=texto.
-// Las imágenes son placeholders de picsum.photos; el dueño puede reemplazarlas
-// por fotos reales del negocio cambiando las URLs del arreglo IMAGENES_FONDO.
 
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 
-// Seeds de picsum.photos con imágenes de naturaleza, texturas vegetales y mercados.
 const IMAGENES_FONDO = [
-  "https://picsum.photos/seed/plants10/600/400",
-  "https://picsum.photos/seed/forest22/600/400",
-  "https://picsum.photos/seed/recycle3/600/400",
-  "https://picsum.photos/seed/market41/600/400",
-  "https://picsum.photos/seed/eco55/600/400",
-  "https://picsum.photos/seed/green67/600/400",
+  "/hero/hero-1.png",
+  "/hero/hero-2.png",
+  "/hero/hero-3.png",
+  "/hero/hero-4.jpg",
+  "/hero/hero-5.jpg",
+  "/hero/hero-6.jpg",
+  "/hero/hero-7.jpg",
+  "/hero/hero-8.jpg",
 ];
 
 export default function SearchHero() {
@@ -34,28 +35,24 @@ export default function SearchHero() {
 
   return (
     <section className="relative overflow-hidden rounded-3xl min-h-[360px] sm:min-h-[420px] flex items-center">
-      {/* Mosaico de 6 imágenes de fondo */}
+      {/* Mosaico de 8 fotos de fondo */}
       <div
-        className="absolute inset-0 grid grid-cols-3 grid-rows-2 gap-0"
+        className="absolute inset-0 grid grid-cols-4 grid-rows-2 gap-0"
         aria-hidden="true"
       >
         {IMAGENES_FONDO.map((src, i) => (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            key={i}
-            src={src}
-            alt=""
-            className="h-full w-full object-cover"
-          />
+          <div key={src} className="relative h-full w-full">
+            <Image src={src} alt="" fill priority={i === 0} className="object-cover" sizes="25vw" />
+          </div>
         ))}
       </div>
 
-      {/* Gradiente eco de izquierda a derecha sobre las imágenes */}
+      {/* Capa verde translúcida uniforme: unifica las fotos con la paleta eco */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(135deg, rgba(26,71,49,0.92) 0%, rgba(26,71,49,0.80) 50%, rgba(14,155,155,0.75) 100%)",
+            "linear-gradient(135deg, rgba(20,83,45,0.88) 0%, rgba(22,163,74,0.82) 100%)",
         }}
       />
 

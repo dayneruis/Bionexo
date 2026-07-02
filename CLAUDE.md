@@ -151,6 +151,15 @@
 - **Botón "Vender en Bionexo":** componente nuevo y reutilizable `src/components/SellButton.tsx`. Reutiliza `whatsappUrl()` de `src/lib/contact-config.ts` (mismo patrón que el botón "Me interesa"). Mensaje fijo bilingüe en `common.sellButton` / `common.sellWhatsappMessage`. Se usa en `Header.tsx` (junto al carrito, en escritorio y móvil) y en `Footer.tsx` (columna de contacto).
 - **Nota de entorno:** en esta sesión `npm run build` falló por memoria insuficiente del equipo (no por errores del código; `npx tsc --noEmit` pasó limpio). Pendiente que el dueño corra `npm run dev` o `npm run build` localmente para la verificación visual final de este bloque.
 
+## 17. Bitácora — Conexión de fotos reales (categorías y hero) + ODS en verde
+
+- **Fotos reales copiadas:** de `D:\Eccomerce\imagenes` a `public/categorias/` (10 fotos, una por categoría: `cat-materiales.jpg`, `cat-mobiliario.jpg`, `cat-moda.jpg`, `cat-aseo.jpg`, `cat-plantas.jpg`, `cat-comida.jpg`, `cat-artesanias.jpg`, `cat-empaques.jpg`, `cat-servicios.jpg`, `cat-otros.jpg`) y a `public/hero/` (8 fotos: `hero-1.png` a `hero-8.jpg`, mezcla de PNG y JPG).
+- **Imagen de categoría:** nuevo archivo `src/lib/category-images.ts` con el mapa `slug de categoría → ruta de la foto`. `CategoryCard.tsx` ahora muestra la foto arriba de la tarjeta (recorte `aspect-[16/9]`, `object-cover`, igual en las 10 tarjetas) siguiendo el mismo patrón visual que `ProductCard.tsx`. Ya no usa `picsum.photos` para categorías (nunca lo usó realmente: antes no mostraba ninguna imagen).
+- **Mosaico del buscador (`SearchHero.tsx`):** las 8 fotos de `public/hero/` reemplazan los 6 placeholders de `picsum.photos`. El mosaico pasó de 3×2 a 4×2 para mostrar las 8 fotos. La capa de color encima cambió de un degradado verde→cian a un degradado **solo en tonos verdes** (`eco-forest` → `eco-green`), así todas las fotos —aunque sean de temas distintos— se ven unificadas bajo la misma paleta y no como un collage disparejo.
+- **Colores de los ODS:** `src/lib/sdg-data.ts` dejó de usar los colores oficiales multicolor de la ONU y ahora cicla entre tres tonos verdes de la marca (`eco-forest`, `eco-green`, `eco-lime`), para que la fila se vea sobria y integrada al resto del sitio en vez de un arcoíris de colores.
+- **Íconos sin cambios:** los íconos de "¿Qué es Bionexo?" (`Leaf`, `Tag`, `Recycle`, `Handshake`, `Globe` de `lucide-react`) ya estaban en `text-eco-green`; se mantienen así a propósito.
+- **Nota de entorno:** de nuevo, en esta sesión el equipo se quedó sin memoria varias veces al intentar levantar `npm run dev` para revisar visualmente este bloque (no relacionado con el código: `npx tsc --noEmit` pasó limpio). Verificación visual final pendiente por parte del dueño.
+
 ---
 
-_Última actualización: Bloque de 4 ajustes visuales completado (logo más grande, sección "¿Qué es Bionexo?", fila de ODS, botón "Vender en Bionexo"). Verificación visual final pendiente por parte del dueño (ver nota de entorno en sección 16)._
+_Última actualización: fotos reales conectadas en categorías y mosaico del buscador, ODS en tonos verdes de marca. Verificación visual final pendiente por parte del dueño (ver nota de entorno en sección 17)._

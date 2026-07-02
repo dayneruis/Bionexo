@@ -398,4 +398,25 @@ Por ahora el sitio *no cobra* directamente (el comprador confirma por WhatsApp).
 
 ---
 
-_Última actualización: 4 ajustes visuales — logo más grande en el header, sección "¿Qué es Bionexo?" con 5 tarjetas e íconos, fila de ODS en "Sobre nosotros" y botón "Vender en Bionexo" en header/footer. Este documento crece con el proyecto._
+### 6.7 Fotos reales conectadas (categorías y mosaico del buscador)
+
+Hasta este bloque, las fotos de categoría no existían (las tarjetas solo tenían texto) y el mosaico del buscador usaba fotos genéricas de `picsum.photos`. Ahora:
+
+- **Carpeta `public/`:** en Next.js, todo lo que pones en la carpeta `public/` queda accesible directamente por su nombre de archivo (ej: `public/categorias/cat-moda.jpg` se ve en el navegador como `/categorias/cat-moda.jpg`). Por eso las fotos que estaban en `D:\Eccomerce\imagenes` (fuera del proyecto web) se copiaron a `public/categorias/` y `public/hero/`.
+- **Mapa de imágenes por categoría** (`src/lib/category-images.ts`): un objeto simple que dice "esta categoría (por su `slug`) usa esta foto". `CategoryCard.tsx` lo consulta para saber qué foto mostrar. Es un archivo aparte (no una tabla en la base de datos) porque, por ahora, estas fotos son fijas; si en la Fase 3 el dueño quiere subir su propia foto por categoría desde el panel admin, ese campo se agregaría a la base de datos más adelante.
+- **Recorte parejo (`aspect-[16/9]` + `object-cover`):** todas las fotos de categoría tienen exactamente la misma proporción (ancho:alto = 16:9), sin importar la foto original. `object-cover` hace que la foto "rellene" ese espacio recortando lo que sobra, en vez de deformarse o dejar espacios en blanco. Así las 10 tarjetas se ven parejas entre sí.
+- **Mosaico del buscador con capa verde:** el mosaico de fondo (`SearchHero.tsx`) ahora usa las 8 fotos reales del negocio. Como son fotos de temas distintos (no fueron tomadas para verse juntas), se les pone encima una capa de color semitransparente (un `linear-gradient` solo con tonos verdes de la marca). Esa capa "unifica" visualmente las fotos: en vez de ver un collage de colores sueltos, todo se ve teñido del mismo verde, y el texto blanco de encima se lee con claridad.
+- **ODS en tonos verdes:** los cuadros de ODS en "Sobre nosotros" dejaron de usar los colores oficiales de la ONU (que son un arcoíris: rojo, naranja, azul, etc.) y ahora usan tres tonos de verde de la marca en rotación. Es una decisión de diseño para que esa fila se vea sobria y no rompa la paleta del sitio.
+
+---
+
+### Nuevos términos para el glosario (bloque 6.7)
+
+- **Carpeta `public/`:** carpeta especial de Next.js cuyo contenido se sirve tal cual, con la misma ruta que tiene adentro (ej: `public/hero/hero-1.png` → `/hero/hero-1.png` en el navegador).
+- **`aspect-[16/9]`:** clase de Tailwind que fija la proporción ancho:alto de un elemento (en este caso, 16 de ancho por cada 9 de alto), sin importar el tamaño real de la imagen que se ponga adentro.
+- **`object-cover`:** propiedad CSS que hace que una imagen "rellene" su contenedor recortando los bordes que sobran, manteniendo la proporción original de la foto (lo opuesto sería `object-contain`, que encoge la foto entera para que quepa sin recortar).
+- **Capa de color (overlay) semitransparente:** un rectángulo de color con opacidad menor a 100% puesto encima de una imagen, para oscurecerla o teñirla y así lograr que el texto de encima se lea bien.
+
+---
+
+_Última actualización: fotos reales conectadas en tarjetas de categoría y mosaico del buscador, colores de ODS ajustados a tonos verdes de marca. Este documento crece con el proyecto._
