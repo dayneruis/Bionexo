@@ -1,11 +1,14 @@
 import Image from "next/image";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { type Locale } from "@/i18n/routing";
+import { SDG_ITEMS } from "@/lib/sdg-data";
 
 // Página "Sobre nosotros": historia, misión, estadísticas de impacto
 // y relación con la marca sombrilla Tu Basura Innova.
 export default async function AboutPage() {
   const t = await getTranslations("about");
+  const locale = (await getLocale()) as Locale;
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
@@ -65,9 +68,28 @@ export default async function AboutPage() {
       </section>
 
       {/* ── Meta ── */}
-      <section className="mb-12">
+      <section className="mb-10">
         <h2 className="mb-3 text-xl font-bold text-eco-forest">{t("goalTitle")}</h2>
         <p className="text-slate-700 leading-relaxed">{t("goalBody")}</p>
+      </section>
+
+      {/* ── Objetivos de Desarrollo Sostenible (ODS) ── */}
+      <section className="mb-12">
+        <h2 className="mb-6 text-xl font-bold text-eco-forest">{t("odsTitle")}</h2>
+        <div className="grid grid-cols-3 gap-3 sm:grid-cols-9">
+          {SDG_ITEMS.map((ods) => (
+            <div
+              key={ods.number}
+              style={{ backgroundColor: ods.color }}
+              className="flex aspect-square flex-col items-center justify-center rounded-xl p-2 text-center text-white"
+            >
+              <span className="text-xl font-extrabold">{ods.number}</span>
+              <span className="mt-1 text-[10px] font-semibold leading-tight">
+                {locale === "en" ? ods.nameEn : ods.nameEs}
+              </span>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* ── Tu Basura Innova (marca sombrilla) ── */}

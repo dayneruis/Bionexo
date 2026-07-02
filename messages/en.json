@@ -19,12 +19,25 @@
     "buy": "Add to cart",
     "interested": "I'm interested / Contact",
     "allCategories": "All categories",
-    "back": "Back"
+    "back": "Back",
+    "sellButton": "Sell on Bionexo",
+    "sellWhatsappMessage": "Hi, I'd like to sell my products on Bionexo"
   },
   "home": {
     "heroTitle": "Circular economy, made into a store",
     "heroSubtitle": "Recovered materials, sustainable fashion and eco-friendly products made by entrepreneurs who give a second life to what others throw away.",
     "heroCta": "Explore the shop",
+    "whatIsTitle": "What is Bionexo?",
+    "whatIs1Title": "Choose sustainable, choose Bionexo",
+    "whatIs1Text": "Every purchase supports entrepreneurs and cares for the planet.",
+    "whatIs2Title": "Products with history and purpose",
+    "whatIs2Text": "Made with recycled materials and natural ingredients.",
+    "whatIs3Title": "Less waste, more future",
+    "whatIs3Text": "Reuse, recycling and responsible consumption.",
+    "whatIs4Title": "Partnerships that create impact",
+    "whatIs4Text": "We connect businesses and communities.",
+    "whatIs5Title": "Aligned with the SDGs",
+    "whatIs5Text": "A fairer, more inclusive world.",
     "featuredTitle": "Featured products",
     "categoriesTitle": "Browse by category"
   },
@@ -143,6 +156,7 @@
     "missionBody": "To give visibility to and strengthen Colombia's circular-economy ventures, connecting them with people and companies who want to consume responsibly. We believe that what is discarded today can become an opportunity tomorrow.",
     "goalTitle": "Our goal",
     "goalBody": "To reach the entire country and region, connecting more and more entrepreneurs and buyers committed to sustainability.",
+    "odsTitle": "We contribute to the Sustainable Development Goals",
     "umbrellaTitle": "Tu Basura Innova, our parent brand",
     "umbrellaBody": "Tu Basura Innova is a technological and social platform for recycling, circular economy, and environmental management, aligned with the Sustainable Development Goals. Bionexo is its commercial heart: where sustainability becomes a product, and recycling becomes progress.",
     "cta": "When you buy at Bionexo, you don't just get a product — you close the loop."

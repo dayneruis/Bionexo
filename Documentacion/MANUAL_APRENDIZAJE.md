@@ -374,6 +374,15 @@ Por ahora el sitio *no cobra* directamente (el comprador confirma por WhatsApp).
 
 ---
 
+### 6.6 Cuatro ajustes visuales (logo, tarjetas de portada, ODS, botón "Vender en Bionexo")
+
+- **Logo más grande en el Header** (`src/components/Header.tsx`): el logo pasó de `h-12`/`h-16` a `h-14`/`h-20` (celular/computador). Se le puso `flex-wrap` a la fila del encabezado como "colchón de seguridad": si en alguna pantalla intermedia no cabe todo (logo + menú + botones), en vez de romperse o encimarse, el contenido pasa a una segunda línea.
+- **Sección "¿Qué es Bionexo?" en la portada** (`src/app/[locale]/page.tsx`): 5 tarjetas con ícono, título y texto corto, usando la librería **`lucide-react`** (íconos SVG listos para usar en React: hoja, etiqueta, reciclaje, apretón de manos y globo). Se instaló con `npm install lucide-react`.
+- **Fila de ODS en "Sobre nosotros"** (`src/app/[locale]/sobre-nosotros/page.tsx`): los **Objetivos de Desarrollo Sostenible (ODS)** son 17 metas globales de la ONU para el 2030 (fin de la pobreza, acción climática, etc.). Se muestran 9 relevantes para Bionexo como cuadros de color con su número y nombre corto. Los colores oficiales de cada ODS viven en un archivo nuevo, `src/lib/sdg-data.ts` (mismo patrón que `colombia-geo.ts`: un array de datos reutilizable). Como esos colores no existen en la paleta Tailwind del proyecto, se aplican con `style={{ backgroundColor: ... }}` directamente en el componente.
+- **Botón "Vender en Bionexo"** (`src/components/SellButton.tsx`): un componente pequeño y reutilizable que abre WhatsApp (usando `whatsappUrl()` de `contact-config.ts`, la misma función que ya usaba "Me interesa") con el mensaje fijo "Hola, quiero vender mis productos en Bionexo". Se usa en el Header (junto al carrito) y en el Footer (columna de contacto), así que si algún día cambia el texto o el número, se edita en un solo lugar.
+
+---
+
 ### Nuevos términos para el glosario
 
 - **`next/image`:** componente de Next.js para mostrar imágenes de forma optimizada (WebP, carga perezosa, tamaño adaptado a la pantalla).
@@ -383,7 +392,10 @@ Por ahora el sitio *no cobra* directamente (el comprador confirma por WhatsApp).
 - **Pasarela de pago:** servicio externo que procesa cobros con tarjeta o PSE. Ejemplos colombianos: Wompi, PayU, ePayco.
 - **Webhook:** URL de tu sitio que servicios externos (como una pasarela de pago) llaman automáticamente para enviarte notificaciones (ej: "el pago fue aprobado").
 - **Filtro CSS `brightness-0 invert`:** convierte cualquier imagen a color blanco puro. Útil para mostrar un logo oscuro sobre fondo oscuro.
+- **`lucide-react`:** librería de íconos SVG para React. Cada ícono es un componente (ej: `<Leaf />`, `<Globe />`) al que se le puede cambiar tamaño y color como a cualquier otro elemento.
+- **ODS (Objetivos de Desarrollo Sostenible):** 17 metas globales que la ONU propuso para 2030 (fin de la pobreza, salud, acción climática, alianzas, etc.). Cada una tiene un número, un color y un ícono oficiales.
+- **`flex-wrap`:** propiedad de CSS que permite que los elementos de una fila pasen a una segunda línea automáticamente cuando ya no caben, en vez de encimarse o desbordar la pantalla.
 
 ---
 
-_Última actualización: Bloque visual y de contenido completado (logos reales, paleta, hero, sobre nosotros, carrito, checkout, preparación pasarela). Este documento crece con el proyecto._
+_Última actualización: 4 ajustes visuales — logo más grande en el header, sección "¿Qué es Bionexo?" con 5 tarjetas e íconos, fila de ODS en "Sobre nosotros" y botón "Vender en Bionexo" en header/footer. Este documento crece con el proyecto._

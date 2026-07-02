@@ -143,6 +143,14 @@
   - Comentario `// ── PUNTO DE INTEGRACIÓN PASARELA (Fase 4) ──` en `CheckoutForm.tsx` marca exactamente dónde insertar el widget del proveedor.
 - **Textos de mensajes actualizados:** heroTitle/heroSubtitle del buscador son más impactantes; se añadió `checkout.paymentNote` y se reestructuró completamente la sección `about.*`.
 
+## 16. Bitácora — Bloque de 4 ajustes visuales (logo, tarjetas, ODS, botón "Vender en Bionexo")
+
+- **Logo del Header más grande:** `src/components/Header.tsx` — el `<Image>` del logo pasó de `h-12`/`sm:h-16` a `h-14`/`sm:h-20`. Se añadió `flex-wrap` a la fila del encabezado como colchón de seguridad para que, si el logo grande + menú + botones no caben en algún ancho intermedio, la fila pase a dos líneas en vez de romperse o encimarse.
+- **Sección "¿Qué es Bionexo?" en la portada:** 5 tarjetas (ícono + título + texto corto) en `src/app/[locale]/page.tsx`, insertadas entre `SearchHero` y "Productos destacados". Íconos de la librería `lucide-react` (instalada con `npm install lucide-react`): `Leaf`, `Tag`, `Recycle`, `Handshake`, `Globe`. Textos bilingües en `messages/es.json` / `messages/en.json` bajo `home.whatIs*`.
+- **Fila de ODS en "Sobre nosotros":** nuevo archivo `src/lib/sdg-data.ts` con los 9 ODS relevantes (número, color oficial ONU, nombre corto es/en), siguiendo el mismo patrón que `colombia-geo.ts`. Sección nueva en `src/app/[locale]/sobre-nosotros/page.tsx`, después de "Nuestra meta" y antes de "Tu Basura Innova". Título bilingüe en `about.odsTitle`.
+- **Botón "Vender en Bionexo":** componente nuevo y reutilizable `src/components/SellButton.tsx`. Reutiliza `whatsappUrl()` de `src/lib/contact-config.ts` (mismo patrón que el botón "Me interesa"). Mensaje fijo bilingüe en `common.sellButton` / `common.sellWhatsappMessage`. Se usa en `Header.tsx` (junto al carrito, en escritorio y móvil) y en `Footer.tsx` (columna de contacto).
+- **Nota de entorno:** en esta sesión `npm run build` falló por memoria insuficiente del equipo (no por errores del código; `npx tsc --noEmit` pasó limpio). Pendiente que el dueño corra `npm run dev` o `npm run build` localmente para la verificación visual final de este bloque.
+
 ---
 
-_Última actualización: Bloque visual y de contenido completado (logos reales, paleta, hero, sobre nosotros, carrito, checkout, preparación pasarela)._
+_Última actualización: Bloque de 4 ajustes visuales completado (logo más grande, sección "¿Qué es Bionexo?", fila de ODS, botón "Vender en Bionexo"). Verificación visual final pendiente por parte del dueño (ver nota de entorno en sección 16)._

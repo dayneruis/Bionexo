@@ -19,12 +19,25 @@
     "buy": "Agregar al carrito",
     "interested": "Me interesa / Contáctame",
     "allCategories": "Todas las categorías",
-    "back": "Volver"
+    "back": "Volver",
+    "sellButton": "Vender en Bionexo",
+    "sellWhatsappMessage": "Hola, quiero vender mis productos en Bionexo"
   },
   "home": {
     "heroTitle": "Economía circular, hecha tienda",
     "heroSubtitle": "Materiales recuperados, moda sostenible y productos ecológicos hechos por emprendedores que le dan una segunda vida a lo que otros desechan.",
     "heroCta": "Explorar la tienda",
+    "whatIsTitle": "¿Qué es Bionexo?",
+    "whatIs1Title": "Elige sostenible, elige Bionexo",
+    "whatIs1Text": "Cada compra impulsa emprendedores y cuida el planeta.",
+    "whatIs2Title": "Productos con historia y propósito",
+    "whatIs2Text": "Hechos con materiales reciclados e ingredientes naturales.",
+    "whatIs3Title": "Menos residuos, más futuro",
+    "whatIs3Text": "Reutilización, reciclaje y consumo responsable.",
+    "whatIs4Title": "Alianzas que generan impacto",
+    "whatIs4Text": "Conectamos empresas y comunidades.",
+    "whatIs5Title": "Alineados con los ODS",
+    "whatIs5Text": "Un mundo más justo e inclusivo.",
     "featuredTitle": "Productos destacados",
     "categoriesTitle": "Explora por categoría"
   },
@@ -143,6 +156,7 @@
     "missionBody": "Visibilizar y fortalecer los emprendimientos de economía circular de Colombia, conectándolos con personas y empresas que quieren consumir de forma responsable. Creemos que lo que hoy se desecha, mañana puede ser una oportunidad.",
     "goalTitle": "Nuestra meta",
     "goalBody": "Llegar a todo el país y a la región, conectando cada vez a más emprendedores y compradores comprometidos con la sostenibilidad.",
+    "odsTitle": "Contribuimos a los Objetivos de Desarrollo Sostenible",
     "umbrellaTitle": "Tu Basura Innova, nuestra marca sombrilla",
     "umbrellaBody": "Tu Basura Innova es una plataforma tecnológica y social para el reciclaje, la economía circular y la gestión ambiental, alineada con los Objetivos de Desarrollo Sostenible. Bionexo es su corazón comercial: el espacio donde la sostenibilidad se vuelve producto, y el reciclaje se convierte en progreso.",
     "cta": "Cuando compras en Bionexo, no solo adquieres un producto: cierras el ciclo."

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { CONTACTO_BIONEXO } from "@/lib/contact-config";
+import SellButton from "./SellButton";
 
 // Pie de página con logo, datos de contacto y redes sociales.
 export default function Footer() {
@@ -27,6 +28,7 @@ export default function Footer() {
           <p className="font-bold text-eco-forest">{t("footer.contactTitle")}</p>
           <p className="mt-1 text-sm text-slate-600">{CONTACTO_BIONEXO.telefono}</p>
           <p className="text-sm text-slate-600">{CONTACTO_BIONEXO.email}</p>
+          <SellButton className="mt-3 inline-flex rounded-full border-2 border-eco-green px-4 py-1.5 text-xs font-bold text-eco-green transition-colors hover:bg-eco-green hover:text-white" />
         </div>
 
         <div>
