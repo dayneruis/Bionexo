@@ -189,6 +189,19 @@
 - **Un solo cambio, todo el sitio actualizado:** como todos los botones de WhatsApp (Comprar/"Me interesa" en `ContactButtons.tsx`, "Vender en Bionexo" en `SellButton.tsx`, "Hacer mi pedido por WhatsApp" en `CartDrawer`/`CheckoutForm`, el botón flotante `WhatsAppFloatingButton.tsx`, y el enlace de confirmación en `pedido-confirmado`) leen el número a través de la función `whatsappUrl()` de `contact-config.ts`, no hubo que tocar ningún otro archivo.
 - **Verificación:** `npx tsc --noEmit` sin errores.
 
+## 21. Bitácora — Fase 3, Parte 1: Login y seguridad del panel
+
+- **Ruta del panel:** `src/app/admin/...`, deliberadamente **fuera** de `[locale]`. El panel es solo en español, sin Header/Footer/carrito de la tienda pública, y con su propio `layout.tsx` raíz (su propio `<html>/<body>`, ya que no hay un `app/layout.tsx` compartido).
+- **Un solo usuario administrador:** en vez de una librería de autenticación completa (NextAuth/Auth.js), que está pensada para múltiples usuarios y proveedores externos, se implementó un login a la medida porque solo hay un usuario (el dueño del negocio).
+  - Usuario y hash de la contraseña en variables de entorno: `ADMIN_USER`, `ADMIN_PASSWORD_HASH` (en `.env`, nunca en git).
+  - Para cambiar la contraseña: `npx tsx scripts/generar-hash-admin.ts "contrasena-nueva"` y pegar el resultado en `.env`.
+  - **Cuidado con los `$` en `.env`:** Next.js expande variables tipo `$NOMBRE` dentro de `.env` (como Docker Compose). El hash de bcrypt empieza con `$2b$10$...`, así que sin escapar cada `$` como `\$`, Next.js los interpretaba como variables vacías y corrompía el hash en silencio (el login fallaba con la contraseña correcta). El script `generar-hash-admin.ts` ya imprime el hash **pre-escapado**, listo para pegar.
+- **Verificación de contraseña (`src/lib/admin-credentials.ts`):** usa `bcryptjs` (versión pura en JavaScript, sin compilar nada en Windows). Esta verificación **solo puede correr en Node.js**, nunca en el middleware (ver siguiente punto).
+- **Sesión (`src/lib/admin-auth.ts`):** cookie `bionexo_admin_session`, firmada con `jose` (JWT, HS256) usando el secreto `ADMIN_SESSION_SECRET`, vence a los 7 días, `httpOnly` (JavaScript del navegador no puede leerla). `jose` se eligió porque, a diferencia de `bcrypt`, sí funciona en el **Edge Runtime** del middleware.
+- **Protección centralizada en `src/middleware.ts`:** ahora es una sola función que decide: si la URL empieza con `/admin` (y no es `/admin/login`), exige la cookie de sesión válida o redirige a `/admin/login`; para el resto del sitio, sigue funcionando igual que antes (enrutamiento de idiomas con `next-intl`).
+- **Rutas de sesión:** `POST /api/admin/login` (verifica credenciales, crea la cookie) y `POST /api/admin/logout` (la borra). Página `/admin/login` con formulario (`src/components/admin/LoginForm.tsx`); panel protegido con layout propio (`src/app/admin/(panel)/layout.tsx`, barra superior + botón "Salir") y una página de bienvenida provisional en `/admin` que en las siguientes partes se convierte en el panel real.
+- **Verificación:** `npx tsc --noEmit` sin errores. Probado con `npm run dev` + `curl`: `/admin` sin sesión redirige a `/admin/login` (307); credenciales incorrectas → 401; credenciales correctas → cookie válida y acceso a `/admin` (200, muestra "Sesión iniciada como admin"); logout borra la cookie y vuelve a redirigir. La tienda pública (`/es`, `/`) sigue funcionando igual.
+
 ---
 
-_Última actualización: número real de WhatsApp del negocio conectado en `contact-config.ts`, aplicado automáticamente a todos los botones del sitio._
+_Última actualización: Fase 3 Parte 1 (login y seguridad del panel de administración) completada y probada. Siguiente: Parte 2, gestión de productos._

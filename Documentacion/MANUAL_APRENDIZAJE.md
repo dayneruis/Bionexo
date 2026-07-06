@@ -439,4 +439,50 @@ Este bloque no agrega funciones nuevas de negocio: son ajustes finos a cosas que
 
 ---
 
-_Última actualización: recuadros blancos para los logos, banner de portada sin recortes, botón "Hacer mi pedido por WhatsApp" en el carrito y checkout, y botón flotante de WhatsApp en todo el sitio. Este documento crece con el proyecto._
+## Parte 8 — Fase 3, Parte 1: el panel de administración empieza por el login
+
+La Fase 3 (panel de administración) es la más grande hasta ahora, así que se divide en varias partes que se construyen y prueban una por una. Esta primera parte no gestiona todavía ni productos ni fotos: solo construye la "puerta con llave" que protegerá todo lo demás.
+
+### 8.1 ¿Por qué el panel vive fuera de `/es` y `/en`?
+
+Hasta ahora, todas las páginas del sitio vivían dentro de una carpeta `[locale]`, que es la que hace que existan versiones en español e inglés de todo. El panel de administración es distinto: es privado, solo lo usa el dueño del negocio, y no tiene sentido traducirlo. Por eso vive en su propia carpeta `src/app/admin/`, separada de `[locale]`, con su propia "envoltura" (`layout.tsx`) que no incluye el menú, el pie de página ni el carrito de la tienda.
+
+### 8.2 ¿Por qué no se usó una librería de login "gigante"?
+
+Existen librerías muy completas para manejar usuarios (por ejemplo, NextAuth/Auth.js), pero están pensadas para sitios con **muchos** usuarios, inicio de sesión con Google/Facebook, roles distintos, etc. Bionexo solo necesita que **una persona** (el dueño) pueda entrar con usuario y contraseña. Usar una librería tan grande para un solo usuario sería una talla de zapato equivocada: más complicado de mantener sin ninguna ventaja real. Por eso se construyó un login sencillo y a la medida.
+
+### 8.3 Cómo funciona el login, paso a paso
+
+1. El dueño escribe usuario y contraseña en `/admin/login`.
+2. El navegador envía esos datos a `POST /api/admin/login`.
+3. Esa ruta compara la contraseña escrita contra un **hash** guardado (nunca la contraseña real) usando la librería `bcryptjs`. Un hash es como una "huella digital" de la contraseña: se puede comprobar que una contraseña coincide con su hash, pero no se puede ir del hash hacia atrás para descubrir la contraseña original. Así, aunque alguien viera el archivo `.env`, no vería la contraseña en texto plano.
+4. Si coincide, el servidor crea una **cookie de sesión firmada**: un "carnet" que el navegador guarda y envía automáticamente en cada visita al panel. Va firmada con la librería `jose` (un JWT, que es un formato estándar de "carnet firmado") para que nadie pueda inventarse una cookie válida sin conocer la clave secreta del servidor.
+5. Cada vez que se visita cualquier página de `/admin`, el `middleware.ts` revisa esa cookie **antes** de mostrar la página. Si no existe o es inválida, redirige de una vez a `/admin/login`.
+
+### 8.4 Un tropiezo real (y por qué importa entenderlo)
+
+Al probar el login la primera vez, fallaba incluso con la contraseña correcta. La causa: los hashes de `bcryptjs` empiezan con algo como `$2b$10$...`, y Next.js lee el archivo `.env` de una forma que trata cualquier `$algo` como si fuera "el valor de la variable llamada algo" (igual que hace Docker Compose). Como no existían variables llamadas `2b` o `10`, Next.js las reemplazaba por texto vacío y el hash quedaba roto sin ningún mensaje de error visible. La solución es escapar cada signo `$` como `\$` dentro de `.env`. El script que genera el hash (`scripts/generar-hash-admin.ts`) ya lo hace automáticamente, así que no hay que acordarse de este detalle a mano.
+
+### 8.5 Cómo cambiar la contraseña del panel
+
+Corre este comando en la terminal, dentro de la carpeta del proyecto:
+
+```
+npx tsx scripts/generar-hash-admin.ts "tu-contrasena-nueva"
+```
+
+Va a imprimir una línea `ADMIN_PASSWORD_HASH="..."` lista para pegar en el archivo `.env`, reemplazando la que ya está.
+
+---
+
+### Nuevos términos para el glosario (Parte 8.1)
+
+- **Middleware:** un pedazo de código que se ejecuta **antes** de que cualquier página responda, para revisar o modificar la petición (en este proyecto: decidir el idioma, o exigir sesión en `/admin`).
+- **Hash (de contraseña):** una transformación de un texto (la contraseña) en otro texto de longitud fija que no se puede revertir. Sirve para comprobar contraseñas sin guardarlas nunca en texto plano.
+- **Cookie `httpOnly`:** una cookie que el navegador guarda pero que el JavaScript de la página **no puede leer**, solo el servidor. Protege la sesión aunque hubiera un error de seguridad en el código del frontend.
+- **JWT (JSON Web Token):** un formato estándar de "carnet digital" firmado, que cualquier servidor puede verificar sin tener que guardar la sesión en una base de datos.
+- **Edge Runtime:** el entorno más liviano y rápido donde corre el middleware de Next.js; no soporta todo lo que soporta Node.js normal (por eso `bcryptjs` se usa solo en la ruta de login, y `jose` —que sí funciona ahí— se usa en el middleware).
+
+---
+
+_Última actualización: Fase 3, Parte 1 — login y protección del panel de administración construidos y probados. Siguiente: Parte 2, gestión de productos._
