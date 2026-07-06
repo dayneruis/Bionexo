@@ -8,6 +8,7 @@ import { CartProvider } from "@/lib/cart";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
+import WhatsAppFloatingButton from "@/components/WhatsAppFloatingButton";
 import "../globals.css";
 
 const geistSans = Geist({
@@ -54,6 +55,8 @@ export default async function LocaleLayout({
             <Footer />
             {/* CartDrawer vive aquí para cubrir toda la pantalla como overlay */}
             <CartDrawer />
+            {/* Botón flotante de WhatsApp para consultas generales, en todas las páginas */}
+            <WhatsAppFloatingButton />
           </CartProvider>
         </NextIntlClientProvider>
       </body>

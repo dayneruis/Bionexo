@@ -21,7 +21,10 @@
     "allCategories": "All categories",
     "back": "Back",
     "sellButton": "Sell on Bionexo",
-    "sellWhatsappMessage": "Hi, I'd like to sell my products on Bionexo"
+    "sellWhatsappMessage": "Hi, I'd like to sell my products on Bionexo",
+    "orderWhatsappButton": "Order via WhatsApp",
+    "generalWhatsappMessage": "Hi, I have a question about Bionexo",
+    "chatWhatsapp": "Chat with us on WhatsApp"
   },
   "home": {
     "heroTitle": "Circular economy, made into a store",

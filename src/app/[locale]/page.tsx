@@ -31,15 +31,18 @@ export default async function HomePage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
-      {/* Portada de marca: imagen visual de presentación, antes del hero de texto */}
+      {/* Portada de marca: imagen visual de presentación, antes del hero de texto.
+          Usa la relación de aspecto real de la imagen (1718×916) con object-contain
+          en vez de una altura fija con object-cover, para que la frase de la
+          imagen se vea SIEMPRE completa y no se corte en ningún ancho de pantalla. */}
       <section className="pt-2">
-        <div className="overflow-hidden rounded-3xl">
+        <div className="aspect-[1718/916] w-full overflow-hidden rounded-3xl bg-eco-cream">
           <Image
             src="/portada-marca.png"
             alt={`${t("brand.name")} — ${t("brand.tagline")}`}
             width={1718}
             height={916}
-            className="h-48 w-full object-cover sm:h-64 md:h-72"
+            className="h-full w-full object-contain"
             priority
           />
         </div>

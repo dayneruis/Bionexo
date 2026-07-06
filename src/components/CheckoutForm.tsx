@@ -7,7 +7,10 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { useCart } from "@/lib/cart";
 import { type DetalleEnvio } from "@/lib/shipping";
 import { formatCop } from "@/lib/format";
+import { whatsappUrl } from "@/lib/contact-config";
+import { buildCartWhatsAppMessage } from "@/lib/cart-whatsapp";
 import ShippingCalculator from "./ShippingCalculator";
+import WhatsAppIcon from "./WhatsAppIcon";
 
 // Formulario completo del checkout: resumen del carrito, calculador de envío
 // y datos del comprador. Al confirmar guarda el pedido en la BD y muestra
@@ -234,6 +237,18 @@ export default function CheckoutForm() {
         <p className="text-center text-xs text-slate-400">
           {t("checkout.paymentNote")}
         </p>
+
+        {/* Vía inmediata de compra por WhatsApp: no exige llenar el formulario,
+            útil mientras la pasarela de pago (Fase 4) no está activa. */}
+        <a
+          href={whatsappUrl(buildCartWhatsAppMessage(items, locale, totalCop))}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-eco-green py-3.5 text-sm font-bold text-eco-green transition-colors hover:bg-eco-green hover:text-white"
+        >
+          <WhatsAppIcon size={16} />
+          {t("common.orderWhatsappButton")}
+        </a>
       </div>
     </form>
   );

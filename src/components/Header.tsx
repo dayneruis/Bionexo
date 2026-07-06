@@ -12,14 +12,17 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-10 border-b border-eco-green/30 bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-2">
-        {/* Logo principal Bionexo — grande para que la marca resalte */}
-        <Link href="/" className="flex items-center">
+        {/* Logo principal Bionexo — grande para que la marca resalte.
+            Va dentro de un recuadro blanco propio porque el PNG tiene fondo
+            claro opaco (no transparente): sin este recuadro, ese fondo se
+            notaba como un rectángulo raro sobre el header. */}
+        <Link href="/" className="flex items-center rounded-xl bg-white p-1.5 shadow-sm">
           <Image
             src="/bionexo.png"
             alt="Bionexo"
             width={240}
             height={72}
-            className="h-16 w-auto object-contain sm:h-24"
+            className="h-14 w-auto object-contain sm:h-20"
             priority
           />
         </Link>

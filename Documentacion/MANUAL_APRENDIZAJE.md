@@ -419,4 +419,24 @@ Hasta este bloque, las fotos de categoría no existían (las tarjetas solo tení
 
 ---
 
-_Última actualización: fotos reales conectadas en tarjetas de categoría y mosaico del buscador, colores de ODS ajustados a tonos verdes de marca. Este documento crece con el proyecto._
+### 6.8 Retoques de imágenes y botón de WhatsApp para pedir sin pasarela
+
+Este bloque no agrega funciones nuevas de negocio: son ajustes finos a cosas que ya existían, más una forma rápida de comprar mientras no hay pasarela de pago (Fase 4).
+
+- **El "recuadro raro" del logo:** varias imágenes PNG de este proyecto (como `bionexo.png`) tienen fondo de color claro pero **opaco** (no transparente). Si el fondo de la página alrededor del logo no es exactamente ese mismo color, se nota un rectángulo. La solución, ya usada antes en "Sobre nosotros", es meter el logo dentro de su propia tarjeta blanca (`bg-white`) — así el "recuadro" es intencional y limpio, en vez de un accidente. Se aplicó también al logo del encabezado (`Header.tsx`) y se agrandó un poco el de "Sobre nosotros" y los del pie de página.
+- **`aspect-[ancho/alto]` en vez de una altura fija:** el banner de portada (`portada-marca.png`) se recortaba porque tenía una altura fija en píxeles (`h-64`, etc.) que no coincidía con la forma real de la imagen. La clase de Tailwind `aspect-[1718/916]` le dice al navegador "este cuadro siempre debe mantener esta proporción exacta (la misma que la imagen original)", sin importar el ancho de pantalla. Combinada con `object-contain` (que encoge la imagen entera para que quepa, sin recortar nada), la frase de la imagen ahora se ve siempre completa.
+- **Botón "Hacer mi pedido por WhatsApp":** como el pago en línea todavía no está activo, se agregó un botón que arma automáticamente un mensaje de WhatsApp con la lista de productos del carrito (nombre, cantidad y precio de cada uno) y el total, y abre el chat de WhatsApp del negocio con ese mensaje ya escrito. Aparece en el cajón del carrito y en la página de checkout, como alternativa más rápida a llenar todo el formulario. La lógica de armar el mensaje se puso en un solo archivo (`src/lib/cart-whatsapp.ts`) para no repetir código entre los dos lugares donde se usa.
+- **Botón flotante de WhatsApp:** un círculo verde fijo en la esquina inferior derecha, visible en cualquier página del sitio, para que un visitante pueda escribir una consulta general en cualquier momento (no es lo mismo que el botón de pedido: este es para preguntas, no para comprar). Se agregó una sola vez en el archivo del "layout" (la plantilla que envuelve todas las páginas), así no hay que repetirlo en cada página.
+- **Ícono de WhatsApp compartido:** el dibujo del ícono de WhatsApp se usaba repetido en varios archivos. Se movió a un componente propio (`src/components/WhatsAppIcon.tsx`) para que, si algún día hay que cambiarlo, se edite en un solo lugar.
+
+---
+
+### Nuevos términos para el glosario (bloque 6.8)
+
+- **`aspect-[ancho/alto]`:** clase de Tailwind que fija una proporción exacta y personalizada (no solo 16:9), útil cuando se quiere respetar la forma real de una imagen concreta.
+- **`object-contain`:** propiedad CSS que encoge una imagen entera para que quepa dentro de su contenedor sin recortar nada (puede dejar espacio vacío a los lados); es lo opuesto de `object-cover`.
+- **Mensaje prellenado de WhatsApp:** un enlace especial (`https://wa.me/numero?text=...`) que, al abrirse, entra directo al chat de WhatsApp con un mensaje ya escrito en el cuadro de texto, listo para que la persona solo presione enviar.
+
+---
+
+_Última actualización: recuadros blancos para los logos, banner de portada sin recortes, botón "Hacer mi pedido por WhatsApp" en el carrito y checkout, y botón flotante de WhatsApp en todo el sitio. Este documento crece con el proyecto._

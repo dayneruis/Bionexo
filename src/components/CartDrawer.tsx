@@ -6,6 +6,9 @@ import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useCart } from "@/lib/cart";
 import { formatCop } from "@/lib/format";
+import { whatsappUrl } from "@/lib/contact-config";
+import { buildCartWhatsAppMessage } from "@/lib/cart-whatsapp";
+import WhatsAppIcon from "./WhatsAppIcon";
 
 // Cajón lateral del carrito: se abre desde CartIcon.
 // Se cierra con el botón ✕, la tecla Escape o haciendo clic en el fondo oscuro.
@@ -177,6 +180,18 @@ export default function CartDrawer() {
             >
               {t("cart.goToCheckout")} →
             </Link>
+
+            {/* Vía inmediata de compra mientras la pasarela de pago (Fase 4)
+                no está activa: arma un mensaje de WhatsApp con la lista del carrito. */}
+            <a
+              href={whatsappUrl(buildCartWhatsAppMessage(items, locale, subtotalCop))}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 flex w-full items-center justify-center gap-2 rounded-full border-2 border-eco-green py-3 text-center text-sm font-bold text-eco-green transition-colors hover:bg-eco-green hover:text-white"
+            >
+              <WhatsAppIcon size={16} />
+              {t("common.orderWhatsappButton")}
+            </a>
           </div>
         )}
       </aside>

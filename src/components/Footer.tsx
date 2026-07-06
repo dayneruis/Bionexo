@@ -19,14 +19,14 @@ export default function Footer() {
               alt="Bionexo"
               width={140}
               height={40}
-              className="h-11 w-auto object-contain"
+              className="h-14 w-auto object-contain"
             />
             <Image
               src="/tubasurainnova.png"
               alt="Tu Basura Innova"
               width={140}
               height={40}
-              className="h-11 w-auto object-contain"
+              className="h-14 w-auto object-contain"
             />
           </div>
           <p className="mt-2 text-xs text-slate-500">
