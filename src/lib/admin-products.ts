@@ -1,0 +1,163 @@
+// Funciones de uso INTERNO para el panel de administración (Fase 3, Parte 2).
+// A diferencia de catalog.ts (que es para la tienda pública), estas funciones
+// SÍ devuelven productos no disponibles, porque el admin necesita verlos y
+// reactivarlos. NO incluyen todavía producer/margin (eso llega en la Parte 4).
+
+import { prisma } from "@/lib/db";
+import { slugify } from "@/lib/slugify";
+
+export type VarianteInput = { type: string; value: string };
+
+export type DatosProducto = {
+  slug: string;
+  nameEs: string;
+  nameEn: string;
+  descriptionEs: string;
+  descriptionEn: string;
+  priceCop: number;
+  available: boolean;
+  featured: boolean;
+  imageUrl: string;
+  originCity: string;
+  originDepartment: string;
+  isInternational: boolean;
+  originCountry: string | null;
+  size: string | null;
+  warranty: boolean;
+  warrantyDuration: string | null;
+  categoryId: string;
+  variants: VarianteInput[];
+};
+
+// Lista todos los productos (disponibles y no disponibles) para el listado del panel.
+export function listarProductosAdmin(query?: string) {
+  const texto = query?.trim();
+  return prisma.product.findMany({
+    where: texto
+      ? {
+          OR: [
+            { nameEs: { contains: texto } },
+            { nameEn: { contains: texto } },
+          ],
+        }
+      : undefined,
+    include: { category: true },
+    orderBy: { nameEs: "asc" },
+  });
+}
+
+// Producto completo (con variantes) para precargar el formulario de edición.
+export function getProductoParaEditar(id: string) {
+  return prisma.product.findUnique({
+    where: { id },
+    include: { variants: true },
+  });
+}
+
+export function crearProducto(datos: DatosProducto) {
+  return prisma.product.create({
+    data: {
+      ...datos,
+      variants: { create: datos.variants },
+    },
+  });
+}
+
+// Reemplaza las variantes existentes por las que llegan del formulario:
+// es más simple y confiable que tratar de "adivinar" cuáles cambiaron.
+export function actualizarProducto(id: string, datos: DatosProducto) {
+  return prisma.product.update({
+    where: { id },
+    data: {
+      ...datos,
+      variants: {
+        deleteMany: {},
+        create: datos.variants,
+      },
+    },
+  });
+}
+
+// "Dar de baja" / reactivar: el proyecto no maneja cantidades de inventario,
+// solo el estado disponible/no disponible (ver CLAUDE.md, sección 5).
+export function cambiarDisponibilidad(id: string, available: boolean) {
+  return prisma.product.update({ where: { id }, data: { available } });
+}
+
+// Valida y limpia lo que llega del formulario del panel antes de tocar la base
+// de datos. Devuelve { error } si algo obligatorio falta o tiene un tipo raro.
+export function validarDatosProducto(body: unknown): DatosProducto | { error: string } {
+  if (typeof body !== "object" || body === null) {
+    return { error: "Datos inválidos." };
+  }
+  const b = body as Record<string, unknown>;
+
+  const camposTexto = ["nameEs", "nameEn", "descriptionEs", "descriptionEn", "categoryId", "slug"] as const;
+  for (const campo of camposTexto) {
+    if (typeof b[campo] !== "string" || (b[campo] as string).trim() === "") {
+      return { error: `Falta el campo obligatorio: ${campo}` };
+    }
+  }
+
+  if (typeof b.priceCop !== "number" || !Number.isFinite(b.priceCop) || b.priceCop < 0) {
+    return { error: "El precio debe ser un número válido mayor o igual a 0." };
+  }
+
+  const isInternational = Boolean(b.isInternational);
+  if (isInternational) {
+    if (typeof b.originCountry !== "string" || !b.originCountry.trim()) {
+      return { error: "Falta el país de origen para un producto internacional." };
+    }
+  } else {
+    if (typeof b.originCity !== "string" || !b.originCity.trim()) {
+      return { error: "Falta la ciudad de origen." };
+    }
+    if (typeof b.originDepartment !== "string" || !b.originDepartment.trim()) {
+      return { error: "Falta el departamento de origen." };
+    }
+  }
+
+  const warranty = Boolean(b.warranty);
+  const slug = slugify(b.slug as string);
+  if (!slug) {
+    return { error: "El slug quedó vacío después de limpiarlo. Usa letras y números." };
+  }
+
+  const variantsRaw = Array.isArray(b.variants) ? b.variants : [];
+  const variants: VarianteInput[] = variantsRaw
+    .filter(
+      (v): v is { type: unknown; value: unknown } => typeof v === "object" && v !== null,
+    )
+    .map((v) => ({
+      type: typeof v.type === "string" ? v.type.trim() : "",
+      value: typeof v.value === "string" ? v.value.trim() : "",
+    }))
+    .filter((v) => v.type !== "" && v.value !== "");
+
+  return {
+    slug,
+    nameEs: (b.nameEs as string).trim(),
+    nameEn: (b.nameEn as string).trim(),
+    descriptionEs: (b.descriptionEs as string).trim(),
+    descriptionEn: (b.descriptionEn as string).trim(),
+    priceCop: Math.round(b.priceCop),
+    available: Boolean(b.available),
+    featured: Boolean(b.featured),
+    imageUrl:
+      typeof b.imageUrl === "string" && b.imageUrl.trim()
+        ? b.imageUrl.trim()
+        : `https://picsum.photos/seed/${slug}/600/450`,
+    originCity: isInternational ? "" : (b.originCity as string).trim(),
+    originDepartment: isInternational ? "" : (b.originDepartment as string).trim(),
+    isInternational,
+    originCountry: isInternational ? (b.originCountry as string).trim() : null,
+    size: typeof b.size === "string" && b.size.trim() ? b.size.trim() : null,
+    warranty,
+    warrantyDuration:
+      warranty && typeof b.warrantyDuration === "string" && b.warrantyDuration.trim()
+        ? b.warrantyDuration.trim()
+        : null,
+    categoryId: b.categoryId as string,
+    variants,
+  };
+}

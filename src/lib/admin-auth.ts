@@ -4,6 +4,7 @@
 // proveedores externos ni roles. `jose` además funciona en el "Edge Runtime"
 // del middleware, a diferencia de bcrypt (que sí necesita Node.js puro).
 
+import { cookies } from "next/headers";
 import { SignJWT, jwtVerify } from "jose";
 
 export const ADMIN_SESSION_COOKIE = "bionexo_admin_session";
@@ -44,4 +45,15 @@ export async function verificarTokenSesion(
     // Token inválido, alterado o vencido.
     return null;
   }
+}
+
+// Lee y verifica la sesión desde la cookie de la petición actual.
+// IMPORTANTE: el matcher de src/middleware.ts excluye "/api" a propósito
+// (para no interferir con el enrutamiento de idiomas), así que NINGUNA ruta
+// bajo /api/admin/* queda protegida por el middleware. Toda ruta de API que
+// modifique datos del panel debe llamar esta función al empezar y devolver
+// 401 si no hay sesión válida.
+export async function obtenerSesionActual(): Promise<SesionAdmin | null> {
+  const token = (await cookies()).get(ADMIN_SESSION_COOKIE)?.value;
+  return verificarTokenSesion(token);
 }

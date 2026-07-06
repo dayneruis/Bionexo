@@ -485,4 +485,38 @@ Va a imprimir una línea `ADMIN_PASSWORD_HASH="..."` lista para pegar en el arch
 
 ---
 
-_Última actualización: Fase 3, Parte 1 — login y protección del panel de administración construidos y probados. Siguiente: Parte 2, gestión de productos._
+## Parte 9 — Fase 3, Parte 2: crear, editar y dar de baja productos
+
+### 9.1 Un descubrimiento importante: el middleware no cubre todo
+
+Cuando se construyó el login (Parte 1), la protección se puso en `src/middleware.ts`, que revisa la cookie de sesión antes de mostrar cualquier página de `/admin`. Pero al construir esta parte apareció un detalle importante: ese middleware tiene una regla que dice "no te apliques a las rutas que empiezan con `/api`" (se hizo así para no interferir con el sistema de idiomas). Eso significa que las rutas de la API que crean o editan productos (`/api/admin/products`) **no pasaban por esa revisión**. Sin arreglarlo, cualquiera que conociera esa dirección podría haber creado productos sin haber iniciado sesión.
+
+La solución: cada ruta de API que modifica datos revisa la sesión **ella misma**, al principio, con una función (`obtenerSesionActual()`). Si no hay sesión válida, responde "401 No autorizado" de inmediato, sin llegar a tocar la base de datos. Es una buena lección: cuando una aplicación tiene varias "puertas de entrada" (páginas Y rutas de API), hay que asegurarse de que la protección cubra todas, no solo la que se ve en el navegador.
+
+### 9.2 ¿Por qué "dar de baja" no borra el producto?
+
+El proyecto ya había decidido (ver CLAUDE.md, sección 5) que no se maneja inventario por cantidades: cada producto solo tiene un interruptor "Disponible / No disponible". Por eso, "dar de baja" en el panel simplemente apaga ese interruptor, no borra el producto de la base de datos. Ventajas de hacerlo así:
+
+- Si alguien ya compró ese producto antes, su pedido sigue teniendo sentido (no aparece "un producto fantasma" en el historial).
+- Es reversible: si el dueño se equivoca o el producto vuelve a estar disponible, solo hay que "reactivarlo", sin tener que volver a cargar todos sus datos.
+
+### 9.3 Un formulario, dos usos (crear y editar)
+
+En vez de programar dos formularios parecidos, se construyó uno solo (`ProductForm.tsx`) que recibe un producto existente como dato opcional: si lo recibe, se precargan todos los campos y el botón dice "Guardar cambios" (edición); si no lo recibe, todo empieza vacío y el botón dice "Crear producto". Es el mismo patrón que ya se usaba en otras partes del proyecto (por ejemplo, `ContactButtons.tsx` reutiliza lógica en vez de duplicarla).
+
+### 9.4 El "slug" y por qué importa
+
+Cada producto tiene una URL propia en la tienda (ej: `/es/producto/miel-organica-frasco-500g`). Esa parte final de la URL es el "slug". El panel lo sugiere automáticamente a partir del nombre en español (quitando tildes, espacios y símbolos raros), pero el dueño puede cambiarlo a mano si quiere una URL distinta. Si dos productos terminaran con el mismo slug, la base de datos lo rechaza (tiene una regla de "valor único"), y el panel muestra un mensaje claro pidiendo elegir otro.
+
+---
+
+### Nuevos términos para el glosario (Parte 9)
+
+- **Slug:** la parte de una URL que identifica un elemento específico de forma legible (ej: en `/producto/miel-organica`, el slug es `miel-organica`).
+- **Restricción única (unique constraint):** una regla de la base de datos que impide que dos filas tengan el mismo valor en una columna (aquí, que dos productos compartan el mismo slug).
+- **Dar de baja (soft delete):** marcar algo como "inactivo" en vez de borrarlo de verdad. Se prefiere sobre el borrado cuando otros datos (como los pedidos) dependen de que ese registro siga existiendo.
+- **Validar datos de entrada:** revisar, antes de guardar algo en la base de datos, que lo que llegó desde un formulario tiene el tipo y la forma esperada (por ejemplo, que el precio sea realmente un número). Protege contra errores y contra datos manipulados a propósito.
+
+---
+
+_Última actualización: Fase 3, Parte 2 — gestión de productos (crear, editar, dar de baja, variantes) construida y probada. Siguiente: Parte 3, subida de fotos._
