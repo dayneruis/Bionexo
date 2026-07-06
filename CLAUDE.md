@@ -111,7 +111,7 @@
 - **Checkout:** página en `src/app/[locale]/checkout/page.tsx` (mínima, servidor) + componente cliente `CheckoutForm.tsx` que lee el carrito de localStorage, muestra el calculador de envío, recibe datos del comprador y llama a `POST /api/orders` para guardar el pedido. Sin contraseñas en esta fase (se agregan con la pasarela en Fase 4).
 - **Confirmación:** página `src/app/[locale]/pedido-confirmado/page.tsx` que lee el pedido de la BD y genera un enlace de WhatsApp con el resumen completo del pedido para que el comprador lo envíe al negocio.
 - **Modelos nuevos en Prisma:** `Order`, `OrderItem`, `ExchangeRate`. Migración: `20260625230632_fase2`.
-- **Número de WhatsApp de ejemplo:** `573000000000` — el dueño lo reemplaza en `src/lib/contact-config.ts` (un solo lugar para todo el sitio).
+- **Número de WhatsApp:** originalmente `573000000000` de ejemplo; reemplazado por el número real del negocio (`573001234567`) en `src/lib/contact-config.ts` — ver sección 20 (un solo lugar para todo el sitio, todos los botones lo leen de ahí).
 
 ## 14. Bitácora — Ajustes pre-Fase 3 (Bloque Marketplace)
 
@@ -183,6 +183,12 @@
 - **Ícono de WhatsApp compartido:** el SVG que antes estaba repetido en `pedido-confirmado/page.tsx` se extrajo a `src/components/WhatsAppIcon.tsx`, reutilizado ahí, en `CartDrawer`, `CheckoutForm` y el botón flotante.
 - **Verificación:** `npx tsc --noEmit` sin errores. `npm run dev` sí pudo levantarse en esta sesión (a diferencia de bloques anteriores); se confirmó por HTTP que `/es`, `/es/sobre-nosotros` y `/es/checkout` responden 200, y que el HTML de la portada incluye las clases nuevas (`aspect-[1718/916]`, el recuadro blanco del logo y el botón flotante).
 
+## 20. Bitácora — Número real de WhatsApp
+
+- **Número reemplazado:** `CONTACTO_BIONEXO.whatsapp` en `src/lib/contact-config.ts` pasó del placeholder `573000000000` al número real `573001234567` (+57 300 123 4567). También se actualizó el campo `telefono` (solo texto para mostrar) al mismo número.
+- **Un solo cambio, todo el sitio actualizado:** como todos los botones de WhatsApp (Comprar/"Me interesa" en `ContactButtons.tsx`, "Vender en Bionexo" en `SellButton.tsx`, "Hacer mi pedido por WhatsApp" en `CartDrawer`/`CheckoutForm`, el botón flotante `WhatsAppFloatingButton.tsx`, y el enlace de confirmación en `pedido-confirmado`) leen el número a través de la función `whatsappUrl()` de `contact-config.ts`, no hubo que tocar ningún otro archivo.
+- **Verificación:** `npx tsc --noEmit` sin errores.
+
 ---
 
-_Última actualización: bloque de retoques (recuadros blancos de logos, banner de portada sin recortes, botón "Hacer mi pedido por WhatsApp" en carrito/checkout, botón flotante de WhatsApp en todo el sitio). Verificado con `npm run dev` corriendo en esta sesión._
+_Última actualización: número real de WhatsApp del negocio conectado en `contact-config.ts`, aplicado automáticamente a todos los botones del sitio._
