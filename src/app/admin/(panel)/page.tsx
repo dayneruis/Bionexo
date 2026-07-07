@@ -21,15 +21,19 @@ export default async function AdminHomePage() {
         >
           <p className="font-bold text-eco-forest">Productos</p>
           <p className="mt-1 text-sm text-slate-500">
-            Crear, editar y dar de baja productos, precios, variantes y origen.
+            Crear, editar y dar de baja productos, precios, fotos, variantes y origen.
+          </p>
+        </Link>
+        <Link
+          href="/admin/productores"
+          className="rounded-xl border border-eco-green/20 bg-white p-5 shadow-sm transition-colors hover:border-eco-green"
+        >
+          <p className="font-bold text-eco-forest">Productores</p>
+          <p className="mt-1 text-sm text-slate-500">
+            Datos internos de contacto de los proveedores (nunca visibles al cliente).
           </p>
         </Link>
       </div>
-
-      <p className="mt-6 text-sm text-slate-400">
-        La subida de fotos y la gestión de productor/margen se agregan en las
-        siguientes partes de la Fase 3.
-      </p>
     </div>
   );
 }

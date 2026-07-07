@@ -7,6 +7,7 @@ import { NOMBRES_DEPARTAMENTOS, getMunicipiosDe } from "@/lib/colombia-geo";
 import type { VarianteInput } from "@/lib/admin-products";
 
 type Categoria = { id: string; nameEs: string };
+type Productor = { id: string; name: string };
 
 // Forma de un producto ya existente (para precargar el formulario en modo edición).
 type ProductoExistente = {
@@ -29,6 +30,9 @@ type ProductoExistente = {
   warrantyDuration: string | null;
   categoryId: string;
   variants: VarianteInput[];
+  // Intermediación (Fase 3, Parte 4): SOLO uso interno, nunca se expone al cliente.
+  producerId: string | null;
+  margin: number;
 };
 
 // Formulario de creación y edición de producto. Se usa igual en
@@ -36,9 +40,11 @@ type ProductoExistente = {
 // si recibe la prop `producto` (edición) o no (creación).
 export default function ProductForm({
   categorias,
+  productores,
   producto,
 }: {
   categorias: Categoria[];
+  productores: Productor[];
   producto?: ProductoExistente;
 }) {
   const router = useRouter();
@@ -69,6 +75,10 @@ export default function ProductForm({
   const [warrantyDuration, setWarrantyDuration] = useState(producto?.warrantyDuration ?? "");
 
   const [variants, setVariants] = useState<VarianteInput[]>(producto?.variants ?? []);
+
+  // Intermediación: SOLO uso interno, nunca se muestra en la tienda pública.
+  const [producerId, setProducerId] = useState(producto?.producerId ?? "");
+  const [margin, setMargin] = useState(producto?.margin ?? 5);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -162,6 +172,8 @@ export default function ProductForm({
       warrantyDuration: warranty ? warrantyDuration : null,
       categoryId,
       variants: variants.filter((v) => v.type.trim() && v.value.trim()),
+      producerId: producerId || null,
+      margin,
     };
 
     try {
@@ -321,6 +333,44 @@ export default function ProductForm({
             />
             Destacado en portada
           </label>
+        </div>
+      </section>
+
+      {/* ── Datos internos: productor y margen ── */}
+      {/* Regla del modelo de intermediación: esta sección NUNCA se muestra al
+          cliente, solo la ve el admin en este panel (ver CLAUDE.md, sección 14). */}
+      <section className="rounded-2xl border border-eco-green/15 bg-white p-6">
+        <h2 className="mb-1 font-bold text-eco-forest">Datos internos</h2>
+        <p className="mb-4 text-xs text-slate-400">
+          Uso interno: el productor y el margen nunca se muestran en la tienda pública.
+        </p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Campo label="Productor (opcional)">
+            <select
+              value={producerId}
+              onChange={(e) => setProducerId(e.target.value)}
+              className={inputClass}
+            >
+              <option value="">Sin productor asignado</option>
+              {productores.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          </Campo>
+          <Campo label="Margen de intermediación (%)">
+            <input
+              type="number"
+              min={3}
+              max={10}
+              step={0.5}
+              required
+              value={margin}
+              onChange={(e) => setMargin(Number(e.target.value))}
+              className={inputClass}
+            />
+          </Campo>
         </div>
       </section>
 

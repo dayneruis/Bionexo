@@ -34,3 +34,50 @@ export function getProductosDeProductor(producerId: string) {
     },
   });
 }
+
+// ─── Gestión desde el panel (Fase 3, Parte 4) ────────────────────────────────
+
+export type DatosProductor = {
+  name: string;
+  contactName: string;
+  phone: string;
+  email: string | null;
+  notes: string | null;
+};
+
+export function crearProductor(datos: DatosProductor) {
+  return prisma.producer.create({ data: datos });
+}
+
+export function actualizarProductor(id: string, datos: DatosProductor) {
+  return prisma.producer.update({ where: { id }, data: datos });
+}
+
+// Productor completo para precargar el formulario de edición del panel.
+export function getProductorParaEditar(id: string) {
+  return prisma.producer.findUnique({ where: { id } });
+}
+
+// Valida y limpia lo que llega del formulario de productor antes de tocar la
+// base de datos (mismo patrón que validarDatosProducto en admin-products.ts).
+export function validarDatosProductor(body: unknown): DatosProductor | { error: string } {
+  if (typeof body !== "object" || body === null) {
+    return { error: "Datos inválidos." };
+  }
+  const b = body as Record<string, unknown>;
+
+  const camposTexto = ["name", "contactName", "phone"] as const;
+  for (const campo of camposTexto) {
+    if (typeof b[campo] !== "string" || (b[campo] as string).trim() === "") {
+      return { error: `Falta el campo obligatorio: ${campo}` };
+    }
+  }
+
+  return {
+    name: (b.name as string).trim(),
+    contactName: (b.contactName as string).trim(),
+    phone: (b.phone as string).trim(),
+    email: typeof b.email === "string" && b.email.trim() ? b.email.trim() : null,
+    notes: typeof b.notes === "string" && b.notes.trim() ? b.notes.trim() : null,
+  };
+}

@@ -34,6 +34,9 @@ export async function PUT(
         { status: 409 },
       );
     }
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2003") {
+      return NextResponse.json({ error: "El productor elegido no existe." }, { status: 400 });
+    }
     throw err;
   }
 }

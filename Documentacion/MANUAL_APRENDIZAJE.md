@@ -552,4 +552,34 @@ Aunque ya se puede subir un archivo, se conservó el campo de URL como alternati
 
 ---
 
-_Última actualización: Fase 3, Parte 3 — subida de fotos desde el panel construida y probada. Siguiente: Parte 4, productor y margen._
+## Parte 11 — Fase 3, Parte 4: productor y margen (cierre de la Fase 3)
+
+### 11.1 ¿Qué es el "productor" y por qué es tan reservado?
+
+Bionexo funciona como intermediario: conecta a compradores con emprendedores y recicladores que fabrican u ofrecen los productos (el "productor"). El negocio se queda con un pequeño margen de cada venta por hacer esa conexión (cobrar, mostrar el catálogo, dar soporte, etc.). Si el cliente final viera el nombre y teléfono del productor real, podría contactarlo directamente y saltarse a Bionexo, perdiendo esa comisión — por eso esos datos se tratan como información **estrictamente interna**, nunca se envían al navegador del comprador.
+
+### 11.2 ¿Por qué el margen tiene un rango fijo (3–10 %)?
+
+Es una regla de negocio, no una limitación técnica: el dueño decidió que el margen de intermediación siempre debe estar entre 3 % y 10 %. El código la hace cumplir en dos lugares a la vez:
+
+- En el formulario del panel, el campo numérico no deja escribir un valor fuera de ese rango (`min`/`max` del input HTML).
+- En el servidor (`validarDatosProducto`), se vuelve a comprobar el mismo rango antes de guardar. Esto es importante: la validación del navegador se puede saltar fácilmente (por ejemplo, llamando a la API directamente), así que la validación que de verdad protege los datos es siempre la del servidor. La del formulario solo mejora la experiencia, avisando al instante.
+
+### 11.3 Un producto puede no tener productor todavía
+
+No todos los productos tienen ya un productor asignado en el sistema (por ejemplo, si el dueño está probando el catálogo antes de formalizar el trato con un proveedor). Por eso el campo es opcional: el selector del formulario incluye la opción "Sin productor asignado", que guarda `null` en la base de datos.
+
+### 11.4 El mismo error de "clave foránea" que ya se había visto con el slug
+
+Cuando un producto queda vinculado a un productor (`producerId`), la base de datos exige que ese productor exista de verdad — es una "clave foránea": una regla que dice "este valor tiene que apuntar a una fila real de la otra tabla". Si alguien intentara guardar un producto con un `producerId` inventado, Prisma lo rechaza con el código de error `P2003`, muy parecido al `P2002` que ya se había visto con los slugs duplicados (Parte 9.4). Las rutas de la API capturan ese código y lo convierten en un mensaje claro para el panel, en vez de un error técnico confuso.
+
+---
+
+### Nuevos términos para el glosario (Parte 11)
+
+- **Clave foránea (foreign key):** una regla de la base de datos que obliga a que un campo (aquí, `producerId` en `Product`) apunte siempre a una fila que realmente existe en otra tabla (aquí, `Producer`). Evita "referencias fantasma" a datos que no existen.
+- **Validación en el servidor vs. validación en el navegador:** la del navegador (atributos como `min`/`max` de un input) es solo para comodidad y feedback inmediato; la del servidor es la que de verdad protege los datos, porque el navegador se puede saltar o manipular.
+
+---
+
+_Última actualización: Fase 3 completa — Parte 1 (login), Parte 2 (productos), Parte 3 (fotos) y Parte 4 (productor y margen), todas construidas y probadas. Pendiente definir con el dueño el alcance de la Fase 4 (reseñas y pasarela de pago)._

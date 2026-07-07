@@ -27,6 +27,9 @@ export type DatosProducto = {
   warrantyDuration: string | null;
   categoryId: string;
   variants: VarianteInput[];
+  // Intermediación (Fase 3, Parte 4): SOLO uso interno, nunca se expone al cliente.
+  producerId: string | null;
+  margin: number;
 };
 
 // Lista todos los productos (disponibles y no disponibles) para el listado del panel.
@@ -123,6 +126,15 @@ export function validarDatosProducto(body: unknown): DatosProducto | { error: st
     return { error: "El slug quedó vacío después de limpiarlo. Usa letras y números." };
   }
 
+  // Margen de intermediación: regla de negocio documentada en CLAUDE.md (3–10 %).
+  const margin = typeof b.margin === "number" ? b.margin : Number(b.margin);
+  if (!Number.isFinite(margin) || margin < 3 || margin > 10) {
+    return { error: "El margen debe ser un número entre 3 y 10 (%)." };
+  }
+
+  const producerId =
+    typeof b.producerId === "string" && b.producerId.trim() ? b.producerId.trim() : null;
+
   const variantsRaw = Array.isArray(b.variants) ? b.variants : [];
   const variants: VarianteInput[] = variantsRaw
     .filter(
@@ -159,5 +171,7 @@ export function validarDatosProducto(body: unknown): DatosProducto | { error: st
         : null,
     categoryId: b.categoryId as string,
     variants,
+    producerId,
+    margin,
   };
 }
