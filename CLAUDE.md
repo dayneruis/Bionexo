@@ -213,6 +213,14 @@
 - **Rutas nuevas:** `/admin/productos` (listado con buscador y estado), `/admin/productos/nuevo`, `/admin/productos/[id]/editar`. APIs: `POST /api/admin/products`, `PUT /api/admin/products/[id]` (edición completa), `PATCH /api/admin/products/[id]` (solo cambia disponible/no disponible, usado por el botón rápido del listado).
 - **Verificación:** `npx tsc --noEmit` sin errores. Probado de punta a punta con `npm run dev` + `curl` simulando la cookie de sesión: crear producto (201), verlo en el listado y en el formulario de edición precargado, editarlo (200), darlo de baja con el botón rápido (200) y confirmar que deja de aparecer en `/admin/productos` como disponible. Se confirmó que un producto no disponible sigue apareciendo en la tienda pública con la etiqueta "No disponible" (comportamiento correcto y ya existente: el sitio marca disponibilidad, no oculta productos — ver sección 5). El producto de prueba se borró de la base de datos al terminar, para no dejar datos ficticios en el catálogo de ejemplo.
 
+## 23. Bitácora — Fase 3, Parte 3: subida de fotos desde el computador
+
+- **Ruta nueva `POST /api/admin/upload`:** protegida igual que el resto de rutas del panel (`obtenerSesionActual()`, responde 401 sin sesión). Recibe el archivo como `multipart/form-data`, valida el tipo real (`image/jpeg`, `image/png`, `image/webp`, `image/gif` — no confía en la extensión del nombre original) y el tamaño (máximo 5 MB). Guarda el archivo en `public/uploads/productos/` con un nombre generado (`crypto.randomUUID()` + extensión según el tipo), para que Next.js lo sirva directo como archivo estático, y devuelve su URL (`/uploads/productos/xxxx.jpg`).
+- **`public/uploads/` agregado a `.gitignore`:** son fotos que sube el dueño mientras usa el panel (contenido dinámico, igual que `dev.db`), no archivos fijos del proyecto para guardar en git.
+- **`ProductForm.tsx` actualizado:** el campo de imagen ahora tiene un selector de archivo que sube la foto automáticamente al elegirla (con aviso "Subiendo imagen..." y mensaje de error si falla), vista previa de la imagen actual, y se conserva el campo de URL por si el dueño prefiere pegar el enlace de una imagen ya publicada en internet (por ejemplo, mientras no tenga la foto real a mano). Ambos caminos llenan el mismo campo `imageUrl` que ya existía desde la Parte 2.
+- **Producer y margen (Parte 4) siguen sin tocar**, tal como estaba planeado.
+- **Verificación:** `npx tsc --noEmit` sin errores. Probado de punta a punta con `npm run dev` + `curl` simulando la cookie de sesión: subir una imagen de prueba (201) y confirmar que se sirve públicamente (200); subir sin sesión (401) y con un tipo de archivo no permitido (400); crear un producto de prueba usando la URL de la imagen subida (201). El producto y la imagen de prueba se borraron al terminar para no dejar datos ficticios.
+
 ---
 
-_Última actualización: Fase 3 Parte 2 (gestión de productos: crear, editar, dar de baja y variantes) completada y probada. Siguiente: Parte 3, subida de fotos._
+_Última actualización: Fase 3 Parte 3 (subida de fotos desde el panel) completada y probada. Siguiente: Parte 4, productor y margen._

@@ -519,4 +519,37 @@ Cada producto tiene una URL propia en la tienda (ej: `/es/producto/miel-organica
 
 ---
 
-_Última actualización: Fase 3, Parte 2 — gestión de productos (crear, editar, dar de baja, variantes) construida y probada. Siguiente: Parte 3, subida de fotos._
+## Parte 10 — Fase 3, Parte 3: subir fotos desde el computador
+
+### 10.1 ¿Por qué antes solo se podía pegar una URL?
+
+La Parte 2 dejó el campo de imagen como un simple texto para pegar una URL (por ejemplo, un enlace a `picsum.photos`). Era una solución temporal a propósito: primero se necesitaba que crear/editar productos funcionara, y la subida de archivos se dejó para esta parte, que es más delicada (hay que recibir un archivo real, revisarlo y guardarlo en el disco del servidor).
+
+### 10.2 Cómo funciona la subida, paso a paso
+
+1. En el formulario del panel, el dueño elige un archivo de foto de su computador.
+2. El navegador lo envía de inmediato (sin esperar a que se guarde el resto del producto) a una nueva ruta, `POST /api/admin/upload`, como `multipart/form-data` (el formato estándar para mandar archivos por HTTP).
+3. Esa ruta revisa dos cosas antes de aceptar el archivo:
+   - **El tipo real de archivo** (mirando su contenido, no el nombre): solo se aceptan JPG, PNG, WEBP o GIF. Nunca se confía en la extensión que traía el archivo original (alguien podría renombrar un archivo peligroso como `foto.jpg`), así que el nombre final en el servidor se arma con la extensión correcta según el tipo real detectado.
+   - **El tamaño**: máximo 5 MB, para que una foto enorme no llene el disco ni haga lenta la subida.
+4. Si todo está bien, el archivo se guarda dentro de `public/uploads/productos/` con un nombre único generado por el servidor (nunca el nombre original), y la ruta responde con la URL pública de la foto (ej: `/uploads/productos/xxxx.jpg`).
+5. Esa URL se guarda automáticamente en el mismo campo `imageUrl` que ya existía: para el resto del sitio (tienda pública, carrito, etc.) no hay ninguna diferencia entre una foto subida y una URL pegada a mano, ambas son "la URL de la imagen del producto".
+
+### 10.3 ¿Por qué la carpeta `public/uploads/` no se sube a git?
+
+El proyecto ya tenía la costumbre de no subir a git lo que se genera o cambia mientras se usa el sitio (la base de datos `dev.db`, por ejemplo). Las fotos que el dueño va subiendo con el panel son exactamente ese tipo de contenido: cambian todo el tiempo y no son parte del código del proyecto, así que se agregó `/public/uploads/` al archivo `.gitignore`.
+
+### 10.4 ¿Por qué se dejó también la opción de pegar una URL?
+
+Aunque ya se puede subir un archivo, se conservó el campo de URL como alternativa. Sirve para casos donde el dueño no tiene todavía la foto real a mano y quiere usar una imagen de ejemplo con un enlace, sin que eso bloquee la creación del producto.
+
+---
+
+### Nuevos términos para el glosario (Parte 10)
+
+- **`multipart/form-data`:** el formato que usa un formulario web para enviar archivos (fotos, PDFs, etc.) al servidor, distinto del formato de texto plano (JSON) que se usa para el resto de los datos.
+- **Validar el tipo real de un archivo:** revisar el contenido de un archivo para confirmar qué tipo de archivo es en realidad, en vez de confiar en su nombre o extensión, que cualquiera puede cambiar.
+
+---
+
+_Última actualización: Fase 3, Parte 3 — subida de fotos desde el panel construida y probada. Siguiente: Parte 4, productor y margen._

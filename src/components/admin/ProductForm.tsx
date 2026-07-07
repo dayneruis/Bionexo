@@ -73,6 +73,9 @@ export default function ProductForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [subiendoImagen, setSubiendoImagen] = useState(false);
+  const [errorImagen, setErrorImagen] = useState<string | null>(null);
+
   // Mientras se está creando (no en edición) y el admin no tocó el slug a
   // mano, lo sugiere automáticamente a partir del nombre en español.
   function onNameEsChange(valor: string) {
@@ -105,6 +108,35 @@ export default function ProductForm({
   }
 
   const municipios = !isInternational ? getMunicipiosDe(originDepartment) : [];
+
+  // Sube el archivo elegido a /api/admin/upload y, si sale bien, deja su URL
+  // guardada en imageUrl (el mismo campo que también acepta una URL pegada a mano).
+  async function onArchivoSeleccionado(e: React.ChangeEvent<HTMLInputElement>) {
+    const archivo = e.target.files?.[0];
+    e.target.value = ""; // permite volver a elegir el mismo archivo si hay un error
+    if (!archivo) return;
+
+    setSubiendoImagen(true);
+    setErrorImagen(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", archivo);
+      const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
+      const data = (await res.json()) as { url?: string; error?: string };
+
+      if (!res.ok) {
+        setErrorImagen(data.error ?? "No se pudo subir la imagen.");
+        return;
+      }
+
+      setImageUrl(data.url!);
+    } catch {
+      setErrorImagen("Error de conexión al subir la imagen.");
+    } finally {
+      setSubiendoImagen(false);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -228,14 +260,46 @@ export default function ProductForm({
               className={inputClass}
             />
           </Campo>
-          <Campo label="URL de la imagen (temporal — la Parte 3 agrega subida de fotos)">
-            <input
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="Se genera una de ejemplo si lo dejas vacío"
-              className={inputClass}
-            />
-          </Campo>
+        </div>
+
+        <div className="mt-4">
+          <label className="mb-1.5 block text-sm font-semibold text-eco-forest">
+            Foto del producto
+          </label>
+          <div className="flex flex-wrap items-center gap-4">
+            {imageUrl && (
+              // Vista previa: imageUrl puede ser un archivo subido o una URL externa
+              // pegada a mano, así que se usa <img> normal en vez de next/image.
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={imageUrl}
+                alt="Vista previa"
+                className="h-24 w-24 rounded-xl border border-eco-green/20 object-cover"
+              />
+            )}
+            <div className="min-w-[220px] flex-1">
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                onChange={onArchivoSeleccionado}
+                disabled={subiendoImagen}
+                className={inputClass}
+              />
+              {subiendoImagen && (
+                <p className="mt-1 text-xs text-eco-green">Subiendo imagen...</p>
+              )}
+              {errorImagen && <p className="mt-1 text-xs text-red-500">{errorImagen}</p>}
+            </div>
+          </div>
+          <p className="mb-1.5 mt-3 text-xs text-slate-400">
+            O pega la URL de una imagen ya publicada en internet:
+          </p>
+          <input
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+            placeholder="Se genera una de ejemplo si lo dejas vacío"
+            className={inputClass}
+          />
         </div>
 
         <div className="mt-4 flex flex-wrap gap-6">
