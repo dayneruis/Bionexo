@@ -596,6 +596,20 @@ El atributo `target="_blank"` hace que el enlace abra una pestaña nueva del nav
 
 El aumento del logo de Bionexo en "Sobre nosotros" (de `h-16 sm:h-20` a `h-20 sm:h-24`) es un cambio puramente visual, de los que ya se habían hecho varias veces antes en el proyecto (ver bitácora del CLAUDE.md, secciones 16 a 19): se cambia el valor de una clase de Tailwind que controla la altura de la imagen, y se ajusta un poco el espacio alrededor (`padding`) para que la tarjeta blanca siga viéndose proporcionada con el logo más grande adentro.
 
+### 12.4 Por qué no se escribió la lista de municipios a mano
+
+El archivo `src/lib/colombia-geo.ts` solo tenía antes los municipios "principales" de cada departamento (la capital y unos pocos más), como una lista de ejemplo. Colombia tiene más de 1.100 municipios en total, y escribir esa lista de memoria habría sido poco confiable: es muy fácil que a un humano (o a una IA escribiendo a mano) se le escape algún municipio, o escriba mal un nombre o un código.
+
+En vez de eso, se usó una fuente pública en internet que ya tiene la lista oficial del DANE (el organismo del gobierno colombiano dueño de esos datos) en formato de datos (JSON), con el nombre y el código de cada municipio. Un script corto (escrito una sola vez, para esta tarea, y luego descartado) leyó ese archivo y generó automáticamente el archivo `colombia-geo.ts` completo, respetando el mismo formato que ya tenía el archivo original.
+
+### 12.5 El control de calidad: comparar contra números conocidos
+
+Antes de dar por buena la lista generada, se contó cuántos municipios quedaron por departamento y se comparó contra cifras oficiales conocidas (por ejemplo, se sabe que Antioquia tiene 125 municipios, Boyacá 123, Cundinamarca 116). Como los números coincidieron exactamente, eso dio confianza de que la fuente y la conversión fueron correctas. Esta es una técnica útil en general: cuando se genera una lista larga de datos automáticamente, buscar una cifra de control (un total conocido) para verificarla es más rápido y más confiable que revisar cada dato uno por uno.
+
+### 12.6 De MAYÚSCULAS a formato título
+
+Los nombres venían todos en mayúsculas en la fuente original (ej. "SAN JOSÉ DE LA MONTAÑA"), porque así los guarda el DANE en sus bases de datos oficiales. Para que se vean naturales en el sitio, se escribió una pequeña función que pone en mayúscula solo la primera letra de cada palabra, excepto un grupo de palabras "conectoras" (de, del, la, los, y) que quedan en minúscula cuando no son la primera palabra del nombre — igual que se escriben normalmente en español ("San José de la Montaña", no "San José De La Montaña").
+
 ---
 
 _Última actualización: Fase 3 completa — Parte 1 (login), Parte 2 (productos), Parte 3 (fotos) y Parte 4 (productor y margen), todas construidas y probadas. Pendiente definir con el dueño el alcance de la Fase 4 (reseñas y pasarela de pago)._
