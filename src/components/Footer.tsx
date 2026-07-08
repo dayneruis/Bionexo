@@ -59,6 +59,16 @@ export default function Footer() {
 
       <p className="border-t border-eco-green/20 px-4 py-3 text-center text-xs text-slate-400">
         © {year} {t("brand.name")}. {t("footer.rights")}
+        {" · "}
+        {/* Enlace discreto al login del panel admin: a propósito pequeño y sobrio, no debe destacar */}
+        <a
+          href="/admin/login"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-slate-400 hover:text-slate-500 hover:underline"
+        >
+          Administración
+        </a>
       </p>
     </footer>
   );

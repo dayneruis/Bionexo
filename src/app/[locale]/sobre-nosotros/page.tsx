@@ -18,13 +18,13 @@ export default async function AboutPage() {
         {/* Tarjeta blanca a propósito: bionexo.png tiene fondo claro opaco (no
             transparente), así que un filtro invert sobre fondo verde dejaba
             todo el rectángulo en blanco sólido (el logo "desaparecía"). */}
-        <div className="mx-auto mb-6 inline-flex rounded-2xl bg-white px-8 py-5 shadow-md">
+        <div className="mx-auto mb-6 inline-flex rounded-2xl bg-white px-9 py-6 shadow-md">
           <Image
             src="/bionexo.png"
             alt="Bionexo"
             width={200}
             height={60}
-            className="h-16 w-auto object-contain sm:h-20"
+            className="h-20 w-auto object-contain sm:h-24"
           />
         </div>
         <h1 className="text-3xl font-extrabold sm:text-4xl">{t("tagline")}</h1>

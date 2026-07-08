@@ -231,6 +231,12 @@
 - **Con esto se cierran las 4 partes planeadas de la Fase 3** (login y seguridad, gestión de productos, subida de fotos, productor y margen).
 - **Verificación:** `npx tsc --noEmit` sin errores. Probado de punta a punta con `npm run dev` + `curl`: crear un productor (201); crear un producto con margen fuera de rango (400) y con un `producerId` inexistente (400); crear un producto válido con margen 7% y productor real (201); confirmar que el HTML público de ese producto no contiene ni el nombre/teléfono del productor ni el valor del margen. El producto y el productor de prueba se borraron al terminar para no dejar datos ficticios (el catálogo de ejemplo conserva sus 5 productores originales del seed).
 
+## 25. Bitácora — Bloque de cierre de la Fase 3 (acceso discreto al panel + logo más grande)
+
+- **Enlace discreto "Administración" en el footer:** `src/components/Footer.tsx` — en la barra inferior de copyright, junto al año y los derechos, se agregó un enlace de texto pequeño y de color gris tenue (`text-slate-400`, sin negrita ni ícono) que dice "Administración" y abre `/admin/login` en una **pestaña nueva** (`target="_blank" rel="noopener noreferrer"`). A propósito no se usó ningún estilo llamativo (ni color de marca, ni botón), para que un visitante normal no lo note pero el dueño sepa dónde encontrarlo.
+- **Logo de Bionexo más grande en "Sobre nosotros":** `src/app/[locale]/sobre-nosotros/page.tsx` — dentro de la tarjeta blanca del hero verde, el logo pasó de `h-16 sm:h-20` a `h-20 sm:h-24`, y el padding de la tarjeta de `px-8 py-5` a `px-9 py-6` para mantener la proporción con el logo más grande.
+- **Verificación:** `npx tsc --noEmit` sin errores.
+
 ---
 
-_Última actualización: Fase 3 completa (Parte 1 login, Parte 2 productos, Parte 3 fotos, Parte 4 productor y margen). Siguiente fase pendiente de definir con el dueño: Fase 4 (reseñas/opiniones y pasarela de pago, según el plan original de la sección 10)._
+_Última actualización: Fase 3 completa (Parte 1 login, Parte 2 productos, Parte 3 fotos, Parte 4 productor y margen, bloque de cierre con acceso discreto al panel y ajuste de logo). Siguiente fase pendiente de definir con el dueño: Fase 4 (reseñas/opiniones y pasarela de pago, según el plan original de la sección 10)._

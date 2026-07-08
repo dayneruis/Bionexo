@@ -582,4 +582,20 @@ Cuando un producto queda vinculado a un productor (`producerId`), la base de dat
 
 ---
 
+## Parte 12 — Bloque de cierre de la Fase 3: acceso discreto al panel y logo más grande
+
+### 12.1 Un enlace "invisible a propósito"
+
+En el pie de página se agregó un enlace de texto que dice "Administración" y lleva a `/admin/login`. Se hizo deliberadamente pequeño y de color gris apagado (el mismo tono del texto de derechos de autor), sin ícono ni color de marca, para que un visitante normal de la tienda no lo note ni sienta curiosidad de darle clic. Esto no es seguridad real (cualquiera que sepa la URL `/admin/login` puede llegar directo escribiéndola), es solo un atajo cómodo para que el dueño encuentre la entrada al panel sin tener que recordar la dirección.
+
+### 12.2 ¿Por qué abrir en una pestaña nueva?
+
+El atributo `target="_blank"` hace que el enlace abra una pestaña nueva del navegador en vez de reemplazar la página actual. Así, si el dueño está viendo la tienda pública y le da clic a "Administración", no pierde esa pestaña — sigue teniendo la tienda abierta en una y el panel en otra. El atributo `rel="noopener noreferrer"` que lo acompaña es una buena práctica de seguridad estándar: evita que la pestaña nueva pueda manipular la pestaña original a través de JavaScript.
+
+### 12.3 Ajuste visual simple: agrandar un logo
+
+El aumento del logo de Bionexo en "Sobre nosotros" (de `h-16 sm:h-20` a `h-20 sm:h-24`) es un cambio puramente visual, de los que ya se habían hecho varias veces antes en el proyecto (ver bitácora del CLAUDE.md, secciones 16 a 19): se cambia el valor de una clase de Tailwind que controla la altura de la imagen, y se ajusta un poco el espacio alrededor (`padding`) para que la tarjeta blanca siga viéndose proporcionada con el logo más grande adentro.
+
+---
+
 _Última actualización: Fase 3 completa — Parte 1 (login), Parte 2 (productos), Parte 3 (fotos) y Parte 4 (productor y margen), todas construidas y probadas. Pendiente definir con el dueño el alcance de la Fase 4 (reseñas y pasarela de pago)._
