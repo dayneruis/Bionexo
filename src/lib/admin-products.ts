@@ -8,6 +8,13 @@ import { slugify } from "@/lib/slugify";
 
 export type VarianteInput = { type: string; value: string };
 
+// Municipio de venta local: department/municipality se guardan como texto,
+// igual que originCity/originDepartment (mismo patrón, sin tabla de códigos).
+export type MunicipioVentaInput = { department: string; municipality: string };
+
+export const ZONAS_DE_VENTA = ["nacional", "internacional", "local"] as const;
+export type ZonaDeVenta = (typeof ZONAS_DE_VENTA)[number];
+
 export type DatosProducto = {
   slug: string;
   nameEs: string;
@@ -30,6 +37,10 @@ export type DatosProducto = {
   // Intermediación (Fase 3, Parte 4): SOLO uso interno, nunca se expone al cliente.
   producerId: string | null;
   margin: number;
+  // Zona de venta (bloque de cierre de Fase 3): A DÓNDE se vende, distinto del
+  // origen (DE DÓNDE es). Ver comentario en prisma/schema.prisma.
+  saleZone: ZonaDeVenta;
+  saleMunicipalities: MunicipioVentaInput[];
 };
 
 // Lista todos los productos (disponibles y no disponibles) para el listado del panel.
@@ -53,29 +64,36 @@ export function listarProductosAdmin(query?: string) {
 export function getProductoParaEditar(id: string) {
   return prisma.product.findUnique({
     where: { id },
-    include: { variants: true },
+    include: { variants: true, saleMunicipalities: true },
   });
 }
 
 export function crearProducto(datos: DatosProducto) {
+  const { saleMunicipalities, variants, ...resto } = datos;
   return prisma.product.create({
     data: {
-      ...datos,
-      variants: { create: datos.variants },
+      ...resto,
+      variants: { create: variants },
+      saleMunicipalities: { create: saleMunicipalities },
     },
   });
 }
 
-// Reemplaza las variantes existentes por las que llegan del formulario:
-// es más simple y confiable que tratar de "adivinar" cuáles cambiaron.
+// Reemplaza las variantes y municipios de venta existentes por los que llegan
+// del formulario: es más simple y confiable que tratar de "adivinar" cuáles cambiaron.
 export function actualizarProducto(id: string, datos: DatosProducto) {
+  const { saleMunicipalities, variants, ...resto } = datos;
   return prisma.product.update({
     where: { id },
     data: {
-      ...datos,
+      ...resto,
       variants: {
         deleteMany: {},
-        create: datos.variants,
+        create: variants,
+      },
+      saleMunicipalities: {
+        deleteMany: {},
+        create: saleMunicipalities,
       },
     },
   });
@@ -135,6 +153,31 @@ export function validarDatosProducto(body: unknown): DatosProducto | { error: st
   const producerId =
     typeof b.producerId === "string" && b.producerId.trim() ? b.producerId.trim() : null;
 
+  // Zona de venta: A DÓNDE se vende el producto (distinto de originCity/originDepartment,
+  // que son DE DÓNDE es).
+  const saleZone = ZONAS_DE_VENTA.includes(b.saleZone as ZonaDeVenta)
+    ? (b.saleZone as ZonaDeVenta)
+    : null;
+  if (!saleZone) {
+    return { error: "La zona de venta debe ser nacional, internacional o local." };
+  }
+
+  const saleMunicipalitiesRaw = Array.isArray(b.saleMunicipalities) ? b.saleMunicipalities : [];
+  const saleMunicipalities: MunicipioVentaInput[] = saleMunicipalitiesRaw
+    .filter(
+      (m): m is { department: unknown; municipality: unknown } =>
+        typeof m === "object" && m !== null,
+    )
+    .map((m) => ({
+      department: typeof m.department === "string" ? m.department.trim() : "",
+      municipality: typeof m.municipality === "string" ? m.municipality.trim() : "",
+    }))
+    .filter((m) => m.department !== "" && m.municipality !== "");
+
+  if (saleZone === "local" && saleMunicipalities.length === 0) {
+    return { error: "Elige al menos un municipio para la zona de venta local." };
+  }
+
   const variantsRaw = Array.isArray(b.variants) ? b.variants : [];
   const variants: VarianteInput[] = variantsRaw
     .filter(
@@ -173,5 +216,9 @@ export function validarDatosProducto(body: unknown): DatosProducto | { error: st
     variants,
     producerId,
     margin,
+    saleZone,
+    // Los municipios locales solo tienen sentido cuando la zona es "local";
+    // si cambian de zona sin borrar la lista, igual queda vacía en la base.
+    saleMunicipalities: saleZone === "local" ? saleMunicipalities : [],
   };
 }

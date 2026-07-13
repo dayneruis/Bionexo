@@ -53,7 +53,8 @@
     "noResults": "No encontramos productos con ese criterio. Intenta con otra búsqueda o revisa las categorías."
   },
   "geo": {
-    "filterTitle": "Filtrar por lugar de origen",
+    "filterTitle": "Filtrar por lugar",
+    "filterHint": "Se muestran productos de venta nacional, del origen elegido y de venta local en esa zona.",
     "department": "Departamento",
     "municipality": "Municipio",
     "allDepartments": "Todos los departamentos",

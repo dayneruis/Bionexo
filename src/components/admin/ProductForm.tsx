@@ -4,7 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { slugify } from "@/lib/slugify";
 import { NOMBRES_DEPARTAMENTOS, getMunicipiosDe } from "@/lib/colombia-geo";
-import type { VarianteInput } from "@/lib/admin-products";
+import { ZONAS_DE_VENTA, type VarianteInput, type MunicipioVentaInput, type ZonaDeVenta } from "@/lib/admin-products";
+
+const ETIQUETAS_ZONA: Record<ZonaDeVenta, string> = {
+  nacional: "Nacional (todo el territorio colombiano)",
+  internacional: "Internacional (todo el país + exterior)",
+  local: "Local (solo en municipios específicos)",
+};
 
 type Categoria = { id: string; nameEs: string };
 type Productor = { id: string; name: string };
@@ -33,6 +39,9 @@ type ProductoExistente = {
   // Intermediación (Fase 3, Parte 4): SOLO uso interno, nunca se expone al cliente.
   producerId: string | null;
   margin: number;
+  // Zona de venta: A DÓNDE se vende el producto (distinto de Origen).
+  saleZone: ZonaDeVenta;
+  saleMunicipalities: MunicipioVentaInput[];
 };
 
 // Formulario de creación y edición de producto. Se usa igual en
@@ -73,6 +82,35 @@ export default function ProductForm({
   const [size, setSize] = useState(producto?.size ?? "");
   const [warranty, setWarranty] = useState(producto?.warranty ?? false);
   const [warrantyDuration, setWarrantyDuration] = useState(producto?.warrantyDuration ?? "");
+
+  // Zona de venta: A DÓNDE se vende el producto (distinto de Origen, que es DE
+  // DÓNDE es). Si es "local", saleMunicipalities guarda uno o varios municipios,
+  // que pueden ser de departamentos distintos entre sí.
+  const [saleZone, setSaleZone] = useState<ZonaDeVenta>(producto?.saleZone ?? "nacional");
+  const [saleMunicipalities, setSaleMunicipalities] = useState<MunicipioVentaInput[]>(
+    producto?.saleMunicipalities ?? [],
+  );
+  const [nuevaZonaDepto, setNuevaZonaDepto] = useState(NOMBRES_DEPARTAMENTOS[0] ?? "");
+  const [nuevaZonaMpio, setNuevaZonaMpio] = useState("");
+  const municipiosZonaNueva = getMunicipiosDe(nuevaZonaDepto);
+
+  function agregarMunicipioVenta() {
+    if (!nuevaZonaMpio) return;
+    const yaExiste = saleMunicipalities.some(
+      (m) => m.department === nuevaZonaDepto && m.municipality === nuevaZonaMpio,
+    );
+    if (!yaExiste) {
+      setSaleMunicipalities([
+        ...saleMunicipalities,
+        { department: nuevaZonaDepto, municipality: nuevaZonaMpio },
+      ]);
+    }
+    setNuevaZonaMpio("");
+  }
+
+  function quitarMunicipioVenta(index: number) {
+    setSaleMunicipalities(saleMunicipalities.filter((_, i) => i !== index));
+  }
 
   const [variants, setVariants] = useState<VarianteInput[]>(producto?.variants ?? []);
 
@@ -174,6 +212,8 @@ export default function ProductForm({
       variants: variants.filter((v) => v.type.trim() && v.value.trim()),
       producerId: producerId || null,
       margin,
+      saleZone,
+      saleMunicipalities: saleZone === "local" ? saleMunicipalities : [],
     };
 
     try {
@@ -425,6 +465,97 @@ export default function ProductForm({
                 ))}
               </select>
             </Campo>
+          </div>
+        )}
+      </section>
+
+      {/* ── Zona de venta ── */}
+      <section className="rounded-2xl border border-eco-green/15 bg-white p-6">
+        <h2 className="mb-1 font-bold text-eco-forest">Zona de venta</h2>
+        <p className="mb-4 text-xs text-slate-400">
+          A dónde se vende/envía el producto. Es distinto del Origen (de arriba), que es de dónde
+          es el producto.
+        </p>
+
+        <div className="flex flex-col gap-2">
+          {ZONAS_DE_VENTA.map((zona) => (
+            <label key={zona} className="flex items-center gap-2 text-sm">
+              <input
+                type="radio"
+                name="saleZone"
+                checked={saleZone === zona}
+                onChange={() => setSaleZone(zona)}
+                className="h-4 w-4 accent-eco-green"
+              />
+              {ETIQUETAS_ZONA[zona]}
+            </label>
+          ))}
+        </div>
+
+        {saleZone === "local" && (
+          <div className="mt-4">
+            <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+              <select
+                value={nuevaZonaDepto}
+                onChange={(e) => {
+                  setNuevaZonaDepto(e.target.value);
+                  setNuevaZonaMpio("");
+                }}
+                className={inputClass}
+              >
+                {NOMBRES_DEPARTAMENTOS.map((d) => (
+                  <option key={d} value={d}>
+                    {d}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={nuevaZonaMpio}
+                onChange={(e) => setNuevaZonaMpio(e.target.value)}
+                className={inputClass}
+              >
+                <option value="">Elige un municipio</option>
+                {municipiosZonaNueva.map((m) => (
+                  <option key={m.codigo} value={m.nombre}>
+                    {m.nombre}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={agregarMunicipioVenta}
+                disabled={!nuevaZonaMpio}
+                className="rounded-full border-2 border-eco-green px-4 py-1.5 text-xs font-bold text-eco-green hover:bg-eco-green hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                + Agregar
+              </button>
+            </div>
+
+            {saleMunicipalities.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {saleMunicipalities.map((m, i) => (
+                  <span
+                    key={`${m.department}-${m.municipality}`}
+                    className="flex items-center gap-1.5 rounded-full bg-eco-forest/10 px-3 py-1 text-xs text-eco-forest"
+                  >
+                    {m.municipality} ({m.department})
+                    <button
+                      type="button"
+                      onClick={() => quitarMunicipioVenta(i)}
+                      aria-label={`Quitar ${m.municipality}`}
+                      className="text-eco-forest/60 hover:text-red-500"
+                    >
+                      ✕
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+            {saleMunicipalities.length === 0 && (
+              <p className="mt-2 text-xs text-red-500">
+                Elige al menos un municipio para la zona de venta local.
+              </p>
+            )}
           </div>
         )}
       </section>

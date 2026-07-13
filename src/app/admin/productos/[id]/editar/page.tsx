@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getCategories } from "@/lib/catalog";
-import { getProductoParaEditar } from "@/lib/admin-products";
+import { getProductoParaEditar, type ZonaDeVenta } from "@/lib/admin-products";
 import { listarProductores } from "@/lib/producer";
 import ProductForm from "@/components/admin/ProductForm";
 
@@ -27,6 +27,11 @@ export default async function EditarProductoPage({
         producto={{
           ...producto,
           variants: producto.variants.map((v) => ({ type: v.type, value: v.value })),
+          saleZone: producto.saleZone as ZonaDeVenta,
+          saleMunicipalities: producto.saleMunicipalities.map((m) => ({
+            department: m.department,
+            municipality: m.municipality,
+          })),
         }}
       />
     </div>

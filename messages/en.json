@@ -53,7 +53,8 @@
     "noResults": "No products found for that search. Try different keywords or browse the categories."
   },
   "geo": {
-    "filterTitle": "Filter by product origin",
+    "filterTitle": "Filter by location",
+    "filterHint": "Shows nationwide products, products from the chosen origin, and products sold locally in that area.",
     "department": "Department",
     "municipality": "Municipality",
     "allDepartments": "All departments",

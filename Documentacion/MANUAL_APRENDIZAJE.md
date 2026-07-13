@@ -612,4 +612,52 @@ Los nombres venían todos en mayúsculas en la fuente original (ej. "SAN JOSÉ D
 
 ---
 
+## Parte 13 — Zona de venta y filtro de búsqueda combinado
+
+### 13.1 "Origen" y "Zona de venta" son dos cosas distintas
+
+Hasta ahora el producto solo tenía un dato geográfico: el **origen** (`originCity`/`originDepartment`), que responde a "¿de dónde ES este producto?" (dónde se fabrica o se produce). Este bloque agregó un segundo dato, independiente del primero: la **zona de venta** (`saleZone`), que responde a "¿A DÓNDE se puede vender/enviar?". Un producto puede ser de Bucaramanga (origen) y venderse en todo el país (zona de venta nacional), o puede ser de Bogotá y venderse solo en un par de municipios puntuales (zona de venta local). Son preguntas distintas y por eso son campos distintos en la base de datos.
+
+La zona de venta tiene 3 valores posibles:
+- **Nacional:** se consigue en cualquier parte de Colombia.
+- **Internacional:** se consigue en Colombia y también fuera del país.
+- **Local:** solo se vende en un municipio o un puñado de municipios concretos, que el dueño elige uno por uno en el panel (pueden ser de departamentos distintos entre sí, por ejemplo Bucaramanga y Bogotá al mismo tiempo).
+
+### 13.2 Una tabla nueva para guardar "varios municipios por producto"
+
+Un producto puede tener cero, uno o varios municipios de venta local. En una base de datos, cuando algo puede repetirse un número variable de veces, no se guarda como una sola columna: se crea una **tabla aparte** con una fila por cada municipio, y cada fila apunta al producto al que pertenece (`productId`). Esa tabla nueva se llama `ProductSaleMunicipality`. Así, un producto con 3 municipios de venta local simplemente tiene 3 filas en esa tabla, y un producto con 0 (porque su zona es "nacional") no tiene ninguna.
+
+También se configuró para que, si se borra un producto, sus filas de municipios se borren automáticamente con él (`onDelete: Cascade`) — así nunca quedan filas "huérfanas" apuntando a un producto que ya no existe.
+
+### 13.3 Regenerar el cliente de Prisma después de cambiar el esquema
+
+Cuando se le agregan campos nuevos a `prisma/schema.prisma`, hay dos pasos separados (y los dos son necesarios):
+1. **Aplicar la migración** (`npx prisma migrate dev`): cambia la base de datos de verdad (`dev.db`), agregando las columnas y tablas nuevas.
+2. **Regenerar el cliente** (`npx prisma generate`): actualiza el código TypeScript autogenerado en `src/generated/prisma`, que es el que le "avisa" al editor y al compilador qué campos existen. Sin este segundo paso, la base de datos ya tiene los campos nuevos, pero el código todavía no los "conoce" y el proyecto no compila (aparece un error como "la propiedad `saleZone` no existe").
+
+En este bloque el primer paso ya se había hecho en la sesión anterior, pero faltaba el segundo — por eso `npx tsc --noEmit` fallaba hasta que se corrió `npx prisma generate`.
+
+### 13.4 El filtro de búsqueda ahora combina tres preguntas con "o"
+
+Antes, cuando alguien elegía un departamento/municipio en el filtro de la tienda, el sitio solo mostraba productos cuyo **origen** coincidía con eso. Ahora el filtro combina tres preguntas distintas con un "o" (en programación esto se llama un operador **OR**): se muestra un producto si cumple **cualquiera** de estas tres condiciones:
+1. Es de venta **nacional** (da igual el municipio elegido, porque de todas formas se consigue ahí).
+2. Su **origen** coincide con el lugar elegido (la regla que ya existía).
+3. Es de venta **local** y el lugar elegido está en su lista de municipios de venta.
+
+Para armar esto en el código (`searchProducts` en `src/lib/catalog.ts`) hubo que reorganizar la función: el filtro de texto (buscar una palabra en el nombre/descripción) también usa un "o" interno (buscar en nombre en español, o en inglés, o en la descripción...), y en JavaScript no se pueden tener dos bloques "OR" distintos dentro del mismo objeto sin que uno pise al otro. La solución fue armar cada filtro (texto, geografía, categoría) como una pieza separada, y unir todas las piezas con un "y" (**AND**): "que cumpla el filtro de texto **Y** el filtro geográfico **Y** el filtro de categoría", donde el filtro geográfico por dentro tiene su propio "o" con los 3 casos de arriba.
+
+### 13.5 Cómo se probó sin usar el navegador
+
+Para confirmar que el filtro combinado funcionaba de verdad (y no solo que el código compilaba), se crearon 3 productos de prueba directo en la base de datos: uno de venta nacional con origen en una ciudad lejana, uno de venta local en Bucaramanga con origen en otra ciudad lejana, y uno de venta local en Medellín. Después se pidió la página de la tienda filtrada por Bucaramanga y se confirmó que aparecían los dos primeros pero no el tercero (y al revés, filtrando por Medellín). Esta es una forma rápida de probar la lógica del servidor sin depender de hacer clic manualmente en el navegador; los 3 productos de prueba se borraron apenas terminó la verificación, para no dejar datos falsos en el catálogo.
+
+---
+
+### Nuevos términos para el glosario (Parte 13)
+
+- **OR / AND (operadores lógicos):** formas de combinar varias condiciones en una sola consulta. "OR" (o) significa que basta con que se cumpla una de las condiciones; "AND" (y) significa que se tienen que cumplir todas al mismo tiempo.
+- **Migración vs. generar el cliente:** aplicar una migración cambia la base de datos real; generar el cliente actualiza el código que "sabe" qué forma tiene esa base de datos. Son dos pasos distintos y hay que hacer los dos después de cambiar el esquema de Prisma.
+- **onDelete: Cascade:** una regla de la base de datos que dice "si se borra la fila principal (el producto), borra automáticamente también sus filas relacionadas (sus municipios de venta)", para que no queden datos sueltos sin dueño.
+
+---
+
 _Última actualización: Fase 3 completa — Parte 1 (login), Parte 2 (productos), Parte 3 (fotos) y Parte 4 (productor y margen), todas construidas y probadas. Pendiente definir con el dueño el alcance de la Fase 4 (reseñas y pasarela de pago)._

@@ -65,6 +65,12 @@ model Product {
   // --- Intermediación: SOLO para uso interno, NUNCA exponer al cliente ---
   margin Float @default(5.0) // Porcentaje de margen de Bionexo sobre el precio (3–10 %)
 
+  // --- Zona de venta: A DÓNDE se vende/envía el producto (distinto del origen,
+  // que es DE DÓNDE es). "nacional" = todo el país; "internacional" = todo el
+  // país + exterior; "local" = solo los municipios listados en saleMunicipalities. ---
+  saleZone         String                   @default("nacional")
+  saleMunicipalities ProductSaleMunicipality[]
+
   // --- Relaciones ---
   categoryId String
   category   Category  @relation(fields: [categoryId], references: [id])
@@ -72,6 +78,17 @@ model Product {
 
   producerId String?   // Productor que fabrica u ofrece este producto (puede ser null)
   producer   Producer? @relation(fields: [producerId], references: [id])
+}
+
+// Municipio donde se vende un producto con zona de venta "local".
+// Solo tiene filas cuando Product.saleZone = "local"; un producto puede tener
+// varios (municipios de distintos departamentos incluso).
+model ProductSaleMunicipality {
+  id           String  @id @default(cuid())
+  productId    String
+  product      Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  department   String
+  municipality String
 }
 
 // Variante de un producto (talla, color o material).

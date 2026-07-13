@@ -5,6 +5,9 @@
 // Funciona en la página de tienda y en las páginas de cada categoría.
 // Al aplicar el filtro actualiza la URL con ?depto=... &mpio=... (o ?origen=internacional),
 // lo que hace que el servidor muestre solo los productos que coinciden.
+// El servidor (searchProducts en catalog.ts) combina 3 criterios con la
+// ubicación elegida: productos de venta nacional, productos cuyo ORIGEN
+// coincide, y productos de venta "local" en ese municipio.
 
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
@@ -81,7 +84,8 @@ export default function GeoFilter({
 
   return (
     <div className="rounded-xl border border-eco-forest/15 bg-eco-forest/5 p-4">
-      <p className="mb-3 text-sm font-semibold text-eco-forest">{t("filterTitle")}</p>
+      <p className="mb-1 text-sm font-semibold text-eco-forest">{t("filterTitle")}</p>
+      <p className="mb-3 text-xs text-foreground/60">{t("filterHint")}</p>
 
       <div className="flex flex-wrap items-end gap-3">
         {/* Selector de departamento */}

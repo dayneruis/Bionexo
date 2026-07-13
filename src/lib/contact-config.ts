@@ -4,9 +4,9 @@
 
 export const CONTACTO_BIONEXO = {
   // Número de WhatsApp en formato internacional sin signos (57 = Colombia)
-  whatsapp: "573001234567",
+  whatsapp: "573104825153",
   email: "contacto@bionexo.example.com",
-  telefono: "+57 300 123 4567",
+  telefono: "+57 310 482 5153",
   facebook: "bionexo",       // Solo el nombre de usuario, sin la URL completa
   instagram: "@bionexo",
   presencia: "Bucaramanga y área metropolitana · Bogotá D.C. · Envíos a toda Colombia",
