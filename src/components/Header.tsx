@@ -34,6 +34,9 @@ export default function Header() {
           <Link href="/tienda" className="transition-colors hover:text-eco-green">
             {t("nav.shop")}
           </Link>
+          <Link href="/noticias" className="transition-colors hover:text-eco-green">
+            {t("nav.news")}
+          </Link>
           <Link href="/sobre-nosotros" className="transition-colors hover:text-eco-green">
             {t("nav.about")}
           </Link>
@@ -50,6 +53,7 @@ export default function Header() {
       <nav className="flex items-center gap-4 overflow-x-auto border-t border-eco-green/20 px-4 py-2 text-sm font-semibold text-slate-700 sm:hidden">
         <Link href="/" className="hover:text-eco-green">{t("nav.home")}</Link>
         <Link href="/tienda" className="hover:text-eco-green">{t("nav.shop")}</Link>
+        <Link href="/noticias" className="hover:text-eco-green">{t("nav.news")}</Link>
         <Link href="/sobre-nosotros" className="hover:text-eco-green">{t("nav.about")}</Link>
         <SellButton className="whitespace-nowrap rounded-full border-2 border-eco-green px-3 py-1 text-xs font-bold text-eco-green hover:bg-eco-green hover:text-white sm:hidden" />
       </nav>

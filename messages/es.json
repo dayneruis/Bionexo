@@ -7,6 +7,7 @@
   "nav": {
     "home": "Inicio",
     "shop": "Tienda",
+    "news": "Noticias",
     "about": "Sobre nosotros",
     "menuTitle": "Categorías"
   },
@@ -164,6 +165,11 @@
     "umbrellaTitle": "Tu Basura Innova, nuestra marca sombrilla",
     "umbrellaBody": "Tu Basura Innova es una plataforma tecnológica y social para el reciclaje, la economía circular y la gestión ambiental, alineada con los Objetivos de Desarrollo Sostenible. Bionexo es su corazón comercial: el espacio donde la sostenibilidad se vuelve producto, y el reciclaje se convierte en progreso.",
     "cta": "Cuando compras en Bionexo, no solo adquieres un producto: cierras el ciclo."
+  },
+  "news": {
+    "title": "Noticias e Historias",
+    "subtitle": "Artículos y noticias cortas sobre economía circular y medio ambiente, e historias motivacionales de la marca y de nuestros productores.",
+    "empty": "Todavía no hay publicaciones. Vuelve pronto."
   },
   "footer": {
     "contactTitle": "Contacto",

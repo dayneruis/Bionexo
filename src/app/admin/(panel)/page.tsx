@@ -33,6 +33,15 @@ export default async function AdminHomePage() {
             Datos internos de contacto de los proveedores (nunca visibles al cliente).
           </p>
         </Link>
+        <Link
+          href="/admin/noticias"
+          className="rounded-xl border border-eco-green/20 bg-white p-5 shadow-sm transition-colors hover:border-eco-green"
+        >
+          <p className="font-bold text-eco-forest">Noticias e Historias</p>
+          <p className="mt-1 text-sm text-slate-500">
+            Crear, editar y borrar artículos, noticias e historias, con foto de portada y video opcional.
+          </p>
+        </Link>
       </div>
     </div>
   );

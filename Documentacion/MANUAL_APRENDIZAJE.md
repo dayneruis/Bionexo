@@ -660,4 +660,40 @@ Para confirmar que el filtro combinado funcionaba de verdad (y no solo que el c�
 
 ---
 
-_Última actualización: Fase 3 completa — Parte 1 (login), Parte 2 (productos), Parte 3 (fotos) y Parte 4 (productor y margen), todas construidas y probadas. Pendiente definir con el dueño el alcance de la Fase 4 (reseñas y pasarela de pago)._
+## Parte 14 — Nueva sección "Noticias e Historias"
+
+### 14.1 Reutilizar el mismo molde en vez de inventar uno nuevo
+
+Esta sección se construyó copiando, casi punto por punto, el mismo patrón que ya existía para Productos: una tabla en la base de datos, funciones "solo lectura pública" separadas de las funciones "para el panel", un formulario compartido entre crear y editar, y botones de acción rápida en el listado. Cuando un proyecto ya tiene un patrón que funciona bien, repetirlo para una funcionalidad parecida es más rápido y más confiable que inventar una forma distinta de resolver lo mismo — y además hace que el código sea más fácil de entender para cualquiera (persona o IA) que lo lea después, porque ya sabe qué esperar.
+
+### 14.2 Incrustar un video sin "subirlo"
+
+El dueño pidió que se pudiera meter un video de YouTube o Instagram en una publicación, pero sin subir ningún archivo de video al servidor (los videos pesan mucho y YouTube/Instagram ya los alojan gratis). La solución es un **iframe**: una especie de "ventana" dentro de la página que muestra el contenido de otra página web (en este caso, el reproductor de YouTube o Instagram), sin que ese contenido llegue a estar guardado en el servidor de Bionexo en ningún momento. El dueño solo pega el enlace normal del video (el que copiaría para compartirlo), y el código (`src/lib/video-embed.ts`) lo transforma en la dirección especial de "modo embed" que YouTube e Instagram entienden.
+
+### 14.3 Por qué se revisa el enlace dos veces (en el formulario y en el servidor)
+
+Cuando el admin pega un enlace de video en el formulario, aparece de inmediato una vista previa del video, para que sepa si el enlace es válido antes de guardar. Pero esa misma revisión se vuelve a hacer en el servidor (en `validarDatosPost`), porque la revisión del formulario se puede saltar (por ejemplo, llamando a la API directamente sin pasar por el formulario). Es la misma idea que ya se había visto con el margen de intermediación de los productos (Parte 11.2): la validación del navegador es solo comodidad, la del servidor es la que de verdad protege los datos.
+
+### 14.4 Un borrador es invisible de verdad, no solo "escondido"
+
+Una publicación en estado "Borrador" no debe verse en el sitio público bajo ninguna circunstancia — ni en el listado, ni entrando directamente a su dirección aunque alguien la adivine. Para lograr esto, la función que lee publicaciones para el público (`getPublishedPostBySlug` en `src/lib/posts.ts`) filtra por `status: "publicado"` como parte de la misma consulta a la base de datos, no como un paso aparte después. Así, aunque alguien escriba a mano la URL exacta de un borrador, la base de datos simplemente responde "no existe" (un error 404), porque para esa consulta específica, en efecto no existe ninguna publicación publicada con esa dirección.
+
+### 14.5 Por qué aquí sí se borra de verdad (y en Productos no)
+
+En la Parte 9 de este manual se explicó por qué los productos nunca se borran de verdad, solo se "dan de baja": porque un pedido antiguo podría quedar roto si el producto que compró alguien desaparece de la base de datos. Las publicaciones de Noticias e Historias no tienen ese problema — ningún otro dato del sitio depende de ellas — así que aquí sí se implementó un borrado permanente de verdad, tal como lo pidió el dueño. Es un buen ejemplo de que la misma pregunta ("¿debería borrarse de verdad o solo ocultarse?") puede tener respuestas distintas en distintas partes de un mismo proyecto, dependiendo de qué otra cosa dependa de esos datos.
+
+### 14.6 Una carpeta de subida compartida, no una nueva para cada cosa
+
+Cuando se agregó la subida de fotos de portada para las publicaciones, en vez de crear una ruta de subida de archivos totalmente nueva y separada, se reutilizó la misma ruta que ya subía fotos de producto (`/api/admin/upload`), agregándole la capacidad de elegir en qué carpeta guardar el archivo (`productos` o `noticias`). Para que el navegador no pudiera inventarse cualquier nombre de carpeta (lo cual podría ser peligroso), se usó una "lista blanca": solo esos dos nombres exactos se aceptan: cualquier otra cosa que llegue se ignora y se usa `productos` por defecto.
+
+---
+
+### Nuevos términos para el glosario (Parte 14)
+
+- **iframe:** una etiqueta de HTML que muestra el contenido de otra página web dentro de un recuadro en la página actual, como una ventana. Se usa aquí para mostrar el reproductor de YouTube o Instagram sin alojar el video en el propio servidor.
+- **Lista blanca (whitelist):** una lista corta y fija de valores permitidos; cualquier cosa que no esté en esa lista se rechaza o se reemplaza por un valor por defecto seguro. Es más seguro que tratar de adivinar y bloquear todos los valores "malos" posibles.
+- **Borrado permanente vs. "dar de baja":** borrar de verdad quita el dato para siempre de la base de datos; "dar de baja" solo cambia un estado (por ejemplo, `available` o `status`) y el dato sigue existiendo. Cuál usar depende de si algo más en el sistema depende de que ese dato siga existiendo.
+
+---
+
+_Última actualización: nueva sección pública "Noticias e Historias" (listado + ficha, bilingüe, con video incrustado de YouTube/Instagram) y su gestión completa (crear, editar, borrar, publicar/despublicar) desde el panel de administración. Pendiente definir con el dueño el alcance de la Fase 4 (reseñas y pasarela de pago)._

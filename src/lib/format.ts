@@ -15,3 +15,11 @@ export function formatUsd(priceUsd: number) {
     maximumFractionDigits: 2,
   }).format(priceUsd);
 }
+
+// Formatea una fecha en el idioma del sitio, ej: "13 de julio de 2026" (es)
+// o "July 13, 2026" (en). Usado en el listado y la ficha de Noticias e Historias.
+export function formatDate(fecha: Date, locale: "es" | "en") {
+  return new Intl.DateTimeFormat(locale === "en" ? "en-US" : "es-CO", {
+    dateStyle: "long",
+  }).format(fecha);
+}

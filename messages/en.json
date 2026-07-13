@@ -7,6 +7,7 @@
   "nav": {
     "home": "Home",
     "shop": "Shop",
+    "news": "News",
     "about": "About us",
     "menuTitle": "Categories"
   },
@@ -164,6 +165,11 @@
     "umbrellaTitle": "Tu Basura Innova, our parent brand",
     "umbrellaBody": "Tu Basura Innova is a technological and social platform for recycling, circular economy, and environmental management, aligned with the Sustainable Development Goals. Bionexo is its commercial heart: where sustainability becomes a product, and recycling becomes progress.",
     "cta": "When you buy at Bionexo, you don't just get a product — you close the loop."
+  },
+  "news": {
+    "title": "News & Stories",
+    "subtitle": "Short articles and news about the circular economy and the environment, plus motivational stories from the brand and our producers.",
+    "empty": "No posts yet. Check back soon."
   },
   "footer": {
     "contactTitle": "Contact",

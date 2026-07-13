@@ -8,7 +8,7 @@ Marca cada casilla a medida que pruebes. Si algo falla, anótalo para revisarlo 
 ## 1. Tienda pública — portada y navegación
 
 - [ ] `http://localhost:3000` redirige a `/es` (español por defecto).
-- [ ] Se ve el logo de Bionexo, el menú (Inicio, Tienda, Sobre nosotros) y el botón "Vender en Bionexo".
+- [ ] Se ve el logo de Bionexo, el menú (Inicio, Tienda, Noticias, Sobre nosotros) y el botón "Vender en Bionexo".
 - [ ] Aparece el banner "portada de marca" completo, sin recortes raros.
 - [ ] El buscador grande (mosaico de fotos) funciona: escribe algo y presiona buscar → te lleva a `/es/tienda?q=...`.
 - [ ] Los 4 botones de búsqueda rápida (Cartón, Plástico reciclado, Moda sostenible, Abono orgánico) funcionan.
@@ -140,6 +140,29 @@ En `/es/checkout`:
 - [ ] Abre en el navegador la ficha pública de un producto que sí tiene productor y margen asignados en el panel.
 - [ ] Usa "Ver código fuente de la página" (Ctrl+U) o el buscador del navegador (Ctrl+F) y busca el nombre del productor, su teléfono, o la palabra "margin"/"margen" en los datos — no debe aparecer en ninguna parte del HTML visible al cliente.
 - [ ] Confirma que esos datos (productor y margen) solo se ven dentro de `/admin`, con sesión iniciada.
+
+## 16. Noticias e Historias — sitio público
+
+- [ ] `/es/noticias` y `/en/noticias` cargan bien; si no hay publicaciones, muestran el mensaje de "todavía no hay publicaciones".
+- [ ] El enlace "Noticias" ("News" en inglés) aparece en el menú principal, junto a Inicio y Tienda.
+- [ ] Cada tarjeta del listado muestra foto de portada, fecha, título y resumen, y lleva a la ficha completa al hacer clic.
+- [ ] La ficha completa (`/es/noticias/<slug>`) muestra foto grande, fecha, título y el contenido completo (con los saltos de línea que escribiste en el panel).
+- [ ] Si la publicación tiene un video de YouTube o Instagram, se ve incrustado y se puede reproducir dentro de la página.
+- [ ] Cambiar de idioma (es/en) muestra el título, resumen y contenido en el idioma correspondiente.
+
+## 17. Panel — Noticias e Historias
+
+- [ ] `/admin/noticias` lista todas las publicaciones (publicadas y borradores), con buscador por título.
+- [ ] "+ Nueva publicación" abre el formulario vacío; se puede llenar y crear una publicación de prueba.
+- [ ] El slug se sugiere solo a partir del título en español, y se puede editar a mano.
+- [ ] Subir una foto de portada desde el computador funciona igual que en productos (JPG/PNG/WEBP/GIF, máximo 5 MB, con vista previa).
+- [ ] Pegar un enlace de YouTube o de Instagram en el campo de video muestra una vista previa del video ahí mismo, antes de guardar.
+- [ ] Pegar un enlace que no sea de YouTube ni Instagram (por ejemplo de Vimeo o de cualquier otra página) muestra un aviso de que el enlace no es válido.
+- [ ] El campo "Estado" deja elegir entre Publicado y Borrador.
+- [ ] Una publicación en Borrador NO aparece en `/noticias` del sitio público, ni se puede abrir directamente escribiendo su dirección a mano (da error 404).
+- [ ] El botón rápido "Publicar" / "Volver a borrador" en el listado cambia el estado sin abrir el formulario completo.
+- [ ] "Editar" en una publicación existente precarga todos sus datos correctamente, incluido el video si tiene.
+- [ ] El botón "Borrar" pide confirmación antes de borrar, y al confirmar la publicación desaparece de verdad (a diferencia de los productos, aquí sí se borra para siempre).
 
 ---
 

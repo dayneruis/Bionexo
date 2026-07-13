@@ -140,3 +140,26 @@ model OrderItem {
   unitPriceCop  Int
   quantity      Int     @default(1)
 }
+
+// Publicación de la sección "Noticias y Historias": noticias/artículos cortos
+// sobre economía circular y medio ambiente, e historias motivacionales de la
+// marca y de los productores. Se gestiona por completo desde el panel.
+model Post {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  titleEs       String
+  titleEn       String
+  summaryEs     String   // resumen corto para el listado
+  summaryEn     String
+  contentEs     String   // texto completo (párrafos simples, sin editor enriquecido)
+  contentEn     String
+  coverImageUrl String   // foto de portada, subida desde el panel
+
+  // Video incrustado (opcional): SOLO se guarda el enlace que pega el admin,
+  // nunca se sube un archivo de video al servidor. Se valida y se convierte
+  // en un iframe embebido con src/lib/video-embed.ts.
+  videoUrl String?
+
+  publishedAt DateTime @default(now()) // fecha de publicación, editable a mano
+  status      String   @default("borrador") // "publicado" | "borrador"
+}
