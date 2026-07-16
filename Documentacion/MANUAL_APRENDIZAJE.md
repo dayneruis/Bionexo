@@ -696,4 +696,39 @@ Cuando se agregó la subida de fotos de portada para las publicaciones, en vez d
 
 ---
 
+## Parte 15 — Corrección: código de servidor "colado" en un componente de cliente
+
+### 15.1 El error y qué lo causaba
+
+Al abrir el formulario de editar un producto en el panel, Next.js mostraba un error de compilación: `Module not found: Can't resolve 'fs'`. Traducido: "no encuentro el módulo `fs`" (`fs` es la parte de Node.js que lee y escribe archivos del disco duro).
+
+La causa: en Next.js, cada archivo es o bien **de servidor** (corre en la computadora que aloja el sitio, tiene acceso al disco duro y a la base de datos) o bien **de cliente** (corre dentro del navegador de quien visita el sitio, sin ningún acceso al disco duro ni a la base de datos). Un archivo se marca como "de cliente" escribiendo `"use client"` en su primera línea — eso es lo que tiene `ProductForm.tsx`, porque necesita reaccionar a lo que el admin escribe en el formulario en tiempo real.
+
+El problema fue que `ProductForm.tsx` (de cliente) importaba unos tipos y una constante desde `src/lib/admin-products.ts` — un archivo que sí es de servidor, porque usa Prisma para hablar con la base de datos SQLite (`dev.db`). Y esa base de datos, para leer el archivo `dev.db` del disco, usa por debajo el módulo `fs` de Node. Cuando Next.js intentaba empaquetar `ProductForm.tsx` para mandarlo al navegador, arrastraba con él a `admin-products.ts` y, con este, a `fs` — algo que **no existe** dentro de un navegador. De ahí el error.
+
+### 15.2 Por qué la solución no fue "borrar la importación y ya"
+
+`ProductForm.tsx` sí necesitaba esos tipos y esa constante (por ejemplo, la lista de zonas de venta: nacional/internacional/local, para dibujar las opciones del formulario). No se podían quitar sin romper el formulario. La solución fue **separar** lo que de verdad es exclusivo del servidor (las funciones que leen y escriben en la base de datos) de lo que es información "neutral" que cualquiera de los dos lados puede usar (los tipos y las listas de valores permitidos).
+
+Se crearon dos archivos nuevos, chiquitos y sin ninguna conexión a la base de datos:
+
+- `src/lib/product-types.ts` — los tipos de producto y la lista `ZONAS_DE_VENTA`.
+- `src/lib/post-types.ts` — los tipos de publicación y la lista `ESTADOS_POST`.
+
+`ProductForm.tsx` y `PostForm.tsx` (los dos formularios de cliente) ahora importan de estos archivos nuevos, nunca de `admin-products.ts` / `admin-posts.ts`. Y esos dos archivos de servidor, para no obligar a cambiar el resto del código que ya los usaba, simplemente **reexportan** lo mismo que antes (es decir, siguen ofreciendo esos mismos tipos a quien los pida, pero por debajo ya no los define él mismo, sino que los toma prestados del archivo nuevo).
+
+### 15.3 La regla para el futuro
+
+Cualquier archivo con `"use client"` solo puede importar cosas que funcionen dentro de un navegador. Antes de importar algo desde un archivo nuevo en un componente de cliente, conviene preguntarse: "¿este archivo usa `@/lib/db` (la base de datos) en algún lugar, aunque sea indirectamente?" Si la respuesta es sí, ese archivo no se puede importar desde un componente de cliente — hay que sacar primero lo que realmente se necesita a un archivo aparte, sin esa conexión a la base de datos, como se hizo aquí.
+
+---
+
+### Nuevos términos para el glosario (Parte 15)
+
+- **Componente de servidor vs. de cliente:** en Next.js, un componente de servidor corre en la computadora que aloja el sitio (puede leer archivos y hablar con la base de datos, pero no puede reaccionar a clics ni escribir en un campo en tiempo real). Un componente de cliente corre dentro del navegador de la persona que visita el sitio (puede reaccionar a la interacción, pero no tiene ningún acceso al disco duro ni a la base de datos). Se marca escribiendo `"use client"` como primera línea del archivo.
+- **`fs` (file system):** la parte de Node.js que permite leer y escribir archivos en el disco duro. Solo existe en el servidor; un navegador no tiene ningún equivalente por seguridad (una página web no puede andar leyendo archivos de la computadora de quien la visita).
+- **Empaquetar (bundling):** el proceso mediante el cual Next.js junta un componente de cliente y todo lo que importa (directa o indirectamente) en un solo paquete de código que le manda al navegador. Si algo de ese paquete no puede existir en un navegador (como `fs`), el empaquetado falla.
+
+---
+
 _Última actualización: nueva sección pública "Noticias e Historias" (listado + ficha, bilingüe, con video incrustado de YouTube/Instagram) y su gestión completa (crear, editar, borrar, publicar/despublicar) desde el panel de administración. Pendiente definir con el dueño el alcance de la Fase 4 (reseñas y pasarela de pago)._

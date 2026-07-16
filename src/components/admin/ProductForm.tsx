@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { slugify } from "@/lib/slugify";
 import { NOMBRES_DEPARTAMENTOS, getMunicipiosDe } from "@/lib/colombia-geo";
-import { ZONAS_DE_VENTA, type VarianteInput, type MunicipioVentaInput, type ZonaDeVenta } from "@/lib/admin-products";
+import { ZONAS_DE_VENTA, type VarianteInput, type MunicipioVentaInput, type ZonaDeVenta } from "@/lib/product-types";
 
 const ETIQUETAS_ZONA: Record<ZonaDeVenta, string> = {
   nacional: "Nacional (todo el territorio colombiano)",

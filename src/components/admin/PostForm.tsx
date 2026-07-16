@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { slugify } from "@/lib/slugify";
 import { analizarVideoUrl } from "@/lib/video-embed";
-import { ESTADOS_POST, type EstadoPost } from "@/lib/admin-posts";
+import { ESTADOS_POST, type EstadoPost } from "@/lib/post-types";
 import VideoEmbed from "@/components/VideoEmbed";
 
 const ETIQUETAS_ESTADO: Record<EstadoPost, string> = {

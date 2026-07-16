@@ -5,23 +5,14 @@
 import { prisma } from "@/lib/db";
 import { slugify } from "@/lib/slugify";
 import { analizarVideoUrl } from "@/lib/video-embed";
+import { ESTADOS_POST, type DatosPost, type EstadoPost } from "@/lib/post-types";
 
-export const ESTADOS_POST = ["publicado", "borrador"] as const;
-export type EstadoPost = (typeof ESTADOS_POST)[number];
-
-export type DatosPost = {
-  slug: string;
-  titleEs: string;
-  titleEn: string;
-  summaryEs: string;
-  summaryEn: string;
-  contentEs: string;
-  contentEn: string;
-  coverImageUrl: string;
-  videoUrl: string | null;
-  publishedAt: Date;
-  status: EstadoPost;
-};
+// Los tipos y la lista de estados viven en post-types.ts (sin Prisma) porque
+// componentes de CLIENTE (PostForm.tsx, TogglePublicadoButton.tsx) también
+// los necesitan. Se reexportan aquí para no romper al resto del código de
+// servidor que ya los importaba desde este archivo.
+export { ESTADOS_POST };
+export type { DatosPost, EstadoPost };
 
 // Lista todas las publicaciones (publicadas y borradores) para el listado del panel.
 export function listarPostsAdmin(query?: string) {

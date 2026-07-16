@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { EstadoPost } from "@/lib/admin-posts";
+import type { EstadoPost } from "@/lib/post-types";
 
 // Botón de acción rápida en el listado: cambia publicado/borrador sin tener
 // que abrir el formulario completo de edición. Mismo patrón que

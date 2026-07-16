@@ -5,43 +5,14 @@
 
 import { prisma } from "@/lib/db";
 import { slugify } from "@/lib/slugify";
+import { ZONAS_DE_VENTA, type DatosProducto, type MunicipioVentaInput, type VarianteInput, type ZonaDeVenta } from "@/lib/product-types";
 
-export type VarianteInput = { type: string; value: string };
-
-// Municipio de venta local: department/municipality se guardan como texto,
-// igual que originCity/originDepartment (mismo patrón, sin tabla de códigos).
-export type MunicipioVentaInput = { department: string; municipality: string };
-
-export const ZONAS_DE_VENTA = ["nacional", "internacional", "local"] as const;
-export type ZonaDeVenta = (typeof ZONAS_DE_VENTA)[number];
-
-export type DatosProducto = {
-  slug: string;
-  nameEs: string;
-  nameEn: string;
-  descriptionEs: string;
-  descriptionEn: string;
-  priceCop: number;
-  available: boolean;
-  featured: boolean;
-  imageUrl: string;
-  originCity: string;
-  originDepartment: string;
-  isInternational: boolean;
-  originCountry: string | null;
-  size: string | null;
-  warranty: boolean;
-  warrantyDuration: string | null;
-  categoryId: string;
-  variants: VarianteInput[];
-  // Intermediación (Fase 3, Parte 4): SOLO uso interno, nunca se expone al cliente.
-  producerId: string | null;
-  margin: number;
-  // Zona de venta (bloque de cierre de Fase 3): A DÓNDE se vende, distinto del
-  // origen (DE DÓNDE es). Ver comentario en prisma/schema.prisma.
-  saleZone: ZonaDeVenta;
-  saleMunicipalities: MunicipioVentaInput[];
-};
+// Los tipos y la lista de zonas viven en product-types.ts (sin Prisma) porque
+// el componente de CLIENTE ProductForm.tsx también los necesita. Se
+// reexportan aquí para no romper al resto del código de servidor que ya los
+// importaba desde este archivo.
+export { ZONAS_DE_VENTA };
+export type { DatosProducto, MunicipioVentaInput, VarianteInput, ZonaDeVenta };
 
 // Lista todos los productos (disponibles y no disponibles) para el listado del panel.
 export function listarProductosAdmin(query?: string) {
