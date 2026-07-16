@@ -36,6 +36,10 @@ export type DatosProducto = {
   // Intermediación (Fase 3, Parte 4): SOLO uso interno, nunca se expone al cliente.
   producerId: string | null;
   margin: number;
+  // Unidades disponibles: ajuste manual desde el panel, SÍ visible al cliente
+  // en la ficha pública. Si llega a 0, el producto se muestra como no disponible
+  // (ver src/lib/availability.ts).
+  stock: number;
   // Zona de venta (bloque de cierre de Fase 3): A DÓNDE se vende, distinto del
   // origen (DE DÓNDE es). Ver comentario en prisma/schema.prisma.
   saleZone: ZonaDeVenta;

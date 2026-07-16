@@ -51,6 +51,12 @@ model Product {
   featured      Boolean  @default(false)
   imageUrl      String
 
+  // Unidades disponibles: se ajusta a mano desde el panel (sin descuento
+  // automático todavía; eso llega con la pasarela de pago en la Fase 4). Se
+  // muestra al cliente en la ficha pública. Si llega a 0, el producto se
+  // muestra como "No disponible" aunque el interruptor `available` siga en true.
+  stock Int @default(10)
+
   // --- Origen del producto ---
   originCity       String  @default("Bucaramanga")  // Ciudad de origen (Colombia)
   originDepartment String  @default("Santander")    // Departamento de origen (Colombia)
@@ -63,7 +69,7 @@ model Product {
   warrantyDuration String?                 // Duración de la garantía (p.ej. "6 meses", "1 año")
 
   // --- Intermediación: SOLO para uso interno, NUNCA exponer al cliente ---
-  margin Float @default(5.0) // Porcentaje de margen de Bionexo sobre el precio (3–10 %)
+  margin Float @default(5.0) // Porcentaje de margen de Bionexo sobre el precio (3–30 %)
 
   // --- Zona de venta: A DÓNDE se vende/envía el producto (distinto del origen,
   // que es DE DÓNDE es). "nacional" = todo el país; "internacional" = todo el

@@ -115,10 +115,16 @@ export function validarDatosProducto(body: unknown): DatosProducto | { error: st
     return { error: "El slug quedó vacío después de limpiarlo. Usa letras y números." };
   }
 
-  // Margen de intermediación: regla de negocio documentada en CLAUDE.md (3–10 %).
+  // Margen de intermediación: regla de negocio documentada en CLAUDE.md (3–30 %).
   const margin = typeof b.margin === "number" ? b.margin : Number(b.margin);
-  if (!Number.isFinite(margin) || margin < 3 || margin > 10) {
-    return { error: "El margen debe ser un número entre 3 y 10 (%)." };
+  if (!Number.isFinite(margin) || margin < 3 || margin > 30) {
+    return { error: "El margen debe ser un número entre 3 y 30 (%)." };
+  }
+
+  // Unidades disponibles: ajuste manual, entero mayor o igual a 0.
+  const stock = typeof b.stock === "number" ? b.stock : Number(b.stock);
+  if (!Number.isInteger(stock) || stock < 0) {
+    return { error: "Las unidades disponibles deben ser un número entero mayor o igual a 0." };
   }
 
   const producerId =
@@ -187,6 +193,7 @@ export function validarDatosProducto(body: unknown): DatosProducto | { error: st
     variants,
     producerId,
     margin,
+    stock,
     saleZone,
     // Los municipios locales solo tienen sentido cuando la zona es "local";
     // si cambian de zona sin borrar la lista, igual queda vacía en la base.

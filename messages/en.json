@@ -85,6 +85,7 @@
     "warranty": "Warranty",
     "warrantyYes": "Includes warranty",
     "warrantyNo": "No warranty",
+    "stockAvailable": "{count} units available",
     "whatsappBuyMessage": "Hi, I want to buy: {product}",
     "whatsappInterestMessage": "Hi, I'm interested in: {product}. Could you give me more information?"
   },

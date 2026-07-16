@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 import type { Product } from "@/generated/prisma/client";
 import { localize } from "@/lib/catalog";
 import { formatCop } from "@/lib/format";
+import { esDisponiblePublico } from "@/lib/availability";
 import { type Locale } from "@/i18n/routing";
 import AvailabilityBadge from "./AvailabilityBadge";
 
@@ -33,7 +34,7 @@ export default function ProductCard({ product }: { product: Product }) {
         </h3>
         <p className="text-lg font-bold text-eco-green">{formatCop(product.priceCop)}</p>
         <div className="mt-auto flex items-center justify-between pt-1">
-          <AvailabilityBadge available={product.available} />
+          <AvailabilityBadge available={esDisponiblePublico(product)} />
           <span className="text-sm font-semibold text-eco-cyan underline-offset-2 group-hover:underline">
             {t("viewProduct")} →
           </span>

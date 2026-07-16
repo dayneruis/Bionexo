@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { getProductBySlug, localize } from "@/lib/catalog";
+import { esDisponiblePublico } from "@/lib/availability";
 import { type Locale } from "@/i18n/routing";
 import AvailabilityBadge from "@/components/AvailabilityBadge";
 import PriceDisplay from "@/components/PriceDisplay";
@@ -60,7 +61,15 @@ export default async function ProductPage({
           {/* Precio en COP con equivalente en USD */}
           <PriceDisplay priceCop={product.priceCop} />
 
-          <AvailabilityBadge available={product.available} />
+          <AvailabilityBadge available={esDisponiblePublico(product)} />
+
+          {/* Unidades disponibles: ajuste manual desde el panel. Si es 0, la
+              insignia de arriba ya dice "No disponible", así que se omite. */}
+          {product.stock > 0 && (
+            <p className="text-sm text-foreground/60">
+              📦 {t("product.stockAvailable", { count: product.stock })}
+            </p>
+          )}
 
           {/* Origen geográfico: ciudad/departamento o país si es internacional */}
           <OriginBadge

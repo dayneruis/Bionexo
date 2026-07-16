@@ -48,6 +48,7 @@ export default async function AdminProductosPage({
               <th className="px-4 py-3">Producto</th>
               <th className="px-4 py-3">Categoría</th>
               <th className="px-4 py-3">Precio</th>
+              <th className="px-4 py-3">Unidades</th>
               <th className="px-4 py-3">Estado</th>
               <th className="px-4 py-3">Acciones</th>
             </tr>
@@ -58,6 +59,12 @@ export default async function AdminProductosPage({
                 <td className="px-4 py-3 font-semibold text-eco-forest">{p.nameEs}</td>
                 <td className="px-4 py-3 text-slate-500">{p.category.nameEs}</td>
                 <td className="px-4 py-3 text-slate-600">{formatCop(p.priceCop)}</td>
+                <td className="px-4 py-3 text-slate-600">
+                  {p.stock}
+                  {p.stock === 0 && (
+                    <span className="ml-1.5 text-xs text-amber-600">(agotado)</span>
+                  )}
+                </td>
                 <td className="px-4 py-3">
                   <span
                     className={
@@ -85,7 +92,7 @@ export default async function AdminProductosPage({
 
             {productos.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-10 text-center text-slate-400">
+                <td colSpan={6} className="px-4 py-10 text-center text-slate-400">
                   No se encontraron productos.
                 </td>
               </tr>

@@ -731,4 +731,35 @@ Cualquier archivo con `"use client"` solo puede importar cosas que funcionen den
 
 ---
 
-_Última actualización: nueva sección pública "Noticias e Historias" (listado + ficha, bilingüe, con video incrustado de YouTube/Instagram) y su gestión completa (crear, editar, borrar, publicar/despublicar) desde el panel de administración. Pendiente definir con el dueño el alcance de la Fase 4 (reseñas y pasarela de pago)._
+## Parte 16 — Margen ampliado (3–30 %) y stock manual visible al público
+
+### 16.1 Por qué el margen sí se podía ampliar sin tocar la base de datos
+
+El campo `margin` en la base de datos es un número decimal (`Float`) sin ningún límite propio guardado ahí — el rango "entre 3 y 10" nunca fue una regla de la base de datos, sino una regla de negocio que se hacía cumplir en tres lugares del código: el atributo `min`/`max` del campo numérico en el formulario del panel (para que el navegador no deje escribir un número fuera de rango), y una segunda revisión igual de estricta en el servidor (`validarDatosProducto`), por si alguien intenta mandar un valor fuera de rango sin pasar por el formulario. Como no era una restricción de la base de datos, ampliar el rango a 3–30 % fue tan simple como cambiar esos dos números en los dos lugares — no hizo falta ninguna migración.
+
+### 16.2 Stock: un campo que sí se muestra, a diferencia del margen y el productor
+
+Hasta ahora, todos los campos "internos" del producto (margen, productor) tenían una regla clara: nunca se muestran al cliente. El campo de stock ("unidades disponibles") es distinto a propósito: el dueño pidió que sí se muestre en la ficha pública. Por eso no se agregó junto a "Datos internos" en el formulario del panel, sino junto a "Disponible" y "Destacado en portada", en la sección de "Datos básicos" — para dejar claro, con la propia organización del formulario, que este campo es información pública del producto, no un dato reservado para el negocio.
+
+### 16.3 Una regla calculada, no un valor que se copia
+
+Para que "0 unidades" implique automáticamente "no disponible", había dos caminos posibles:
+1. Que al guardar el producto con stock 0, el código cambiara también el interruptor `available` a `false` de una vez (copiando el resultado).
+2. Que la disponibilidad que ve el público se **calcule al momento de mostrarla**, combinando los dos datos (`available` y `stock`), sin tocar nunca el valor guardado de `available`.
+
+Se eligió la segunda opción (la función `esDisponiblePublico()` en `src/lib/availability.ts`). La ventaja: si el admin vuelve a subir el stock de 0 a, por ejemplo, 8 unidades, el producto vuelve a aparecer como disponible automáticamente, sin que el admin tenga que acordarse de volver a marcar el interruptor "Disponible" a mano. El interruptor guardado sigue reflejando la intención real del admin ("yo quiero que este producto se pueda vender"); el stock es una condición aparte que se revisa cada vez que alguien visita la página, no un valor que se "contamina" el uno al otro.
+
+### 16.4 Por qué el valor por defecto de la migración fue 10 y no 0
+
+Cuando se agrega un campo nuevo y obligatorio a una tabla que ya tiene filas (en este caso, los 20 productos de ejemplo), hay que decidir qué valor le toca a esas filas ya existentes. Si el valor por defecto hubiera sido 0, los 20 productos de ejemplo habrían pasado a mostrarse todos como "No disponible" de un momento a otro (por la regla de la Parte 16.3), aunque no había ninguna razón real para eso. Por eso se eligió 10 como valor por defecto: un número que deja los productos de ejemplo funcionando igual que antes, y que el dueño puede ir ajustando producto por producto según la cantidad real que tenga.
+
+---
+
+### Nuevos términos para el glosario (Parte 16)
+
+- **Valor calculado vs. valor guardado:** un valor guardado se escribe una vez en la base de datos y no cambia hasta que alguien lo edite a mano. Un valor calculado se obtiene combinando otros datos cada vez que se necesita, así que siempre está "al día" sin que nadie tenga que actualizarlo a mano. La disponibilidad pública de un producto (Parte 16.3) es un valor calculado a partir de dos guardados (`available` y `stock`).
+- **Valor por defecto en una migración:** cuando se agrega una columna nueva a una tabla que ya tiene filas, el valor por defecto es lo que se le asigna automáticamente a esas filas viejas (que nunca tuvieron esa columna). Elegir bien ese valor evita cambios de comportamiento no deseados en los datos que ya existían.
+
+---
+
+_Última actualización: rango del margen de intermediación ampliado de 3–10 % a 3–30 %, y nuevo campo de stock manual ("unidades disponibles"), visible en la ficha pública, que marca el producto como no disponible al llegar a 0. Pendiente definir con el dueño el alcance de la Fase 4 (reseñas y pasarela de pago)._

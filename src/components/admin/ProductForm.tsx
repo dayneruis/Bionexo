@@ -26,6 +26,7 @@ type ProductoExistente = {
   priceCop: number;
   available: boolean;
   featured: boolean;
+  stock: number;
   imageUrl: string;
   originCity: string;
   originDepartment: string;
@@ -68,6 +69,9 @@ export default function ProductForm({
   const [available, setAvailable] = useState(producto?.available ?? true);
   const [featured, setFeatured] = useState(producto?.featured ?? false);
   const [imageUrl, setImageUrl] = useState(producto?.imageUrl ?? "");
+  // Unidades disponibles: ajuste manual (sin descuento automático todavía).
+  // Si llega a 0, la ficha pública muestra el producto como no disponible.
+  const [stock, setStock] = useState(producto?.stock ?? 10);
 
   const [slug, setSlug] = useState(producto?.slug ?? "");
   const [slugEditadoAMano, setSlugEditadoAMano] = useState(esEdicion);
@@ -200,6 +204,7 @@ export default function ProductForm({
       priceCop,
       available,
       featured,
+      stock,
       imageUrl,
       originCity,
       originDepartment,
@@ -354,7 +359,7 @@ export default function ProductForm({
           />
         </div>
 
-        <div className="mt-4 flex flex-wrap gap-6">
+        <div className="mt-4 flex flex-wrap items-end gap-6">
           <label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
@@ -373,7 +378,26 @@ export default function ProductForm({
             />
             Destacado en portada
           </label>
+          <div className="w-40">
+            <Campo label="Unidades disponibles">
+              <input
+                type="number"
+                min={0}
+                step={1}
+                required
+                value={stock}
+                onChange={(e) => setStock(Number(e.target.value))}
+                className={inputClass}
+              />
+            </Campo>
+          </div>
         </div>
+        {stock === 0 && (
+          <p className="mt-2 text-xs text-amber-600">
+            Con 0 unidades, el producto se mostrará como "No disponible" en el sitio público
+            aunque el interruptor "Disponible" esté marcado.
+          </p>
+        )}
       </section>
 
       {/* ── Datos internos: productor y margen ── */}
@@ -403,7 +427,7 @@ export default function ProductForm({
             <input
               type="number"
               min={3}
-              max={10}
+              max={30}
               step={0.5}
               required
               value={margin}
