@@ -195,7 +195,7 @@
 - **Ruta del panel:** `src/app/admin/...`, deliberadamente **fuera** de `[locale]`. El panel es solo en español, sin Header/Footer/carrito de la tienda pública, y con su propio `layout.tsx` raíz (su propio `<html>/<body>`, ya que no hay un `app/layout.tsx` compartido).
 - **Un solo usuario administrador:** en vez de una librería de autenticación completa (NextAuth/Auth.js), que está pensada para múltiples usuarios y proveedores externos, se implementó un login a la medida porque solo hay un usuario (el dueño del negocio).
   - Usuario y hash de la contraseña en variables de entorno: `ADMIN_USER`, `ADMIN_PASSWORD_HASH` (en `.env`, nunca en git).
-  - Para cambiar la contraseña: `npx tsx scripts/generar-hash-admin.ts "contrasena-nueva"` y pegar el resultado en `.env`.
+  - Para cambiar la contraseña: `npx tsx scripts/generar-hash-admin.ts` y pegar el resultado en `.env`. El script pregunta la contraseña de forma oculta (se ve como `*`, nunca en texto plano) y pide confirmarla dos veces; ya no se pasa como argumento del comando (ver sección 30).
   - **Cuidado con los `$` en `.env`:** Next.js expande variables tipo `$NOMBRE` dentro de `.env` (como Docker Compose). El hash de bcrypt empieza con `$2b$10$...`, así que sin escapar cada `$` como `\$`, Next.js los interpretaba como variables vacías y corrompía el hash en silencio (el login fallaba con la contraseña correcta). El script `generar-hash-admin.ts` ya imprime el hash **pre-escapado**, listo para pegar.
 - **Verificación de contraseña (`src/lib/admin-credentials.ts`):** usa `bcryptjs` (versión pura en JavaScript, sin compilar nada en Windows). Esta verificación **solo puede correr en Node.js**, nunca en el middleware (ver siguiente punto).
 - **Sesión (`src/lib/admin-auth.ts`):** cookie `bionexo_admin_session`, firmada con `jose` (JWT, HS256) usando el secreto `ADMIN_SESSION_SECRET`, vence a los 7 días, `httpOnly` (JavaScript del navegador no puede leerla). `jose` se eligió porque, a diferencia de `bcrypt`, sí funciona en el **Edge Runtime** del middleware.
@@ -292,4 +292,13 @@ Este bloque se había quedado a medias en una sesión anterior (3 de los 4 archi
 
 ---
 
-_Última actualización: rango del margen de intermediación ampliado de 3–10 % a 3–30 %, y nuevo campo de stock manual ("unidades disponibles") visible en la ficha pública, que marca el producto como no disponible al llegar a 0. Siguiente fase pendiente de definir con el dueño: Fase 4 (reseñas/opiniones y pasarela de pago, según el plan original de la sección 10)._
+## 30. Bitácora — Cambio de contraseña del panel sin mostrarla en pantalla
+
+- **`scripts/generar-hash-admin.ts` ya no recibe la contraseña como argumento del comando** (`npx tsx scripts/generar-hash-admin.ts "contrasena"`, forma anterior). Ahora se ejecuta sin argumentos (`npx tsx scripts/generar-hash-admin.ts`) y el script la pregunta de forma interactiva y oculta: se ve un `*` por cada tecla, nunca el texto real, y pide escribirla dos veces para confirmar que coincide.
+- **Por qué el cambio:** el dueño pidió no ver la contraseña en pantalla. Al recibirla como argumento del comando, quedaba visible mientras se escribía (y podía quedar en el historial de la terminal). Al leerla directo del teclado en modo "oculto" (`stdin` en *raw mode*, sin usar ninguna librería nueva), además se resuelve de paso el problema de pegado de símbolos que mencionó el dueño: como ya no la interpreta el shell (PowerShell/Git Bash) como parte del comando, no importa qué caracteres tenga (`$`, `!`, espacios, comillas, etc.).
+- **Si el script se corre sin una terminal real** (por ejemplo, redirigiendo la entrada desde una tubería o un archivo), ahora muestra un mensaje claro pidiendo abrirlo directamente en PowerShell o Git Bash, en vez de un error críptico de Node.
+- **Sin cambios en el resto del flujo:** el hash sigue imprimiéndose pre-escapado (los `$` como `\$`), listo para pegar tal cual en `ADMIN_PASSWORD_HASH` dentro de `.env` (ver sección 21 sobre por qué hace falta ese escape).
+
+---
+
+_Última actualización: el script para cambiar la contraseña del panel (`generar-hash-admin.ts`) ahora la pide de forma interactiva y oculta (sin mostrarla en pantalla ni pasarla como argumento del comando). Siguiente fase pendiente de definir con el dueño: Fase 4 (reseñas/opiniones y pasarela de pago, según el plan original de la sección 10)._

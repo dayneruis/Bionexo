@@ -468,10 +468,10 @@ Al probar el login la primera vez, fallaba incluso con la contraseña correcta. 
 Corre este comando en la terminal, dentro de la carpeta del proyecto:
 
 ```
-npx tsx scripts/generar-hash-admin.ts "tu-contrasena-nueva"
+npx tsx scripts/generar-hash-admin.ts
 ```
 
-Va a imprimir una línea `ADMIN_PASSWORD_HASH="..."` lista para pegar en el archivo `.env`, reemplazando la que ya está.
+El script pregunta la contraseña dos veces (se ve como `*` mientras la escribes, nunca en texto plano) y luego imprime una línea `ADMIN_PASSWORD_HASH="..."` lista para pegar en el archivo `.env`, reemplazando la que ya está. Ver la Parte 17 de este manual para la explicación de por qué funciona así.
 
 ---
 
@@ -762,4 +762,29 @@ Cuando se agrega un campo nuevo y obligatorio a una tabla que ya tiene filas (en
 
 ---
 
-_Última actualización: rango del margen de intermediación ampliado de 3–10 % a 3–30 %, y nuevo campo de stock manual ("unidades disponibles"), visible en la ficha pública, que marca el producto como no disponible al llegar a 0. Pendiente definir con el dueño el alcance de la Fase 4 (reseñas y pasarela de pago)._
+## Parte 17 — Pedir una contraseña sin mostrarla en pantalla
+
+### 17.1 El problema con "pasarla como argumento del comando"
+
+Antes, para cambiar la contraseña del panel se escribía así: `npx tsx scripts/generar-hash-admin.ts "mi-contrasena"`. El problema es que todo lo que se escribe como parte de un comando queda **visible en la propia terminal** mientras se escribe (y a veces también queda guardado en el historial de comandos de la terminal). Además, si la contraseña tiene símbolos que el shell (PowerShell o Git Bash) interpreta de forma especial (como `$`, `!`, comillas o espacios), el comando puede romperse o pegarse mal — justo el problema que mencionaste con el pegado de símbolos.
+
+### 17.2 La solución: leer directo del teclado, en "modo oculto"
+
+Se cambió el script para que ya no reciba la contraseña como parte del comando. En vez de eso, la pregunta interactivamente: mientras escribes, cada tecla se reemplaza por un `*` en pantalla (igual que cuando escribes la contraseña de tu computador o del wifi), y nunca se imprime el texto real. Esto se logra poniendo la entrada de teclado (`stdin` en Node.js) en lo que se llama **modo crudo** (*raw mode*): en vez de que la terminal espere a que presiones Enter para entregar la línea completa, el programa recibe cada tecla al instante, una por una, y decide qué hacer con ella (mostrar un `*`, borrar con retroceso, terminar con Enter).
+
+Como ventaja adicional, esto también resuelve el problema de pegar contraseñas con símbolos raros: al escribir (o pegar) directamente en este modo, el programa nunca le pide ayuda al shell para interpretar el texto — lo recibe carácter por carácter, tal cual, sin que a `$` o `!` les pase nada especial.
+
+### 17.3 Por qué se pide dos veces
+
+Como no se ve lo que se escribe, es fácil equivocarse sin darse cuenta (una tecla de más, una de menos). Por eso el script pide escribirla dos veces y compara que sean idénticas antes de seguir — si no coinciden, avisa y no genera ningún hash, para no terminar con una contraseña distinta a la que creías haber puesto.
+
+---
+
+### Nuevos términos para el glosario (Parte 17)
+
+- **Modo crudo (*raw mode*) de la terminal:** modo en el que un programa recibe cada tecla que se presiona al instante, en vez de esperar a que el usuario presione Enter para recibir la línea completa. Es lo que permite mostrar un `*` por cada tecla en vez del carácter real, o reaccionar de inmediato a teclas especiales como Ctrl+C.
+- **Entrada estándar (`stdin`):** el "canal" por el que un programa de terminal recibe lo que el usuario escribe en el teclado. Es distinto de recibir datos como argumentos del comando (lo que ya no hace este script) o de un archivo.
+
+---
+
+_Última actualización: el script para cambiar la contraseña del panel (`generar-hash-admin.ts`) ahora la pide de forma interactiva y oculta (con asteriscos), en vez de recibirla como argumento del comando. Pendiente definir con el dueño el alcance de la Fase 4 (reseñas y pasarela de pago)._
