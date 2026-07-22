@@ -787,4 +787,37 @@ Como no se ve lo que se escribe, es fácil equivocarse sin darse cuenta (una tec
 
 ---
 
-_Última actualización: el script para cambiar la contraseña del panel (`generar-hash-admin.ts`) ahora la pide de forma interactiva y oculta (con asteriscos), en vez de recibirla como argumento del comando. Pendiente definir con el dueño el alcance de la Fase 4 (reseñas y pasarela de pago)._
+## Parte 18 — El código ya vive en GitHub
+
+### 18.1 Qué significa "subir el código a GitHub"
+
+Hasta ahora, todo el historial de cambios (los "commits") solo existía en el disco duro de este computador, dentro de la carpeta `D:\Eccomerce\.git`. Si el computador se dañara o se perdiera, se perdería también todo ese historial. "Subir a GitHub" significa copiar ese historial completo a un servidor externo (github.com), que sirve como respaldo y, más adelante, como punto de partida para desplegar la tienda en internet.
+
+Esto se hizo en dos pasos:
+1. **Conectar** el proyecto local con un repositorio vacío ya creado en GitHub (`git remote add origin ...`), como quien guarda la dirección de un buzón antes de empezar a enviarle cartas.
+2. **Empujar** (`git push`) todo el historial de commits hacia ese buzón.
+
+### 18.2 Por qué el primer intento se quedó "colgado"
+
+En Windows, Git normalmente usa un ayudante llamado *Git Credential Manager* para iniciar sesión en GitHub, que intenta abrir una ventana del navegador. En este caso esa ventana no se podía completar, así que el comando se quedó esperando una respuesta que nunca llegaba. La solución fue pedirle a Git, con `-c credential.helper=`, que **no** use ese ayudante para ese comando en particular, y en cambio pregunte el usuario y la contraseña directo en la terminal, en texto plano (bueno, con la entrada oculta para la contraseña).
+
+### 18.3 Token de acceso personal, en vez de la contraseña de la cuenta
+
+Desde hace unos años, GitHub ya no acepta la contraseña normal de la cuenta para operaciones de Git (como `git push`) por seguridad. En su lugar, se genera un **token de acceso personal**: una clave larga y aleatoria, creada desde la configuración de GitHub, que funciona como una "llave temporal" con permisos limitados (en este caso, solo para subir código). Ese token es el que se pegó en el lugar donde normalmente iría la contraseña.
+
+### 18.4 Por qué `.env` nunca corrió peligro
+
+El archivo `.env` (donde vive el hash de la contraseña del panel de administración) está listado en `.gitignore` desde el principio del proyecto (ver Parte de seguridad del panel). Eso significa que Git lo ignora por completo: nunca lo propone para guardar en un commit, así que nunca pudo terminar subido a GitHub. Se comprobó con el comando `git ls-files | grep .env`, que lista todos los archivos que Git sí tiene guardados y busca cuáles contienen "`.env`" en el nombre — no encontró ninguno, confirmando que el archivo real (con datos sensibles) nunca formó parte del repositorio.
+
+---
+
+### Nuevos términos para el glosario (Parte 18)
+
+- **Repositorio remoto:** una copia del proyecto (con todo su historial de commits) que vive en un servidor externo, como github.com, en vez de en el propio computador. `origin` es el apodo que Git le da por defecto al repositorio remoto principal.
+- **`git push`:** el comando que copia los commits guardados localmente hacia el repositorio remoto.
+- **Token de acceso personal:** una clave alternativa a la contraseña de una cuenta, pensada para que programas (como Git) se identifiquen sin usar la contraseña real de la persona, y que se puede revocar por separado si algún día se filtra.
+- **`.gitignore`:** el archivo que le dice a Git qué archivos o carpetas debe ignorar siempre, para que nunca se incluyan en un commit ni se suban al repositorio remoto.
+
+---
+
+_Última actualización: el proyecto ya está conectado a GitHub (repositorio privado `dayneruis/Bionexo`, rama `master`) y el código se subió correctamente; se confirmó que `.env` nunca se subió. Pendiente definir con el dueño el alcance de la Fase 4 (reseñas y pasarela de pago)._

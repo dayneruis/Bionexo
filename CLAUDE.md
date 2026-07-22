@@ -301,4 +301,12 @@ Este bloque se había quedado a medias en una sesión anterior (3 de los 4 archi
 
 ---
 
-_Última actualización: el script para cambiar la contraseña del panel (`generar-hash-admin.ts`) ahora la pide de forma interactiva y oculta (sin mostrarla en pantalla ni pasarla como argumento del comando). Siguiente fase pendiente de definir con el dueño: Fase 4 (reseñas/opiniones y pasarela de pago, según el plan original de la sección 10)._
+## 31. Bitácora — Código subido a GitHub
+
+- **Repositorio remoto conectado:** `https://github.com/dayneruis/Bionexo.git` (repositorio privado), rama `master`. Todo el código del proyecto ya está subido ahí.
+- **`.env` NO se subió:** protegido desde siempre por la línea `.env*` de `.gitignore`. Se verificó con `git ls-files | grep .env` (sin resultados) que nunca ha estado ni está en el repositorio. La contraseña/hash del panel de administración solo existe en el computador local.
+- **Autenticación usada:** token de acceso personal de GitHub (no la contraseña de la cuenta), pegado en el momento del `push` a través de una terminal interactiva, para evitar depender de la ventana emergente del Git Credential Manager.
+
+---
+
+_Última actualización: el proyecto ya está conectado a GitHub (repositorio privado `dayneruis/Bionexo`, rama `master`) y el código quedó subido correctamente, confirmando que `.env` nunca se sube. Siguiente fase pendiente de definir con el dueño: Fase 4 (reseñas/opiniones y pasarela de pago, según el plan original de la sección 10)._
