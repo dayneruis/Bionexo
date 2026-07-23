@@ -1,6 +1,6 @@
 // Esquema de la base de datos del proyecto Bionexo.
-// Motor: SQLite en local (se migra a Postgres al desplegar).
-// Documentación completa en CLAUDE.md y en Documentacion/MANUAL_APRENDIZAJE.md.
+// Motor: PostgreSQL (Neon, en la nube). Documentación completa en CLAUDE.md
+// y en Documentacion/MANUAL_APRENDIZAJE.md.
 
 generator client {
   provider = "prisma-client"
@@ -8,7 +8,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 // Categorías del catálogo (10 en total: las 8 originales + Servicios + Otros productos).

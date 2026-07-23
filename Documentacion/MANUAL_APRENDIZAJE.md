@@ -821,3 +821,60 @@ El archivo `.env` (donde vive el hash de la contraseña del panel de administrac
 ---
 
 _Última actualización: el proyecto ya está conectado a GitHub (repositorio privado `dayneruis/Bionexo`, rama `master`) y el código se subió correctamente; se confirmó que `.env` nunca se subió. Pendiente definir con el dueño el alcance de la Fase 4 (reseñas y pasarela de pago)._
+
+---
+
+## Parte 19 — La base de datos se muda de tu computador a internet (Neon)
+
+### 19.1 ¿Por qué cambiar de SQLite a Postgres?
+
+Hasta ahora, todos los productos, categorías y pedidos vivían en un solo archivo dentro de tu computador: `dev.db`. Ese formato se llama **SQLite**, y es perfecto para desarrollar porque no necesita instalar ni configurar nada — pero tiene una limitación importante: **solo tu computador puede leerlo**. Si mañana subes la tienda a un hosting en internet, ese servidor no tiene acceso a tu disco duro, así que necesita su propia base de datos, guardada en un servidor que esté siempre encendido y conectado a la red.
+
+Ahí entra **PostgreSQL** (o "Postgres"): un motor de base de datos mucho más robusto, pensado para vivir en un servidor y atender muchas conexiones al mismo tiempo. Y **Neon** es el servicio que te da ese servidor ya configurado, gratis para empezar, en la nube — tú solo necesitas la "dirección" para conectarte a él (la cadena de conexión).
+
+### 19.2 La cadena de conexión: la "dirección + llave" de tu base de datos
+
+Cuando creaste tu cuenta en Neon, te dieron un texto largo parecido a esto:
+
+```
+postgresql://usuario:contraseña@servidor/nombre-de-base-de-datos?opciones
+```
+
+Es literalmente una dirección postal con una llave incluida: dice quién eres (`usuario` y `contraseña`), a qué edificio vas (`servidor`) y a qué apartamento dentro de ese edificio (`nombre-de-base-de-datos`). Cualquiera que tenga ese texto completo puede leer y modificar todos tus datos — por eso es tan importante que **nunca** quede en GitHub ni en ningún lugar público. Vive únicamente en tu archivo `.env`, que `.gitignore` excluye de git desde el principio del proyecto (ver Parte 18.4).
+
+### 19.3 ¿Por qué dos conexiones (`DATABASE_URL` y `DIRECT_URL`) y no una sola?
+
+Esto es una particularidad de Neon (y de la mayoría de proveedores modernos de Postgres "sin servidor"). Cuando muchas personas visitan tu tienda a la vez, abrir una conexión nueva a la base de datos por cada visita sería lento y caro. Para evitarlo, Neon pone en el medio un programa llamado **PgBouncer** (un "agrupador de conexiones" o *connection pooler*): en vez de que la app hable directo con Postgres, habla con PgBouncer, que reutiliza un grupo pequeño de conexiones ya abiertas para atender a todo el mundo. Esa es la conexión con `-pooler` en el nombre, y es la que tu app usa día a día (`DATABASE_URL`).
+
+El problema es que **crear o modificar tablas** (lo que hace `prisma migrate`) necesita mantener una "conversación" más larga y ordenada con la base de datos — algo que el agrupador, por diseño, no garantiza (puede repartir cada pregunta tuya a una conexión distinta del grupo, rompiendo esa conversación). Por eso, para ese tipo de operación puntual, se usa la conexión **directa** (`DIRECT_URL`, sin `-pooler`), que habla con Postgres sin ningún intermediario. En el día a día casi no se nota esta diferencia: `DATABASE_URL` la usa la app siempre, y `DIRECT_URL` solo se necesita las veces (pocas) que cambies el diseño de las tablas.
+
+### 19.4 ¿Qué son las "migraciones" y por qué se archivaron las viejas?
+
+Cada vez que este proyecto cambia el diseño de las tablas (agregar una columna, crear un modelo nuevo), Prisma guarda una "receta" de ese cambio en la carpeta `prisma/migrations/`, como una foto histórica de cada paso. El problema: esas recetas se escriben en el "idioma" del motor de base de datos que estabas usando en ese momento — y el idioma de SQLite y el de Postgres no son intercambiables (comandos distintos, tipos de datos distintos). Como cambiamos de motor, las 6 recetas viejas ya no servían para Postgres.
+
+En vez de borrarlas (perdiendo ese historial), se movieron completas a `prisma/migrations_sqlite_backup/`, una carpeta que Prisma ya no revisa. Y como la base nueva de Neon estaba completamente vacía, se creó una única receta nueva (`20260723011757_init_postgres`) que arma, en un solo paso y en el idioma de Postgres, todas las tablas que el proyecto necesita hoy.
+
+### 19.5 Cómo se comprobó que todo quedó bien conectado
+
+No basta con que el código compile: había que confirmar que la app realmente está leyendo y escribiendo en Neon, no en el viejo archivo local. Se hizo así:
+1. Se consultó Neon directamente (sin pasar por la app) para contar cuántas filas quedaron en las tablas de productos, categorías y productores, y coincidió con lo que trae el catálogo de ejemplo (20, 10 y 5).
+2. Se levantó la tienda en el navegador (`npm run dev`) y se revisaron varias páginas reales — portada, categoría, tienda, sobre nosotros, noticias, panel — confirmando que cargan bien y que los productos que muestran son justamente esos mismos.
+
+### 19.6 Un mensaje raro que apareció en la terminal (y por qué no es un problema)
+
+Durante una de las pruebas apareció en la terminal un mensaje de publicidad ("tip: auth for agents...") impreso por una de las librerías del proyecto (`dotenv`, la que lee el archivo `.env`). Se verificó que ese mensaje viene de la versión oficial de esa librería, descargada del registro público de npm (no de una versión alterada ni de un paquete falso) — es una práctica de mercadeo un poco invasiva que esa librería ya usaba antes con otro mensaje parecido. No se hizo clic en ningún enlace ni se instaló nada a partir de ese mensaje. Se documenta aquí solo para que, si lo vuelves a ver alguna vez, sepas que ya se investigó y no representa un riesgo para tu proyecto.
+
+---
+
+### Nuevos términos para el glosario (Parte 19)
+
+- **PostgreSQL (Postgres):** motor de base de datos pensado para vivir en un servidor y atender muchas conexiones a la vez, a diferencia de SQLite (un solo archivo, pensado para un solo programa a la vez).
+- **Neon:** el servicio elegido para este proyecto que ofrece una base de datos PostgreSQL ya lista, en la nube, con un plan gratuito para empezar.
+- **Cadena de conexión:** el texto que junta el usuario, la contraseña, la dirección del servidor y el nombre de la base de datos en un solo lugar; es lo único que necesita un programa para conectarse.
+- **Connection pooler (agrupador de conexiones):** un programa intermedio (aquí, PgBouncer, incluido en Neon) que reutiliza un grupo pequeño de conexiones abiertas en vez de crear una nueva por cada visita al sitio, para que la base de datos no se sature.
+- **Conexión directa:** la conexión que habla con Postgres sin pasar por el agrupador; necesaria para operaciones especiales como crear o cambiar tablas.
+- **Migración (de Prisma):** un archivo que guarda, paso a paso, los cambios que se le han hecho al diseño de las tablas a lo largo del tiempo, escrito en el "idioma SQL" del motor de base de datos que se esté usando.
+
+---
+
+_Última actualización: la base de datos del proyecto ya vive en la nube (Neon, PostgreSQL), verificada de punta a punta en local; el archivo antiguo de SQLite (`dev.db`) se conserva como respaldo pero ya no lo usa la aplicación._

@@ -24,7 +24,7 @@
 - Node.js v22.16.0 instalado.
 - Git 2.54 instalado.
 - Desarrollo **a la medida** (no plataforma cerrada).
-- **Stack oficial (aprobado):** Next.js (App Router) + TypeScript + Tailwind CSS + Prisma (SQLite en local, preparado para migrar a Postgres al desplegar).
+- **Stack oficial (aprobado):** Next.js (App Router) + TypeScript + Tailwind CSS + Prisma. Base de datos: **PostgreSQL en la nube (Neon)**, usada tanto en local como en producción (migrado desde SQLite local — ver sección 32).
 - Flujo: desarrollar y probar **en local** primero; desplegar después (hosting gratis o de bajo costo, por definir).
 
 ## 4. Idiomas y moneda
@@ -309,4 +309,22 @@ Este bloque se había quedado a medias en una sesión anterior (3 de los 4 archi
 
 ---
 
-_Última actualización: el proyecto ya está conectado a GitHub (repositorio privado `dayneruis/Bionexo`, rama `master`) y el código quedó subido correctamente, confirmando que `.env` nunca se sube. Siguiente fase pendiente de definir con el dueño: Fase 4 (reseñas/opiniones y pasarela de pago, según el plan original de la sección 10)._
+## 32. Bitácora — Migración de la base de datos: SQLite local → PostgreSQL en la nube (Neon)
+
+- **Motivo:** paso previo indispensable para poder desplegar la tienda a internet (sección 3): SQLite es un archivo local (`dev.db`) que solo existe en este computador; para que el sitio funcione como página web real hace falta una base de datos accesible desde internet. El dueño ya creó una cuenta gratuita en **Neon** (proveedor de PostgreSQL en la nube) y compartió su cadena de conexión.
+- **`prisma/schema.prisma`:** el `datasource` cambió de `provider = "sqlite"` a `provider = "postgresql"`. El resto del esquema (todos los modelos: `Product`, `Category`, `Order`, `Post`, etc.) no necesitó ningún cambio porque no usaba nada específico de SQLite.
+- **Adaptador de conexión:** se reemplazó `@prisma/adapter-better-sqlite3` por `@prisma/adapter-pg` (el conector oficial de Prisma para Postgres) en tres lugares que antes construían el cliente de Prisma: `src/lib/db.ts` (la app), `prisma/seed.ts` (los datos de ejemplo) y, de forma indirecta, cualquier script futuro que use `prisma`. Se instalaron los paquetes `@prisma/adapter-pg`, `pg` y `@types/pg`; se desinstalaron `@prisma/adapter-better-sqlite3` y `better-sqlite3` (ya no hacen falta).
+- **`.env` — dos conexiones, no una:** Neon entrega dos formas de conectarse con la misma base de datos:
+  - `DATABASE_URL` (con `-pooler` en el nombre del servidor): conexión "agrupada", pensada para que la aplicación en funcionamiento normal abra y cierre conexiones rápido sin agotar el límite del plan gratuito. Es la que usan `src/lib/db.ts` y `prisma/seed.ts` todos los días.
+  - `DIRECT_URL` (sin `-pooler`): conexión "directa", necesaria **solo** para crear o modificar tablas (`prisma migrate ...`), porque ese tipo de operación no funciona bien a través del agrupador de conexiones.
+  Ambas viven en `.env`, que sigue fuera de git (confirmado de nuevo con `git check-ignore` y `git status` después de editarlo: no aparece como cambio a subir).
+- **Migraciones viejas archivadas, no borradas:** las 6 migraciones que existían (pensadas para SQLite, con SQL que no sirve para Postgres) se movieron intactas a `prisma/migrations_sqlite_backup/` (fuera de la carpeta que Prisma revisa) como respaldo histórico. Se creó una migración nueva, `20260723011757_init_postgres`, que arma en Postgres las mismas tablas que ya tenía el esquema, aplicada directamente sobre la base de Neon (vacía, así que no hubo que migrar datos existentes).
+- **Datos de ejemplo recargados:** se corrió `prisma/seed.ts` sobre la base nueva → mismos datos que ya existían en local (20 productos, 10 categorías, 5 productores).
+- **`dev.db` no se borró:** el archivo local de SQLite se deja como respaldo por si hace falta consultarlo, pero la app ya no lo usa para nada. Sigue fuera de git (regla ya existente en `.gitignore`).
+- **Aviso de un mensaje raro en la terminal:** al probar la conexión apareció un mensaje publicitario impreso por la propia librería `dotenv` (versión 17.4.2, la oficial, verificada contra el registro de npm — no es un paquete alterado) que menciona un sitio llamado "vestauth.com" dirigido a "agentes". Es publicidad incluida a propósito por esa librería en versiones recientes (ya lo había hecho antes apuntando a "dotenvx.com"), no algo relacionado con este proyecto ni con Neon. No se visitó ese enlace ni se instaló nada relacionado.
+- **Verificación de punta a punta:** `npx tsc --noEmit` sin errores. Con `npm run dev` conectado a Neon: la portada muestra los 9 productos destacados, la categoría "Materiales recuperados" muestra sus 3 productos, `/es/tienda`, `/es/sobre-nosotros`, `/es/noticias` y `/admin/login` responden 200, y `/admin` sin sesión sigue redirigiendo a `/admin/login` (307, la protección del panel no depende de la base de datos). Se confirmó por consulta directa a Neon que las tablas `Product`, `Category` y `Producer` tienen 20, 10 y 5 filas respectivamente.
+- **Pendiente:** estos cambios (código + migración nueva) están hechos en el computador pero **todavía no se han subido a GitHub** — eso queda pendiente de un `git commit`/`git push` cuando el dueño lo apruebe. Tampoco se ha configurado ningún hosting todavía para que el sitio sea visible en internet (sigue pendiente el resto de la sección 3: elegir hosting y publicar).
+
+---
+
+_Última actualización: la base de datos ya vive en la nube (PostgreSQL en Neon), tanto en local como lista para producción, con los datos de ejemplo recargados; verificado de punta a punta con el sitio corriendo en local contra Neon. Pendiente: subir estos cambios a GitHub, elegir un hosting para publicar el sitio en internet, y definir con el dueño el alcance de la Fase 4 (reseñas/opiniones y pasarela de pago, según el plan original de la sección 10)._
