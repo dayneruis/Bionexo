@@ -327,4 +327,21 @@ Este bloque se había quedado a medias en una sesión anterior (3 de los 4 archi
 
 ---
 
-_Última actualización: la base de datos ya vive en la nube (PostgreSQL en Neon), tanto en local como lista para producción, con los datos de ejemplo recargados; verificado de punta a punta con el sitio corriendo en local contra Neon. Pendiente: subir estos cambios a GitHub, elegir un hosting para publicar el sitio en internet, y definir con el dueño el alcance de la Fase 4 (reseñas/opiniones y pasarela de pago, según el plan original de la sección 10)._
+_Última actualización: la base de datos ya vive en la nube (PostgreSQL en Neon), tanto en local como lista para producción, con los datos de ejemplo recargados; verificado de punta a punta con el sitio corriendo en local contra Neon. Pendiente: elegir un hosting para publicar el sitio en internet, y definir con el dueño el alcance de la Fase 4 (reseñas/opiniones y pasarela de pago, según el plan original de la sección 10)._
+
+---
+
+## 33. Bitácora — Fotos de producto/noticias suben a Cloudinary (ya no al disco local)
+
+- **Motivo:** mismo motivo que la migración de la base de datos (sección 32): un servidor en la nube no tiene acceso al disco duro de este computador, así que las fotos guardadas en `public/uploads/...` no se verían una vez desplegado el sitio. Cloudinary es el servicio elegido para guardar las fotos en la nube (cuenta gratuita del dueño, cloud name `ztp9xswv`).
+- **`.env`:** tres variables nuevas, solo de uso del servidor (nunca llegan al navegador del visitante): `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`.
+- **`package.json`:** se instaló `cloudinary` (SDK oficial de Node).
+- **`next.config.ts`:** se agregó `res.cloudinary.com` a `images.remotePatterns`, para que Next.js permita mostrar imágenes que vengan de ese dominio (junto con `picsum.photos`, que sigue ahí para las fotos de ejemplo).
+- **`src/app/api/admin/upload/route.ts`:** en vez de guardar el archivo con `fs.writeFile` en `public/uploads/`, ahora se sube a Cloudinary (carpetas `bionexo/productos` y `bionexo/noticias` allá, mismo criterio de antes) y se guarda la URL pública que Cloudinary devuelve (`secure_url`). Las validaciones de tipo de archivo y tamaño máximo (5 MB) no cambiaron. **No hizo falta tocar `ProductForm.tsx` ni `PostForm.tsx`**: ambos ya solo esperan `{ url: "..." }` de esta misma ruta, sin importar de dónde venga.
+- **Percance con las credenciales (para tenerlo presente a futuro):** el primer API Secret que compartió el dueño no coincidía con su cuenta (Cloudinary respondía "Invalid Signature"); al regenerarlo, las dos primeras API Keys nuevas venían con permisos restringidos y Cloudinary las rechazaba con `"Request forbidden due to missing permissions (actions=[\"create\"])"` — el mismo código de error se repitió con dos llaves distintas, lo que confirmó que no era un problema de una llave en particular. La tercera llave, generada explícitamente con rol de **acceso completo (sin restricciones)**, sí funcionó. **Para el futuro: al crear una API Key nueva en Cloudinary, asegurarse de que tenga permiso de "create" (subida), no solo de lectura.**
+- **Verificación:** se subió una foto de prueba real a través de la ruta del panel (sesión de administrador simulada con el mismo método de firma que usa la app, sin necesitar la contraseña real) y se confirmó con la API de Cloudinary (equivalente a mirar el Media Library) que la foto sí quedó guardada, antes de borrarla para no dejar datos de prueba. `npx tsc --noEmit` sin errores.
+- **Fotos viejas en `public/uploads/`:** no se tocaron ni se migraron (eran de pruebas anteriores); ese código ya no se usa pero la carpeta se deja como está, sigue fuera de git por `.gitignore`.
+
+---
+
+_Última actualización: las fotos que se suben desde el panel (productos y noticias) ya se guardan en Cloudinary, verificado de punta a punta. Pendiente: elegir un hosting para publicar el sitio en internet, subir estos cambios a GitHub, y definir con el dueño el alcance de la Fase 4._

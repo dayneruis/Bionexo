@@ -878,3 +878,43 @@ Durante una de las pruebas apareció en la terminal un mensaje de publicidad ("t
 ---
 
 _Última actualización: la base de datos del proyecto ya vive en la nube (Neon, PostgreSQL), verificada de punta a punta en local; el archivo antiguo de SQLite (`dev.db`) se conserva como respaldo pero ya no lo usa la aplicación._
+
+---
+
+## Parte 20 — Las fotos ahora se guardan en Cloudinary, no en tu computador
+
+### 20.1 El mismo problema que con la base de datos, aplicado a las fotos
+
+En la Parte 19 vimos que un servidor en internet no puede leer archivos guardados en tu disco duro. Con las fotos que subes desde el panel de administración pasaba exactamente lo mismo: se guardaban dentro de `public/uploads/`, una carpeta de este mismo computador. **Cloudinary** es un servicio pensado justo para esto: le mandas una foto, la guarda en la nube, y te devuelve una dirección web (URL) para mostrarla desde cualquier lugar — tu tienda, tu celular, o el servidor donde despliegues el sitio más adelante.
+
+### 20.2 Por qué Next.js necesitó un permiso extra para mostrar las fotos nuevas
+
+Next.js tiene una regla de seguridad: por defecto, no permite que tu sitio muestre imágenes que vengan de cualquier dirección de internet, solo de las que tú autorices explícitamente en `next.config.ts` (`images.remotePatterns`). Es una protección contra que alguien, sin que tú lo sepas, haga que tu sitio cargue imágenes desde un lugar que no controlas. Como las fotos de ejemplo ya venían de `picsum.photos` (ya autorizado), solo hizo falta agregar `res.cloudinary.com` a esa misma lista para que las fotos nuevas se puedan mostrar.
+
+### 20.3 El problema con las "llaves" de Cloudinary (y cómo se resolvió)
+
+Para que tu servidor pueda subir fotos a tu cuenta de Cloudinary sin que cualquiera pueda hacerlo también, Cloudinary usa un sistema de identificación con tres datos: el nombre de tu cuenta (`Cloud name`, público, no es secreto), una **API Key** (como un usuario) y un **API Secret** (como su contraseña). Cuando se probó por primera vez, aparecieron dos problemas distintos, uno detrás del otro:
+
+1. **Firma inválida:** el primer API Secret que se guardó no coincidía con lo que Cloudinary tenía registrado para esa cuenta — como escribir mal una contraseña. Se resolvió regenerando el API Secret desde el dashboard.
+2. **Permiso de "crear" faltante:** ya con la firma correcta, Cloudinary seguía rechazando la subida, pero con un mensaje distinto: `"missing permissions (actions=["create"])"`. Esto significa que la llave se identificó correctamente, pero **no tenía permiso para crear (subir) archivos** — como tener una llave que sí abre la puerta de entrada, pero no la del clóset donde se guardan las cosas. Esto pasó con dos llaves nuevas seguidas, lo cual fue la pista de que el problema no era una llave en particular, sino cómo se estaban generando (con algún tipo de restricción de permisos activada sin querer). La tercera llave, generada eligiendo explícitamente el rol de acceso completo, sí funcionó.
+
+### 20.4 Cómo se probó sin usar el usuario y contraseña reales del panel
+
+Para probar que la subida funcionaba de verdad (no solo en un script suelto, sino a través del panel real), hacía falta una sesión de administrador válida. En vez de pedir la contraseña real del dueño, se generó una "credencial de sesión" temporal (un token) usando la misma clave secreta que ya usa la aplicación para firmar sus propias sesiones (`ADMIN_SESSION_SECRET`, ya guardada en `.env`) — es decir, se construyó una sesión igual de válida que la que crea el panel al iniciar sesión normalmente, sin necesitar ni escribir la contraseña real.
+
+### 20.5 Cómo se confirmó que la foto sí llegó a tu cuenta
+
+En vez de pedirte que entraras tú mismo al Media Library a revisar, se le preguntó directamente a Cloudinary por esa foto usando su API (el mismo sistema que usa el dashboard por detrás para mostrarte tus archivos) — confirmó que sí existía, con su tamaño y su dirección web — y después se borró con esa misma API, para no dejar fotos de prueba ocupando espacio en tu cuenta.
+
+---
+
+### Nuevos términos para el glosario (Parte 20)
+
+- **Cloudinary:** servicio en la nube para guardar y administrar imágenes (y otros archivos multimedia), con una API para subirlas, transformarlas y borrarlas desde código.
+- **API Key / API Secret:** el par de datos que identifica a quién sube algo a una cuenta en la nube — la Key dice "quién eres", el Secret lo demuestra (como un usuario y su contraseña). Nunca deben quedar visibles en código público.
+- **Permisos de una llave (scope):** algunos servicios permiten crear llaves de acceso con permisos limitados (por ejemplo, "solo leer" pero no "crear" ni "borrar"). Si una llave fue creada así por accidente, funciona para algunas acciones y falla para otras, aunque los datos de la llave sean correctos.
+- **`remotePatterns` (Next.js):** la lista de dominios de internet desde los que Next.js tiene permitido mostrar imágenes con su componente `<Image>`. Cualquier dominio nuevo (como `res.cloudinary.com`) debe agregarse a mano en `next.config.ts`.
+
+---
+
+_Última actualización: las fotos que se suben desde el panel (productos y noticias) ya se guardan en Cloudinary en vez del disco local, verificado subiendo y confirmando una foto de prueba real y luego borrándola._
