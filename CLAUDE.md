@@ -345,3 +345,12 @@ _Última actualización: la base de datos ya vive en la nube (PostgreSQL en Neon
 ---
 
 _Última actualización: las fotos que se suben desde el panel (productos y noticias) ya se guardan en Cloudinary, verificado de punta a punta. Pendiente: elegir un hosting para publicar el sitio en internet, subir estos cambios a GitHub, y definir con el dueño el alcance de la Fase 4._
+
+---
+
+## 34. Bitácora — Corrección del despliegue en Vercel: faltaba generar el cliente de Prisma
+
+- **Síntoma:** el primer intento de desplegar en Vercel falló en `npm run build` con "Módulo no encontrado: No se puede resolver `@/generated/prisma/client`", repetido en todos los archivos que usan la base de datos (`src/lib/db.ts`, rutas `/api/orders`, `/api/admin/posts`, `/api/admin/products`, etc.).
+- **Causa raíz:** el esquema (`prisma/schema.prisma`) genera el cliente de Prisma en una carpeta propia (`src/generated/prisma`) en lugar del lugar por defecto. Esa carpeta se crea automáticamente al correr `npx prisma generate`, así que está en `.gitignore` (es código generado, no se sube a git — igual que `node_modules`). El script `"build"` de `package.json` era solo `"next build"`, sin ningún paso que generara antes esa carpeta. En el computador local nunca se notó porque la carpeta ya existía de sesiones anteriores; en Vercel, con el repositorio recién clonado, la carpeta no existe y la compilación falla.
+- **Corrección:** `package.json` — el script `"build"` pasó de `"next build"` a `"prisma generate && next build"`, para que el cliente de Prisma se regenere automáticamente antes de compilar, tanto en Vercel como en cualquier computador nuevo que clone el proyecto.
+- **Verificación:** `npm run build` en local corre `prisma generate` y luego `next build` sin el error de módulo; genera las 22 páginas correctamente. Se detectó una advertencia aparte y no relacionada de ESLint (`eslint-config-next/core-web-vitals` no se resuelve) que no detiene la compilación — pendiente de revisar en otra sesión si molesta.

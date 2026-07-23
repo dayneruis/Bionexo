@@ -917,4 +917,50 @@ En vez de pedirte que entraras tú mismo al Media Library a revisar, se le pregu
 
 ---
 
+## Parte 21 — Por qué falló el primer despliegue en Vercel (y cómo se arregló)
+
+### 21.1 El error
+
+Al intentar publicar el sitio en Vercel por primera vez, la compilación falló con un mensaje como: "Módulo no encontrado: no se puede resolver `@/generated/prisma/client`", repetido en varios archivos que usan la base de datos.
+
+### 21.2 Por qué pasó
+
+Prisma funciona en dos pasos que a veces se confunden:
+
+1. **Generar el cliente:** a partir de `prisma/schema.prisma`, Prisma escribe automáticamente un montón de código de TypeScript (el "cliente") que sabe exactamente qué tablas y columnas tiene tu base de datos. Este paso se hace con el comando `npx prisma generate`.
+2. **Usar el cliente:** el resto del código (`src/lib/db.ts`, las rutas de la API, etc.) importa ese código generado para hacer consultas a la base de datos.
+
+Ese código generado vive en `src/generated/prisma`, una carpeta que **nunca se sube a GitHub** (está en `.gitignore`), por la misma razón que `node_modules` tampoco se sube: se puede volver a crear en cualquier momento con un comando, así que no tiene sentido guardarla en el repositorio.
+
+El problema es que, en tu computador, esa carpeta ya existía de sesiones anteriores de trabajo — nunca la viste desaparecer, así que nunca notaste que hacía falta generarla. Pero Vercel arranca desde una copia limpia del repositorio (igual que si borraras el proyecto y lo volvieras a descargar de GitHub): ahí la carpeta no existe, y como el script de compilación (`npm run build`) solo decía `"next build"` — sin pedir primero que se generara el cliente — la compilación fallaba apenas encontraba la primera importación de Prisma.
+
+### 21.3 La corrección
+
+En `package.json`, el script `"build"` pasó de:
+
+```
+"build": "next build"
+```
+
+a:
+
+```
+"build": "prisma generate && next build"
+```
+
+El símbolo `&&` significa "corre esto, y si funciona, corre lo siguiente". Así, cada vez que Vercel (o cualquier computador nuevo) instale el proyecto y corra `npm run build`, primero se genera el cliente de Prisma fresco y después sí se compila el sitio — sin depender de que la carpeta ya existiera de antes.
+
+### 21.4 Cómo se verificó
+
+Se corrió `npm run build` en este mismo computador después del cambio, y se confirmó que el mensaje `✔ Generated Prisma Client` aparece primero, seguido de la compilación completa de las 22 páginas del sitio sin el error de módulo no encontrado.
+
+---
+
+### Nuevos términos para el glosario (Parte 21)
+
+- **Cliente de Prisma (Prisma Client):** el código que Prisma genera automáticamente a partir de tu esquema (`schema.prisma`), que el resto de la aplicación usa para leer y escribir en la base de datos. Se regenera con `npx prisma generate` cada vez que cambia el esquema.
+- **`&&` en un script de `package.json`:** encadena comandos para que corran uno después del otro, pero solo si el anterior no falló — útil para asegurar un orden (primero generar, después compilar).
+
+---
+
 _Última actualización: las fotos que se suben desde el panel (productos y noticias) ya se guardan en Cloudinary en vez del disco local, verificado subiendo y confirmando una foto de prueba real y luego borrándola._
