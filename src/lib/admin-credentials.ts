@@ -16,6 +16,22 @@ export function verificarCredenciales(usuario: string, contrasena: string): bool
     );
   }
 
+  // ── LOG TEMPORAL DE DEPURACIÓN (quitar después de resolver el login en producción) ──
+  // No imprime la contraseña ni el hash completo, solo datos que ayudan a detectar
+  // si la variable de entorno llegó corrompida (comillas, backslashes literales, etc.)
+  // o si el usuario/contraseña que llega del formulario no es lo esperado.
+  console.log("[debug-login]", {
+    usuarioRecibido: usuario,
+    usuarioEsperado,
+    usuarioCoincide: usuario === usuarioEsperado,
+    largoHashEnv: hashEsperado.length,
+    hashEnvInicio: hashEsperado.slice(0, 7),
+    hashEnvFin: hashEsperado.slice(-4),
+    largoContrasenaRecibida: contrasena.length,
+  });
+
   if (usuario !== usuarioEsperado) return false;
-  return bcrypt.compareSync(contrasena, hashEsperado);
+  const coincide = bcrypt.compareSync(contrasena, hashEsperado);
+  console.log("[debug-login] resultado bcrypt.compareSync:", coincide);
+  return coincide;
 }
