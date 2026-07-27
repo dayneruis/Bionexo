@@ -10,15 +10,12 @@ export default function LoginForm() {
   const [usuario, setUsuario] = useState("");
   const [contrasena, setContrasena] = useState("");
   const [error, setError] = useState<string | null>(null);
-  // ── DEPURACIÓN TEMPORAL (quitar junto con el resto del bloque "debug") ──
-  const [debug, setDebug] = useState<unknown>(null);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    setDebug(null);
 
     try {
       const res = await fetch("/api/admin/login", {
@@ -28,9 +25,8 @@ export default function LoginForm() {
       });
 
       if (!res.ok) {
-        const data = (await res.json()) as { error?: string; debug?: unknown };
+        const data = (await res.json()) as { error?: string };
         setError(data.error ?? "No se pudo iniciar sesión.");
-        setDebug(data.debug ?? null);
         setLoading(false);
         return;
       }
@@ -78,13 +74,6 @@ export default function LoginForm() {
         <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
           {error}
         </p>
-      )}
-
-      {/* ── DEPURACIÓN TEMPORAL: quitar este bloque junto con `debug` arriba ── */}
-      {debug !== null && debug !== undefined && (
-        <pre className="overflow-x-auto rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800">
-          {JSON.stringify(debug, null, 2)}
-        </pre>
       )}
 
       <button

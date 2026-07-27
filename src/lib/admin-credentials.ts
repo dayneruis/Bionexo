@@ -6,26 +6,7 @@
 
 import bcrypt from "bcryptjs";
 
-// ── DEPURACIÓN TEMPORAL (quitar junto con el bloque de abajo cuando el login
-// en producción quede resuelto) ── datos que ayudan a detectar si la variable
-// de entorno llegó corrompida (comillas, backslashes literales, longitud
-// distinta a 60) o si el usuario/contraseña que llega del formulario no es
-// el esperado. Nunca incluye la contraseña ni el hash completos.
-export type DebugLogin = {
-  usuarioRecibido: string;
-  usuarioEsperado: string | undefined;
-  usuarioCoincide: boolean;
-  largoHashEnv: number;
-  hashEnvInicio: string;
-  hashEnvFin: string;
-  largoContrasenaRecibida: number;
-  resultadoBcrypt: boolean | null;
-};
-
-export function verificarCredenciales(
-  usuario: string,
-  contrasena: string,
-): { coincide: boolean; debug: DebugLogin } {
+export function verificarCredenciales(usuario: string, contrasena: string): boolean {
   const usuarioEsperado = process.env.ADMIN_USER;
   const hashEsperado = process.env.ADMIN_PASSWORD_HASH;
 
@@ -35,22 +16,6 @@ export function verificarCredenciales(
     );
   }
 
-  const usuarioCoincide = usuario === usuarioEsperado;
-  const debug: DebugLogin = {
-    usuarioRecibido: usuario,
-    usuarioEsperado,
-    usuarioCoincide,
-    largoHashEnv: hashEsperado.length,
-    hashEnvInicio: hashEsperado.slice(0, 7),
-    hashEnvFin: hashEsperado.slice(-4),
-    largoContrasenaRecibida: contrasena.length,
-    resultadoBcrypt: null,
-  };
-  console.log("[debug-login]", debug);
-
-  if (!usuarioCoincide) return { coincide: false, debug };
-  const coincide = bcrypt.compareSync(contrasena, hashEsperado);
-  debug.resultadoBcrypt = coincide;
-  console.log("[debug-login] resultado bcrypt.compareSync:", coincide);
-  return { coincide, debug };
+  if (usuario !== usuarioEsperado) return false;
+  return bcrypt.compareSync(contrasena, hashEsperado);
 }

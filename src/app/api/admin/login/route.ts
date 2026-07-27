@@ -12,20 +12,13 @@ import {
 export async function POST(request: Request) {
   const { usuario, contrasena } = await request.json();
 
-  if (typeof usuario !== "string" || typeof contrasena !== "string") {
+  if (
+    typeof usuario !== "string" ||
+    typeof contrasena !== "string" ||
+    !verificarCredenciales(usuario, contrasena)
+  ) {
     return NextResponse.json(
       { error: "Usuario o contraseña incorrectos." },
-      { status: 401 },
-    );
-  }
-
-  // ── DEPURACIÓN TEMPORAL (quitar junto con debug en admin-credentials.ts) ──
-  // Se devuelve `debug` en la respuesta para verlo directo en el formulario,
-  // sin depender de encontrar los logs de Vercel.
-  const { coincide, debug } = verificarCredenciales(usuario, contrasena);
-  if (!coincide) {
-    return NextResponse.json(
-      { error: "Usuario o contraseña incorrectos.", debug },
       { status: 401 },
     );
   }
