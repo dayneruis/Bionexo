@@ -3,6 +3,7 @@ import { getCategories } from "@/lib/catalog";
 import { getProductoParaEditar, type ZonaDeVenta } from "@/lib/admin-products";
 import { listarProductores } from "@/lib/producer";
 import ProductForm from "@/components/admin/ProductForm";
+import BackLink from "@/components/admin/BackLink";
 
 export default async function EditarProductoPage({
   params,
@@ -20,6 +21,7 @@ export default async function EditarProductoPage({
 
   return (
     <div className="mx-auto max-w-3xl">
+      <BackLink href="/admin/productos" label="Productos" />
       <h1 className="mb-6 text-2xl font-bold text-eco-forest">Editar producto</h1>
       <ProductForm
         categorias={categorias}

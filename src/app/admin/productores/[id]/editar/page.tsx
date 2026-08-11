@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getProductorParaEditar } from "@/lib/producer";
 import ProducerForm from "@/components/admin/ProducerForm";
+import BackLink from "@/components/admin/BackLink";
 
 export default async function EditarProductorPage({
   params,
@@ -14,6 +15,7 @@ export default async function EditarProductorPage({
 
   return (
     <div className="mx-auto max-w-3xl">
+      <BackLink href="/admin/productores" label="Productores" />
       <h1 className="mb-6 text-2xl font-bold text-eco-forest">Editar productor</h1>
       <ProducerForm productor={productor} />
     </div>

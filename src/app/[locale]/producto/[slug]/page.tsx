@@ -48,7 +48,7 @@ export default async function ProductPage({
             src={product.imageUrl}
             alt={name}
             fill
-            className="object-cover"
+            className="object-contain"
             sizes="50vw"
           />
         </div>

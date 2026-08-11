@@ -23,3 +23,14 @@ export function formatDate(fecha: Date, locale: "es" | "en") {
     dateStyle: "long",
   }).format(fecha);
 }
+
+// Divide el contenido de una noticia en párrafos, uno por cada salto de línea
+// que escribió el admin (sin importar si dejó una o varias líneas en blanco
+// entre ellos). Se usa para mostrar cada párrafo con su propio espacio visual,
+// en vez de depender de que el texto pegado tenga líneas en blanco.
+export function paragraphsFromText(texto: string): string[] {
+  return texto
+    .split(/\r\n|\r|\n/)
+    .map((linea) => linea.trim())
+    .filter((linea) => linea.length > 0);
+}

@@ -205,6 +205,9 @@ export default function PostForm({ post }: { post?: PostExistente }) {
               placeholder="Texto completo de la publicación"
               className={inputClass}
             />
+            <p className="mt-1 text-xs text-slate-400">
+              Cada salto de línea (Enter) se mostrará como un párrafo separado en la página pública.
+            </p>
           </Campo>
           <Campo label="Contenido completo (inglés)">
             <textarea
@@ -215,6 +218,9 @@ export default function PostForm({ post }: { post?: PostExistente }) {
               placeholder="Full text of the post"
               className={inputClass}
             />
+            <p className="mt-1 text-xs text-slate-400">
+              Each line break (Enter) will be shown as a separate paragraph on the public page.
+            </p>
           </Campo>
           <Campo label="Slug (URL pública)">
             <input

@@ -6,6 +6,7 @@ import { getCategories, getFeaturedProducts } from "@/lib/catalog";
 import ProductGrid from "@/components/ProductGrid";
 import CategoryCard from "@/components/CategoryCard";
 import SearchHero from "@/components/SearchHero";
+import HomeNewsPreview from "@/components/HomeNewsPreview";
 
 // Ícono + clave de traducción de cada una de las 5 tarjetas de "¿Qué es Bionexo?"
 const WHAT_IS_CARDS = [
@@ -21,7 +22,8 @@ const WHAT_IS_CARDS = [
 // 2. Sección de búsqueda con mosaico de imágenes (SearchHero)
 // 3. "¿Qué es Bionexo?" (5 tarjetas con ícono)
 // 4. Productos destacados
-// 5. Acceso rápido a las 10 categorías
+// 5. Adelanto de Noticias e Historias (últimas 3, si hay alguna publicada)
+// 6. Acceso rápido a las 10 categorías
 export default async function HomePage() {
   const t = await getTranslations();
   const [featuredProducts, categories] = await Promise.all([
@@ -104,6 +106,9 @@ export default async function HomePage() {
         <h2 className="mb-6 text-2xl font-bold text-eco-forest">{t("home.featuredTitle")}</h2>
         <ProductGrid products={featuredProducts} />
       </section>
+
+      {/* Adelanto de Noticias e Historias (no se muestra si no hay publicaciones) */}
+      <HomeNewsPreview />
 
       {/* Explorar por categoría */}
       <section className="py-8">

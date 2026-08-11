@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { getPublishedPostBySlug } from "@/lib/posts";
-import { formatDate } from "@/lib/format";
+import { formatDate, paragraphsFromText } from "@/lib/format";
 import { type Locale } from "@/i18n/routing";
 import VideoEmbed from "@/components/VideoEmbed";
 
@@ -39,9 +39,17 @@ export default async function NoticiaPage({
       <p className="mt-6 text-sm font-semibold text-eco-cyan">{formatDate(post.publishedAt, locale)}</p>
       <h1 className="mt-1 text-3xl font-bold text-eco-forest">{titulo}</h1>
 
-      {/* El contenido se guarda como texto simple (sin editor enriquecido);
-          whitespace-pre-wrap conserva los saltos de línea que escribió el admin. */}
-      <div className="mt-6 whitespace-pre-wrap text-foreground/80">{contenido}</div>
+      {/* El contenido se guarda como texto simple (sin editor enriquecido). Cada
+          salto de línea que escribió el admin se muestra como su propio párrafo
+          con espacio debajo, así siempre queda clara la separación entre
+          secciones sin depender de que haya líneas en blanco en el texto original. */}
+      <div className="mt-6 flex flex-col gap-4 text-foreground/80">
+        {paragraphsFromText(contenido).map((parrafo, i) => (
+          <p key={i} className="whitespace-pre-wrap">
+            {parrafo}
+          </p>
+        ))}
+      </div>
 
       {post.videoUrl && (
         <div className="mt-8">

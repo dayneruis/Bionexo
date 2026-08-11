@@ -964,3 +964,51 @@ Se corrió `npm run build` en este mismo computador después del cambio, y se co
 ---
 
 _Última actualización: las fotos que se suben desde el panel (productos y noticias) ya se guardan en Cloudinary en vez del disco local, verificado subiendo y confirmando una foto de prueba real y luego borrándola._
+
+---
+
+## Parte 22 — Fotos de producto completas, adelanto de noticias en el home, y párrafos bien separados
+
+### 22.1 Por qué las fotos de producto se veían "cortadas"
+
+Cuando una foto no tiene exactamente la misma proporción (ancho/alto) que el recuadro donde se muestra, el navegador tiene que decidir cómo encajarla. En CSS eso se controla con la propiedad `object-fit`, y hay dos valores opuestos que conviene tener siempre claros:
+
+- **`cover` ("cubrir"):** agranda la foto hasta que **llene todo el recuadro**, y **recorta** lo que sobre por los bordes. Es como mirar por una ventana pequeña: se ve todo del mismo tamaño de marco, pero puede que se corten los bordes de lo que hay afuera.
+- **`contain` ("contener"):** achica la foto hasta que **quepa entera dentro del recuadro**, sin recortar nada. Si la proporción no calza exacto, queda un espacio vacío a los lados o arriba/abajo — como poner una foto rectangular dentro de un marco cuadrado: la foto se ve completa, pero puede que no llene el marco por completo.
+
+El sitio usaba `cover` en las tarjetas y fichas de producto, así que cualquier foto que no viniera ya recortada en proporción 4:3 perdía partes del producto. Se cambió a `contain` en los cuatro lugares donde aparece una foto de producto (tarjeta, ficha de detalle, carrito y checkout), y como esos recuadros ya tenían un color de fondo suave detrás de la foto, el espacio vacío que puede quedar no se nota como un hueco raro, se ve como un fondo intencional.
+
+Este cambio fue solo de **una palabra** en cada uno de los 4 archivos (`cover` → `contain`), pero como esos archivos son componentes reutilizables que se usan para *todos* los productos del catálogo (no hay un componente distinto por producto), el efecto se aplicó automáticamente a las 20 fichas y tarjetas existentes sin tocar nada más.
+
+### 22.2 Cómo se armó el adelanto de noticias en la portada
+
+Ya existía la sección completa de "Noticias e Historias" en `/noticias`, con su propia función para traer solo las publicaciones marcadas como "publicado" (nunca borradores). Para mostrar un adelanto en el home no hizo falta duplicar esa lógica, solo **reutilizar el mismo patrón con un límite más chico**:
+
+1. Se agregó una función nueva, `getRecentPublishedPosts(limite)`, casi idéntica a la que ya traía todas las noticias, pero con `take: limite` — un parámetro de Prisma que le dice a la base de datos "tráeme como máximo esta cantidad de filas", en vez de traerlas todas y recortar la lista después en JavaScript (es más eficiente pedirle a la base de datos exactamente lo que se necesita).
+2. Se creó un componente nuevo (`HomeNewsPreview`) que llama a esa función pidiendo 3, y arma una fila de tarjetas más pequeñas que las de `/noticias`, cada una con su foto, fecha, título y un resumen recortado a 2 líneas (con la utilidad de Tailwind `line-clamp-2`, que corta el texto y agrega "…" si no cabe, en vez de dejar que estire la tarjeta).
+3. Un detalle importante para que el sitio se vea prolijo incluso sin contenido: si todavía no hay ninguna noticia publicada, el componente devuelve `null` (nada) en vez de mostrar una sección vacía o con un mensaje de "no hay noticias". En Next.js, cuando un componente de servidor devuelve `null`, sencillamente no se imprime nada en el HTML final — es la forma normal de decir "esta sección no aplica ahora mismo".
+
+### 22.3 Por qué los párrafos de una noticia se veían "pegados" (y cómo se separaron)
+
+Este fue el caso más sutil de los tres, porque **el texto nunca estuvo mal guardado** — el problema era puramente de cómo se dibujaba en pantalla.
+
+La página de una noticia ya usaba una propiedad CSS llamada `white-space: pre-wrap`, que le dice al navegador "respeta los saltos de línea tal como están en el texto, no los ignores" (por defecto, HTML colapsa cualquier cantidad de espacios y saltos de línea en uno solo). El detalle que se pasó por alto es que `pre-wrap` solo genera un **espacio visual notorio** entre dos bloques de texto cuando hay una **línea completamente vacía** de por medio (es decir, el admin presionó Enter dos veces seguidas). Si el admin separaba sus ideas con un solo Enter — que es lo más natural al escribir, y casi siempre lo que trae un texto pegado desde Word, Gmail o WhatsApp — el resultado visual eran líneas pegadas una debajo de la otra, sin el "aire" que hace ver a un texto organizado por secciones.
+
+La solución no fue "arreglar" el texto guardado, sino cambiar la manera de dibujarlo: en vez de un solo bloque con todo el contenido adentro, ahora el texto se **parte en un arreglo de líneas** (usando el método de JavaScript `.split()` con una expresión que reconoce cualquier tipo de salto de línea) y cada línea no vacía se dibuja como su propio párrafo (`<p>`), con un margen fijo debajo de cada uno. Así, cada vez que el admin presiona Enter una sola vez, ese salto **siempre** se traduce en un párrafo separado con su espacio correspondiente — sin depender de si dejó una línea en blanco o no.
+
+Esta lógica se puso en una función reutilizable (`paragraphsFromText`) en el mismo archivo de utilidades donde ya vivía `formatDate`, para que si en el futuro hace falta el mismo comportamiento en otro lugar (por ejemplo, una vista previa en el panel), no haya que escribirla de nuevo.
+
+---
+
+### Nuevos términos para el glosario (Parte 22)
+
+- **`object-fit` (`cover` / `contain`):** propiedad CSS que decide cómo encaja una imagen dentro de un recuadro de proporción distinta. `cover` llena el recuadro y recorta lo que sobre; `contain` muestra la imagen completa, aunque quede espacio vacío alrededor.
+- **`take` (Prisma):** parámetro que limita cuántas filas devuelve una consulta a la base de datos, para no traer más datos de los que hacen falta.
+- **`line-clamp` (Tailwind):** utilidad que recorta un texto a un número fijo de líneas y agrega puntos suspensivos si no cabe, útil para que las tarjetas de una lista mantengan siempre el mismo alto.
+- **Componente de servidor que devuelve `null`:** en Next.js, cuando un componente decide que no tiene nada que mostrar (por ejemplo, no hay datos), puede devolver `null` en vez de HTML — la página sencillamente no imprime nada en ese lugar.
+- **`white-space: pre-wrap`:** propiedad CSS que hace que el navegador respete los saltos de línea y espacios tal como están escritos en el texto, en vez de colapsarlos (el comportamiento por defecto de HTML).
+- **`.split()` con expresión regular:** método de JavaScript que corta un texto en pedazos cada vez que encuentra el patrón indicado — en este caso, cualquier tipo de salto de línea (`\n`, `\r\n` o `\r`), para no depender de un solo formato.
+
+---
+
+_Última actualización: las fotos de producto ahora se muestran completas (sin recortar), la portada tiene un adelanto de las últimas noticias, y los párrafos de una noticia siempre se ven separados aunque el admin solo use un Enter entre ellos; verificado de punta a punta con el sitio corriendo en local contra Neon._

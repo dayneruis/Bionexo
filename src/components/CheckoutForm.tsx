@@ -136,7 +136,7 @@ export default function CheckoutForm() {
                     src={item.imageUrl}
                     alt={itemName}
                     fill
-                    className="object-cover"
+                    className="object-contain"
                     sizes="56px"
                   />
                 </div>
